@@ -1,5 +1,6 @@
 #pragma once
 
+typedef struct card Card;
 #include <stdlib.h>
 #include <string.h>
 #include "debug.h"
@@ -8,7 +9,6 @@
 #define CARDTYPE_HAND 1
 #define CARDTYPE_EQUIPMENT 2
 
-typedef struct card Card;
 struct card {
 	char *name;
 	int type; // CARDTYPE_HAND or CARDTYPE_EQUIPMENT

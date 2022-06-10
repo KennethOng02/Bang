@@ -7,4 +7,5 @@ struct character {
 
 Character * Charater_init(int id) {
 	// fopen("Ch")
+	return NULL;
 }
