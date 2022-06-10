@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "debug.h"
-// #include "player.h"
+#include "player.h"
 
 #define CARDTYPE_HAND 1
 #define CARDTYPE_EQUIPMENT 2
