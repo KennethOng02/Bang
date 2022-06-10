@@ -56,3 +56,12 @@ Card **buildCard() {
 	}
 	return card;
 }
+
+void printDeck(Card ** deck, int deck_size) {
+	for ( int i=0; i<deck_size; i++ ) {
+		printf("Card %d\n", i+1);
+		printf("	Name: %s\n", deck[i]->name);
+		printf("	Type: %d\n", deck[i]->type);
+		printf("	Suit: %d\n", deck[i]->suit);
+	}
+}
