@@ -19,29 +19,12 @@
 	} \
 }
 
-Card ** buildDeck(int deck_size) {
-	Card ** deck = malloc(deck_size * sizeof(Card *));
-	for ( int i=0; i<deck_size; i++ ) {
-		deck[i] = malloc(sizeof(Card));
-		deck[i]->type = i+1;
-	}
-	return deck;
-}
-	
-Card ** genDeck(int deck_size) {
-	
-	Card ** deck = buildDeck(deck_size); // initiate deck according "cards.txt";
-	
-	SHUFFLE(deck, deck_size, Card *);
-	
-	return deck;
-}
-
-Card **buildCard() {
+Card **buildDeck() {
 	FILE *pfile = fopen("card.txt", "r");
 	assert(pfile);
 	
-	Card **card = calloc(80, sizeof(Card));
+	int j = 0;
+	Card **card = calloc(80, sizeof(Card *));
 	char *buffer = calloc(1024, sizeof(char));
 	while(fgets(buffer, 1024, pfile) != NULL) {
 		char **line;
@@ -50,9 +33,9 @@ Card **buildCard() {
 
 		char *card_str = line[3];
 		char **card_list;
-		mystrsplit(&card_list, &counter, card_str, " ");
+		mystrsplit(&card_list, &counter, card_str, NULL);
 		for(int i = 0; i < counter; i++)
-			card[i] = Card_init(line[0], strtod(line[1], NULL), strtod(card_list[i], NULL));
+			card[j++] = Card_init(line[0], strtod(line[1], NULL), strtod(card_list[i], NULL));
 	}
 	return card;
 }
@@ -65,3 +48,13 @@ void printDeck(Card ** deck, int deck_size) {
 		printf("	Suit: %d\n", deck[i]->suit);
 	}
 }
+
+Card ** genDeck(int deck_size) {
+	
+	Card ** deck = buildDeck(); // initiate deck according "cards.txt";
+
+	SHUFFLE(deck, deck_size, Card *);
+
+	return deck;
+}
+
