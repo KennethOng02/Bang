@@ -50,10 +50,19 @@ void printDeck(Card ** deck, int deck_size) {
 }
 
 Card ** genDeck(int deck_size) {
-	
 	Card ** deck = buildDeck(); // initiate deck according "cards.txt";
-
 	SHUFFLE(deck, deck_size, Card *);
-
 	return deck;
+}
+
+Role * genRoles(int numPlayer) {
+	if ( numPlayer == 4 ) {
+		Role * roles = malloc(4 * sizeof(Role));
+		roles[0] = SHERIFF;
+		roles[1] = roles[2] = OUTLAW;
+		roles[3] = RENEGADE;
+		SHUFFLE(roles, 4, Role);
+		return roles;
+	}
+	return NULL;
 }
