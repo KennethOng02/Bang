@@ -31,7 +31,7 @@ Player *Player_init(Character *character, Role role) {
 	new->character = character;
 	new->hp = new->character->hp;
 	new->role = role;
-	if ( new->role == SHERIFF ) {
+	if(new->role == SHERIFF) {
 		new->hp++;
 	}
 	new->card_bufSize = 10;
@@ -41,12 +41,13 @@ Player *Player_init(Character *character, Role role) {
 	new->equipment = Equipment_init();
 	new->distancePlus = 0;
 	new->distanceMinus = 0;
-	if ( strcmp(new->character->name, "Paul Regret") == 0 ) {
+
+	if(strcmp(new->character->name, "Paul Regret") == 0)
 		new->distancePlus++;
-	}
-	if ( strcmp(new->character->name, "Rose Doolan") == 0 ) {
+
+	if(strcmp(new->character->name, "Rose Doolan") == 0)
 		new->distanceMinus++;
-	}
+
 	return new;
 }
 

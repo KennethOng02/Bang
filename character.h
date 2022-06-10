@@ -24,13 +24,14 @@ struct character {
 };
 
 Character *Character_init(const char *name, const int hp, const char *intro) {
-	if(name == NULL || intro == NULL) {
-		ERROR_PRINT("it's NULL pointer Mother Fucker !!\n");
-	}
-	if(hp < 0 && hp > 4) {
+	if(name == NULL || intro == NULL)
+		ERROR_PRINT("NULL pointer Mother Fucker !!\n");
+
+	if(hp < 0 && hp > 4)
 		ERROR_PRINT("hp must be between 0 and 4");
-	}
+
 	Character *new = malloc(sizeof(Character));
+
 	new->name = malloc(strlen(name) + 1);
 	strcpy(new->name, name);
 	new->hp = hp;
@@ -58,14 +59,12 @@ Character **buildCharacterDeck() {
 
 Character **genCharacterDeck(int deck_size) {
 	Character **deck = buildCharacterDeck(); 
-
 	SHUFFLE(deck, deck_size, Character *);
-
 	return deck;
 }
 
 void printCharacterDeck(Character ** deck, int deck_size) {
-	for ( int i=0; i<deck_size; i++ ) {
+	for(int i = 0; i < deck_size; i++) {
 		printf("Character %d\n", i+1);
 		printf("	Name: %s\n", deck[i]->name);
 		printf("	hp: %d\n", deck[i]->hp);

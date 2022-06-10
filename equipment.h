@@ -14,11 +14,11 @@ struct equipment {
 
 Equipment * Equipment_init() {
 	Equipment * new = malloc(sizeof(Equipment));
-	new -> gun = NULL;
-	new -> armour = NULL;
-	new -> horsePlus = NULL;
-	new -> horseMinus = NULL;
-	new -> Jail = NULL;
-	new -> bomb = NULL;
+	new->gun = NULL;
+	new->armour = NULL;
+	new->horsePlus = NULL;
+	new->horseMinus = NULL;
+	new->Jail = NULL;
+	new->bomb = NULL;
 	return new;
 }

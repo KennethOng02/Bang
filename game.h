@@ -41,7 +41,7 @@ Card **buildDeck() {
 }
 
 void printDeck(Card ** deck, int deck_size) {
-	for ( int i=0; i<deck_size; i++ ) {
+	for(int i = 0; i < deck_size; i++) {
 		printf("Card %d\n", i+1);
 		printf("	Name: %s\n", deck[i]->name);
 		printf("	Type: %d\n", deck[i]->type);
@@ -56,7 +56,7 @@ Card ** genDeck(int deck_size) {
 }
 
 Role * genRoles(int numPlayer) {
-	if ( numPlayer == 4 ) {
+	if(numPlayer == 4) {
 		Role * roles = malloc(4 * sizeof(Role));
 		roles[0] = SHERIFF;
 		roles[1] = roles[2] = OUTLAW;
