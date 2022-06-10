@@ -1,18 +1,17 @@
 #pragma once
-
 #include "card.h"
 #include "character.h"
 #include "equipment.h"
 
 typedef struct player Player;
 struct player {
-	int			hp;
+	int hp;
 	Character	*charater;
-	int			card_size;
-	Card		**card;
+	int card_size;
+	Card **card;
 	Equipment	*equipment;
-	int	       	distancePlus;
-	int	       	distanceMinus;
+	int distancePlus;
+	int distanceMinus;
 };
 
 void Player_onTurn(Player *this);

@@ -14,4 +14,3 @@
 "Suzy Lafayette","4","Each time she has no cards in her hand, she instantly draws a card from the draw pile."
 "Vulture Sam","4","Each time another player is eliminated, Sam takes all the cards that player had in his hand and in play, and adds them to his hand."
 "Willy the Kid","4","During his turn, he can play any number of Bang! cards."
-

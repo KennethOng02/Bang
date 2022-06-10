@@ -57,4 +57,3 @@ Card ** genDeck(int deck_size) {
 
 	return deck;
 }
-
