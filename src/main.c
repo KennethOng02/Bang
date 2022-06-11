@@ -21,13 +21,13 @@ int main(int argc, char ** argv) {
 
 
 	for(int i = 0; i < DECK_SIZE; i++)
-		free(deck[i]);
+		Card_free(deck[i]);
 	free(deck);
 	for(int i = 0; i < CHARACTER_SIZE; i++)
-		free(character_deck[i]);
+		Character_free(character_deck[i]);
 	free(character_deck);
 	for(int i = 0; i < PLAYER_SIZE; i++)
-		free(players[i]);
+		Player_free(players[i]);
 	free(players);
 	free(roles);
 	puts("---Exit BANG---");

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "player.h"
@@ -8,7 +9,9 @@
 
 Player *Player_init(Character *character, Role role) {
 	Player *new = malloc(sizeof(Player));
-	new->character = character;
+
+	new->character = Character_init(character->name, character->hp, character->intro);
+
 	new->hp = new->character->hp;
 	new->role = role;
 	if(new->role == SHERIFF) {
