@@ -1,24 +1,17 @@
 #pragma once
 
+typedef struct equipment Equipment;
 #include "card.h"
 
-typedef struct equipment Equipment;
 struct equipment {
 	Card *gun;
 	Card *armour;
 	Card *horsePlus;
 	Card *horseMinus;
-	Card *Jail;
+	Card *jail;
 	Card *bomb;
 };
 
-Equipment * Equipment_init() {
-	Equipment * new = malloc(sizeof(Equipment));
-	new->gun = NULL;
-	new->armour = NULL;
-	new->horsePlus = NULL;
-	new->horseMinus = NULL;
-	new->Jail = NULL;
-	new->bomb = NULL;
-	return new;
-}
+Equipment * Equipment_init();
+
+void Equipment_free(Equipment *this);

@@ -17,6 +17,9 @@ int main(int argc, char ** argv) {
 	for(int i = 0; i < PLAYER_SIZE; i++ )
 		players[i] = Player_init(character_deck[i], roles[i]);
 
+
+
+
 	for(int i = 0; i < DECK_SIZE; i++)
 		free(deck[i]);
 	free(deck);
