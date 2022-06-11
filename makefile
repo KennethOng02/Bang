@@ -1,2 +1,6 @@
 all: 
-	gcc main.c -o main
+	gcc src/main.c -o bin/main
+
+run:
+	gcc src/main.c -o bin/main
+	./bin/main

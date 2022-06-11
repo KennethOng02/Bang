@@ -1,20 +1,7 @@
 #pragma once
 #include <stdio.h>
 #include <assert.h>
-#include "mysplit.h"
-
-#define SWAP(A,B,TYPE) 	{ \
-						TYPE tmp = A; \
-						A = B; \
-						B = tmp; \
-						}
-
-# define SHUFFLE(ARR,ARR_SIZE,ARR_TYPE) { \
-	for ( int i=0; i<ARR_SIZE; i++ ) { \
-		int tarIdx = rand() % ARR_SIZE; \
-		SWAP(ARR[i], ARR[tarIdx], ARR_TYPE); \
-	} \
-}
+#include "mylib.h"
 
 typedef struct character Character;
 struct character {
@@ -41,7 +28,7 @@ Character *Character_init(const char *name, const int hp, const char *intro) {
 }
 
 Character **buildCharacterDeck() {
-	FILE *pfile = fopen("character.txt", "r");
+	FILE *pfile = fopen("src/character.txt", "r");
 	assert(pfile);
 
 	Character **character = calloc(16, sizeof(Character *));

@@ -12,16 +12,21 @@ int main(int argc, char ** argv) {
 	puts("---Welcome to BANG!---");
 	Card **deck = genDeck(DECK_SIZE);
 	Character **character_deck = genCharacterDeck(CHARACTER_SIZE);
-
 	Player **players = malloc(PLAYER_SIZE * sizeof(Player *));
-	Role * roles = genRoles(PLAYER_SIZE);
+	Role *roles = genRoles(PLAYER_SIZE);
 	for(int i = 0; i < PLAYER_SIZE; i++ )
 		players[i] = Player_init(character_deck[i], roles[i]);
 
+	for(int i = 0; i < DECK_SIZE; i++)
+		free(deck[i]);
 	free(deck);
+	for(int i = 0; i < CHARACTER_SIZE; i++)
+		free(character_deck[i]);
 	free(character_deck);
+	for(int i = 0; i < PLAYER_SIZE; i++)
+		free(players[i]);
 	free(players);
 	free(roles);
-
+	puts("---Exit BANG---");
 	return 0;
 }

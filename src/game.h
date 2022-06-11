@@ -1,26 +1,11 @@
 #pragma once
-
 #include <stdlib.h>
 #include <assert.h>
-#include "mysplit.h"
+#include "mylib.h"
 #include "card.h"
 
-#define SWAP(A,B,TYPE) 	{ \
-						TYPE tmp = A; \
-						A = B; \
-						B = tmp; \
-						}
-
-
-# define SHUFFLE(ARR,ARR_SIZE,ARR_TYPE) { \
-	for ( int i=0; i<ARR_SIZE; i++ ) { \
-		int tarIdx = rand() % ARR_SIZE; \
-		SWAP(ARR[i], ARR[tarIdx], ARR_TYPE); \
-	} \
-}
-
 Card **buildDeck() {
-	FILE *pfile = fopen("card.txt", "r");
+	FILE *pfile = fopen("src/card.txt", "r");
 	assert(pfile);
 	
 	int j = 0;
@@ -40,7 +25,7 @@ Card **buildDeck() {
 	return card;
 }
 
-void printDeck(Card ** deck, int deck_size) {
+void printDeck(Card **deck, int deck_size) {
 	for(int i = 0; i < deck_size; i++) {
 		printf("Card %d\n", i+1);
 		printf("	Name: %s\n", deck[i]->name);
@@ -49,13 +34,13 @@ void printDeck(Card ** deck, int deck_size) {
 	}
 }
 
-Card ** genDeck(int deck_size) {
-	Card ** deck = buildDeck(); // initiate deck according "cards.txt";
+Card **genDeck(int deck_size) {
+	Card **deck = buildDeck(); // initiate deck according "cards.txt";
 	SHUFFLE(deck, deck_size, Card *);
 	return deck;
 }
 
-Role * genRoles(int numPlayer) {
+Role *genRoles(int numPlayer) {
 	if(numPlayer == 4) {
 		Role * roles = malloc(4 * sizeof(Role));
 		roles[0] = SHERIFF;
