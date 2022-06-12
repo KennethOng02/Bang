@@ -9,6 +9,9 @@ all: $(dependency)
 run:
 	./bin/main
 
+debug: $(dependency)
+	gcc src/main.c $(dependency_path) -D__DEBUG__ -o bin/main
+
 %.o: src/%.c
 	gcc -c $< -o ./bin/$@
 
