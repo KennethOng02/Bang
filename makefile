@@ -7,7 +7,6 @@ all: $(dependency)
 	gcc src/main.c $(dependency_path) -o bin/main
 
 run:
-	gcc src/main.c -o bin/main
 	./bin/main
 
 %.o: src/%.c
