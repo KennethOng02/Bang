@@ -3,13 +3,17 @@
 typedef struct game Game;
 
 #include "card.h"
+#include "deck.h"
 #include "avatar.h"
+
+#define DECK_SIZE 80
+#define CHARACTER_SIZE 16
 
 struct game {
 	int numAvatar;
 	Avatar ** avatars;
-	Card ** deck;
-	Card ** discardPile;
+	Deck * deck;
+	Deck * discardPile;
 };
 
 Game *Game_init(int numAvatar);
@@ -23,7 +27,7 @@ Character **genCharacterDeck(int deck_size);
 void Game_free(Game *this);
 
 
-int Game_draw(Game *this, Avatar *avatar);
+Card **Game_draw(Game *this, int num);
 
 
 int Game_use(Game *this, Avatar *user, Avatar ** targets, Card * card);

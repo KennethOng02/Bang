@@ -1,4 +1,4 @@
-dependency=game.o avatar.o card.o mylib.o
+dependency=game.o avatar.o deck.o card.o mylib.o
 bin_dir=./bin/
 
 dependency_path=$(addprefix ${bin_dir}, ${dependency})
