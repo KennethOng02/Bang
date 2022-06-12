@@ -5,6 +5,7 @@
 #include "game.h"
 #include "card.h"
 #include "mylib.h"
+#include "debug.h"
 
 #define DECK_SIZE 80
 #define CHARACTER_SIZE 16
@@ -13,14 +14,6 @@ Game *Game_init(int numAvatar) {
 
 	Game *new = malloc(sizeof(Game));
 
-	// initiate Avatar *avatars[numAvatar]
-	new->numAvatar = numAvatar;
-	Role *roles = genRoles(numAvatar);
-	new->avatars = malloc(new->numAvatar * sizeof(Avatar *));
-	Character **character_deck = genCharacterDeck(CHARACTER_SIZE);
-	for(int i = 0; i < numAvatar; i++ )
-		new->avatars[i] = Avatar_init(character_deck[i], roles[i]);
-
 	// initiate Card *deck[DECK_SIZE]
 	new->deck = genDeck(DECK_SIZE);
 
@@ -28,6 +21,18 @@ Game *Game_init(int numAvatar) {
 	new->discardPile = malloc(DECK_SIZE * sizeof(Card *));
 	for ( int i=0; i<DECK_SIZE; i++ ) {
 		new->discardPile[i] = NULL;
+	}
+
+	// initiate Avatar *avatars[numAvatar]
+	new->numAvatar = numAvatar;
+	Role *roles = genRoles(numAvatar);
+	new->avatars = malloc(new->numAvatar * sizeof(Avatar *));
+	Character **character_deck = genCharacterDeck(CHARACTER_SIZE);
+	for(int i = 0; i < numAvatar; i++ ) {
+		new->avatars[i] = Avatar_init(character_deck[i], roles[i]);
+		for ( int _=0; _<new->avatars[i]->hp; _++ ) {
+			Avatar_draw(new->avatars[i], new);
+		}
 	}
 
 	for(int i = 0; i < CHARACTER_SIZE; i++)
@@ -56,6 +61,23 @@ void Game_free(Game *this) {
 	free(this);
 }
 
+void Game_run(Game *this) {
+	int curIdx;
+	for ( curIdx = 0; curIdx<this->numAvatar; curIdx++ ) {
+		if ( this->avatars[curIdx]->role == SHERIFF ) {
+			break;
+		}
+	}
+	if ( curIdx >= this->numAvatar ) {
+		ERROR_PRINT("No SHERIFF in this game.\n");
+	}
+	while ( 1 ) {
+		Avatar_onTurn(this->avatars[curIdx], this);
+		curIdx = (curIdx + 1) % this->numAvatar;
+		// isDead?
+		// game over?
+	}
+}
 
 
 

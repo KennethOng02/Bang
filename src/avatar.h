@@ -20,6 +20,7 @@ void Character_free(Character *this);
 
 
 struct equipment {
+	// Only card pointers
 	Card *gun;
 	Card *armour;
 	Card *horsePlus;
