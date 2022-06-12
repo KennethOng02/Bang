@@ -85,3 +85,21 @@ void Avatar_free(Avatar *this) {
 	free(this->cards);
 	free(this);
 }
+
+//void Avatar_onTurn(Avatar *this, Game *game) {
+	
+
+void Avatar_onJudge(Avatar *this, Game *game) {
+	for ( Card *card = (Card *)this->equipment; card < (Card*)(this->equipment+sizeof(Equipment)); card++ ) {
+		printf("HI\n");
+	}
+	return;
+}
+
+//void Avatar_onDraw(Avatar *this, Game *game);
+
+//void Avatar_onPlay(Avatar *this, Game *game);
+//void Avatar_onDump(Avatar *this, Game *game);
+//void Avatar_onReact(Avatar *this, Game *game);
+//void Avatar_onDead(Avatar *this, Game *game);
+//void Avatar_onHurt(Avatar *this, Game *game);
