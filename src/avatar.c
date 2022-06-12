@@ -96,6 +96,14 @@ void Avatar_onJudge(Avatar *this, Game *game) {
 	return;
 }
 
+void Avatar_onTurn(Avatar *this, Game *game) {
+	return;
+}
+
+void Avatar_draw(Avatar *this, Game *game) {
+	return;
+}
+
 //void Avatar_onDraw(Avatar *this, Game *game);
 
 //void Avatar_onPlay(Avatar *this, Game *game);
