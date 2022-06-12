@@ -2,11 +2,11 @@
 
 #include <stdbool.h>
 
-typedef struct player Player
+typedef struct player Player ;
 
 struct player {
 	bool isComputer;
-}
+};
 
 Player * Player_init(bool);
 

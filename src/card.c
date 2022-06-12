@@ -32,10 +32,62 @@ void Card_free(Card *this) {
 	free(this);
 }
 
-int Card_playBang(Avatar * user, Avatar ** target) {
-	return 0;
-}
+// int Card_playBang(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	if ( Avatar_onReact( target , game , card ) == 0 ){
+// 		target->hp -- ;
+// 	}
+// 	return 0;
+// }
 
-int Card_playXXX(Avatar * user, Avatar ** target) {
-	return 0;
-}
+// int Card_playMiss(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	return 0;
+// }
+
+// int Card_playBeer(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	user->hp ++ ;
+// 	return 0;
+// }
+
+// int Card_playBeer(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	user->hp ++ ;
+// 	return 0;
+// }
+
+// int Card_playSallon(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	for(size_t i = 0 ; i < game->numAvatar ; i++)
+// 		game->avatars[i]->hp ++ ;
+// 	return 0;
+// }
+
+
+// int Card_playWellsFargo(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	Game_Draw(game, user, 3);
+// 	return 0;
+// }
+
+// int Card_playStagecoach(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	Game_DrawTo(game, user, 2);
+// 	return 0;
+// }
+
+// int Card_playStagecoach(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	Game_DrawTo(game, user, 2);
+// 	return 0;
+// }
+
+// int Card_playGeneralStore(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	Game_Draw(game, user, game->numAvatar);
+// 	return 0;
+// }
+
+// int Card_playPanic(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	Game_Draw(game, user, game->numAvatar);
+// 	return 0;
+// }
+
+// int Card_playGatling(Avatar * user, Avatar * target, Game * game, Card * card) {
+// 	if ( Avatar_onReact( target , game , card ) == 0 ){
+// 		target->hp -- ;
+// 	}
+// 	return 0;
+// }

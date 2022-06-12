@@ -26,7 +26,7 @@ void Game_free(Game *this);
 int Game_draw(Game *this, Avatar *avatar);
 
 
-int Game_use(Game *this, Avatar *user, Avatar ** targets, Card * card);
+int Game_use(Game *this, Avatar *user, Avatar * targets, Card * card);
 
 
 int Game_drop(Game *this, Avatar *user, Card * card);
