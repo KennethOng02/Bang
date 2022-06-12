@@ -16,4 +16,4 @@ debug: $(dependency)
 	gcc -c $< -o ./bin/$@
 
 clean:
-	rm ./bin/*
+	rm ./bin/?*
