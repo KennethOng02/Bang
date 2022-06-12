@@ -3,7 +3,7 @@
 
 #include "card.h"
 #include "debug.h"
-#include "player.h"
+#include "avatar.h"
 
 #define CARDTYPE_HAND 1
 #define CARDTYPE_EQUIPMENT 2
@@ -32,10 +32,10 @@ void Card_free(Card *this) {
 	free(this);
 }
 
-int Card_playBang(Player * user, Player ** target) {
+int Card_playBang(Avatar * user, Avatar ** target) {
 	return 0;
 }
 
-int Card_playXXX(Player * user, Player ** target) {
+int Card_playXXX(Avatar * user, Avatar ** target) {
 	return 0;
 }

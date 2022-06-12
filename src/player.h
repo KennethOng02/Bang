@@ -1,41 +1,26 @@
 #pragma once
 
-typedef struct player Player;
+#include <stdbool.h>
 
-#include "card.h"
-#include "character.h"
-#include "equipment.h"
-
-typedef enum role Role;
-enum role {
-	SHERIFF,
-	DEPUTY,
-	OUTLAW,
-	RENEGADE,
-	ROLE_MAX
-};
+typedef struct player Player
 
 struct player {
-	int			hp;
-	Character	*character;
-	Role		role;
-	int			card_bufSize;
-	int			card_size;
-	Card 		**card;
-	Equipment	*equipment;
-	int 		distancePlus;
-	int			distanceMinus;
-};
+	bool isComputer;
+}
 
-Player *Player_init(Character *character, Role role);
+Player * Player_init(bool);
 
-void Player_free(Player *this);
+void Player_free(Player *);
 
-void Player_onTurn(Player *this);
-void Player_onJudge(Player *this);
-void Player_onDraw(Player *this);
-void Player_onPlay(Player *this);
-void Player_onDump(Player *this);
-void Player_onReact(Player *this);
-void Player_onDead(Player *this);
-void Player_onHurt(Player *this);
+
+int *Player_sel(Player *this, Game *game, Card **cards, int cards_size, int n);
+// select n cards from cards[0..cards_size)
+// return their indexes
+
+int *Player_selDrop(Player *this, Game *game, Card **cards, int cards_size, int n);
+// select n cards to drop from cards[0..cards_size)
+// return their indexes
+
+int Player_selUse(Player *this, Game *game, Card **cards, int cards_size);
+// select 1 card to use from cards[0..cards_size)
+// return its index
