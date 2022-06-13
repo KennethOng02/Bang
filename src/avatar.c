@@ -88,6 +88,7 @@ void Avatar_free(Avatar *this) {
 	}
 	free(this->cards);
 	free(this);
+	DEBUG_PRINT("Avatar_free Done !\n");
 }
 
 void Avatar_onTurn(Avatar *this, Game *game)  {
@@ -124,14 +125,10 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 
 		} else {
 			// Find next avatar
-			for ( int i=0; i<game->numAvatar; i++ ) {
-				if ( game->avatars[i]->id == this->id ) {
-					Avatar *nextAvatar = game->avatars[(i+1)%game->numAvatar];
-					Avatar_equip(nextAvatar, game, bomb);
-					break;
-				}
-				if ( i == game->numAvatar-1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
-			}
+			int index = Game_find_index( game, this );
+			if ( index == -1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
+			Avatar *nextAvatar = game->avatars[(index+1)%game->numAvatar];
+			Avatar_equip(nextAvatar, game, bomb);
 		}
 		
 	}
@@ -165,13 +162,42 @@ void Avatar_onDump(Avatar *this, Game *game) {
 	
 }
 
-//void Avatar_onReact(Avatar *this, Game *game);
-void Avatar_dead(Avatar *this, Game *game){
+int Avatar_onReact(Avatar *this, Game *game, int card_id) {
+	return 0;
+}
 
+void Avatar_dead(Avatar *this, Game *game) {
+	int index = Game_find_index( game, this );
+	if ( index == -1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
+	//discard cards
+	for( int i = 0; i < this->cards_size ; i++ ) {
+		Deck_put( game->discardPile, this->cards[i] );
+	}
+	//discard equipment
+	if( this->equipment->armour != NULL) Deck_put( game->discardPile, this->equipment->armour );
+	if( this->equipment->horseMinus != NULL) Deck_put( game->discardPile, this->equipment->horseMinus );
+	if( this->equipment->horsePlus != NULL) Deck_put( game->discardPile, this->equipment->horsePlus );
+	if( this->equipment->gun != NULL) Deck_put( game->discardPile, this->equipment->gun );
+	if( this->equipment->bomb != NULL) Deck_put( game->discardPile, this->equipment->bomb );
+	if( this->equipment->jail != NULL) Deck_put( game->discardPile, this->equipment->jail );
+	//move dead people out
+	for( int i = index ; i < game->numAvatar - 1; i++ ) {
+		game->avatars[i] = game->avatars[i+1];
+	}
+	game->numAvatar --;
+	Avatar_free(this);
+	
 }
 void Avatar_hurt(Avatar *this, Game *game){
 	this->hp -- ;
-	// if(this->hp == 0)
+	if(this->hp == 0) {
+		if( Avatar_onReact(this, game, CARD_BEER) == 0 ) {
+			Avatar_dead(this, game);
+		}else {
+			this->hp ++ ;
+		}
+	}
+
 	DEBUG_PRINT("Avatar %d hurt.\n", this->id);
 	return;
 }
@@ -182,11 +208,11 @@ void Avatar_heal(Avatar *this, Game *game){
 }
 void Avatar_equip(Avatar *this, Game *game, Card *card) {
 	if( card->id > CARD_ARMOUR_START && card->id < CARD_ARMOUR_END ) {
-		if( card.id == CARD_BARREL ) {
+		if( card->id == CARD_BARREL ) {
 			this->equipment->armour = card;
-		}else if ( card.id == CARD_SCOPE ) {
+		}else if ( card->id == CARD_SCOPE ) {
 			this->equipment->horseMinus = card;
-		}else if ( card.id == CARD_MUSTANG ) {
+		}else if ( card->id == CARD_MUSTANG ) {
 			this->equipment->horsePlus = card;
 		}
 	}else if ( card->id > CARD_GUN_START && card->id < CARD_GUN_END ) {
@@ -197,9 +223,9 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 			this->equipment->gun = card;
 		}
 	}else if ( card->id > CARD_JUDGE_START && card->id < CARD_JUDGE_END ) {
-		if( card.id == CARD_JAIL ) {
+		if( card->id == CARD_JAIL ) {
 			this->equipment->jail = card;
-		}else if ( card.id == CARD_DYNAMITE ) {
+		}else if ( card->id == CARD_DYNAMITE ) {
 			this->equipment->bomb = card;
 		}
 	}
@@ -215,7 +241,7 @@ Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
 void Avatar_draw(Avatar *this, Game *game){
 	this->cards_size ++;
 	this->cards[this->cards_size - 1] = Deck_draw(game->deck);
-	DEBUG_PRINT("Avatar %d draw one card.\n", this->id );
+	DEBUG_PRINT("Avatar %d draw one card.Remain: %d cards.\n", this->id ,game->deck->top + 1);
 	return;
 }
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num){	
@@ -228,7 +254,7 @@ void Avatar_get(Avatar *this, Game *game, Card *want){
 }
 Card* Avatar_taken(Avatar *this, Game *game, int index){
 	Card *bye = this->cards[index];
-	for( size_t i = index ; i < this->cards_size - 1 ; i++ ){
+	for( int i = index ; i < this->cards_size - 1 ; i++ ){
 		this->cards[index] = this->cards[index + 1];
 	}
 	this->cards_size -- ;

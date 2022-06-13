@@ -30,15 +30,6 @@ void Game_free(Game *this);
 void Game_run(Game *this);
 
 
-int Game_draw(Game *this, Avatar *avatar);
-
-
-int Game_judge(Game *this, Avatar *avatar, Card * card);
-
-
-int Game_use(Game *this, Avatar *user, Avatar ** targets, Card * card);
-
-
-int Game_drop(Game *this, Avatar *user, Card * card);
+int Game_find_index(Game *this, Avatar *avatar);
 
 

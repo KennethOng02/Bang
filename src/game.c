@@ -56,6 +56,9 @@ void Game_free(Game *this) {
 	Deck_free(this->discardPile, DECK_SIZE);
 
 	free(this);
+	
+	DEBUG_PRINT("Game_free Done !\n");
+	return;
 }
 
 void Game_run(Game *this) {
@@ -74,7 +77,20 @@ void Game_run(Game *this) {
 	while ( 1 ) {
 		Avatar_onTurn(this->avatars[curIdx], this);
 		curIdx = (curIdx + 1) % this->numAvatar;
+		if( this->deck->top + 1 <= 0){
+			printf("no cards\n");
+			return;
+		}
 		// isDead?
 		// game over?
 	}
+}
+
+int Game_find_index(Game *this, Avatar *avatar)	{
+	for ( int i=0; i<this->numAvatar; i++ ) {
+		if ( this->avatars[i]->id == avatar->id ) {
+			return i;
+		}
+	}
+	return -1;
 }

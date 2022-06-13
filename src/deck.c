@@ -11,7 +11,7 @@
 
 Card *Deck_draw(Deck *this) {
 	Card *new = this->card_pile[this->top];
-	(this->top)--;
+	this->card_pile[this->top--] = NULL;
 	return new;
 }
 
@@ -32,6 +32,7 @@ void Deck_free(Deck *this, int size) {
 	for(int i = 0; i < size; i++)
 		if ( this->card_pile[i] ) Card_free(this->card_pile[i]);
 	free(this);
+	DEBUG_PRINT("Deck_free Done !\n");
 	return;
 }
 
