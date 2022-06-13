@@ -4,6 +4,7 @@
 
 #include "avatar.h"
 #include "debug.h"
+#include "cardid.h"
 
 Character *Character_init(const char *name, const int hp, const char *intro) {
 	if(name == NULL || intro == NULL)
@@ -165,6 +166,73 @@ void Avatar_onDump(Avatar *this, Game *game) {
 }
 
 //void Avatar_onReact(Avatar *this, Game *game);
-void Avatar_draw(Avatar *this, Game *game) {
+void Avatar_dead(Avatar *this, Game *game){
+
+}
+void Avatar_hurt(Avatar *this, Game *game){
+	this->hp -- ;
+	// if(this->hp == 0)
+	DEBUG_PRINT("Avatar %d hurt.\n", this->id);
 	return;
 }
+void Avatar_heal(Avatar *this, Game *game){
+	this->hp ++ ;
+	DEBUG_PRINT("Avatar %d heal.\n", this->id);
+	return;
+}
+void Avatar_equip(Avatar *this, Game *game, Card *card) {
+	if( card->id > CARD_ARMOUR_START && card->id < CARD_ARMOUR_END ) {
+		if( card.id == CARD_BARREL ) {
+			this->equipment->armour = card;
+		}else if ( card.id == CARD_SCOPE ) {
+			this->equipment->horseMinus = card;
+		}else if ( card.id == CARD_MUSTANG ) {
+			this->equipment->horsePlus = card;
+		}
+	}else if ( card->id > CARD_GUN_START && card->id < CARD_GUN_END ) {
+		if( this->equipment->gun != NULL){
+			Card *trash = Avatar_unequip(this,game,&(this->equipment->gun));
+			Deck_put(game->discardPile,trash);
+		}else {
+			this->equipment->gun = card;
+		}
+	}else if ( card->id > CARD_JUDGE_START && card->id < CARD_JUDGE_END ) {
+		if( card.id == CARD_JAIL ) {
+			this->equipment->jail = card;
+		}else if ( card.id == CARD_DYNAMITE ) {
+			this->equipment->bomb = card;
+		}
+	}
+	DEBUG_PRINT("Avatar %d quipped the card: %s.\n", this->id , card->name);
+	return;
+}
+Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
+	Card *bye = *card;
+	*card = NULL;
+	DEBUG_PRINT("Avatar %d unquipped the card: %s.\n", this->id , (*card)->name );
+	return bye;
+}
+void Avatar_draw(Avatar *this, Game *game){
+	this->cards_size ++;
+	this->cards[this->cards_size - 1] = Deck_draw(game->deck);
+	DEBUG_PRINT("Avatar %d draw one card.\n", this->id );
+	return;
+}
+int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num){	
+}
+void Avatar_get(Avatar *this, Game *game, Card *want){
+	this->cards_size ++;
+	this->cards[this->cards_size - 1] = want;
+	DEBUG_PRINT("Avatar %d get the card: %s.\n", this->id , want->name);
+	return;
+}
+Card* Avatar_taken(Avatar *this, Game *game, int index){
+	Card *bye = this->cards[index];
+	for( size_t i = index ; i < this->cards_size - 1 ; i++ ){
+		this->cards[index] = this->cards[index + 1];
+	}
+	this->cards_size -- ;
+	DEBUG_PRINT("Avatar %d's card: %s had been taken.\n", this->id , bye->name );
+	return bye;
+}
+

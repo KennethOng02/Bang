@@ -76,4 +76,4 @@ void Avatar_equip(Avatar *this, Game *game, Card *card);
 Card *Avatar_unequip(Avatar *this, Game *game, Card **card);
 void Avatar_draw(Avatar *this, Game *game);
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num);
-void Avatar_take(Avatar *this, Game *game, Card *choosen);
+Card *Avatar_taken(Avatar *this, Game *game, Card *choosen);
