@@ -10,6 +10,7 @@
 #include "debug.h"
 
 Card *Deck_draw(Deck *this) {
+	if ( this->top < 0 ) ERROR_PRINT("No card remain.\n");
 	Card *new = this->card_pile[this->top];
 	this->card_pile[this->top--] = NULL;
 	return new;
@@ -102,6 +103,7 @@ Role *genRoles(int numAvatar) {
 		roles[1] = roles[2] = OUTLAW;
 		roles[3] = RENEGADE;
 		SHUFFLE(roles, 4, Role);
+		DEBUG_PRINT("Finish shuffling roles: { %d, %d, %d, %d }\n", roles[0], roles[1], roles[2], roles[3]);
 		return roles;
 	}
 	return NULL;

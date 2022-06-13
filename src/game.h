@@ -5,6 +5,7 @@ typedef struct game Game;
 #include "card.h"
 #include "deck.h"
 #include "avatar.h"
+#include "player.h"
 
 #define DECK_SIZE 80
 #define CHARACTER_SIZE 16
@@ -16,7 +17,7 @@ struct game {
 	Deck * discardPile;
 };
 
-Game *Game_init(int numAvatar);
+Game *Game_init(int numAvatar, Player **players);
 Card **buildDeck();
 Card **genDeck(int deck_size);
 Role *genRoles(int numAvatar);

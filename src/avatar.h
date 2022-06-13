@@ -9,6 +9,7 @@ typedef struct avatar Avatar;
 
 #include "card.h"
 #include "game.h"
+#include "player.h"
 
 struct character {
 	char *name;
@@ -49,6 +50,7 @@ enum role {
 
 struct avatar {
 	int			id;
+	Player		*player;
 	int			hp;
 	Character	*character;
 	Role		role;
@@ -59,7 +61,7 @@ struct avatar {
 	int			distanceMinus;
 };
 
-Avatar *Avatar_init(int id, Character *character, Role role);
+Avatar *Avatar_init(int id, Player *player, Character *character, Role role);
 
 void Avatar_free(Avatar *this);
 

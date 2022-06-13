@@ -1,4 +1,4 @@
-dependency=game.o avatar.o deck.o card.o mylib.o
+dependency=game.o avatar.o deck.o card.o mylib.o player.o interface.o
 bin_dir=./bin/
 debug_suffix=.debug
 

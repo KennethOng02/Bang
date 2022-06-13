@@ -5,6 +5,7 @@
 #include "avatar.h"
 #include "debug.h"
 #include "cardid.h"
+#include "player.h"
 
 Character *Character_init(const char *name, const int hp, const char *intro) {
 	if(name == NULL || intro == NULL)
@@ -51,17 +52,19 @@ void Equipment_free(Equipment *this) {
 }
 
 
-Avatar *Avatar_init(int id, Character *character, Role role) {
+Avatar *Avatar_init(int id, Player *player, Character *character, Role role) {
 
 	Avatar *new = malloc(sizeof(Avatar));
 
 	new->id = id;
+	new->player = player;
 
 	new->character = Character_init(character->name, character->hp, character->intro);
 
 	new->hp = new->character->hp;
 	new->role = role;
 	if(new->role == SHERIFF) {
+		DEBUG_PRINT("SHERIFF is avatar %d.\n", id);
 		new->hp++;
 	}
 	new->cards_size = 0;
@@ -81,6 +84,7 @@ Avatar *Avatar_init(int id, Character *character, Role role) {
 }
 
 void Avatar_free(Avatar *this) {
+	// Free players in main.c
 	Character_free(this->character);
 	Equipment_free(this->equipment);
 	for ( int i=0; i<this->cards_size; i++ ) {
@@ -100,6 +104,8 @@ void Avatar_onTurn(Avatar *this, Game *game)  {
 	if ( jailed ) return;
 
 	Avatar_onDraw(this, game);
+
+	Avatar_onPlay(this, game);
 
 }
 	
@@ -156,6 +162,8 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 }
 
 void Avatar_onPlay(Avatar *this, Game *game) {
+	// Test
+	Player_chooseTake(this->player, game, this->cards, this->cards_size, 2);
 }
 
 void Avatar_onDump(Avatar *this, Game *game) {
@@ -188,6 +196,7 @@ void Avatar_dead(Avatar *this, Game *game) {
 	Avatar_free(this);
 	
 }
+
 void Avatar_hurt(Avatar *this, Game *game){
 	this->hp -- ;
 	if(this->hp == 0) {
@@ -201,11 +210,13 @@ void Avatar_hurt(Avatar *this, Game *game){
 	DEBUG_PRINT("Avatar %d hurt.\n", this->id);
 	return;
 }
+
 void Avatar_heal(Avatar *this, Game *game){
 	this->hp ++ ;
 	DEBUG_PRINT("Avatar %d heal.\n", this->id);
 	return;
 }
+
 void Avatar_equip(Avatar *this, Game *game, Card *card) {
 	if( card->id > CARD_ARMOUR_START && card->id < CARD_ARMOUR_END ) {
 		if( card->id == CARD_BARREL ) {
@@ -232,26 +243,32 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 	DEBUG_PRINT("Avatar %d quipped the card: %s.\n", this->id , card->name);
 	return;
 }
+
 Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
 	Card *bye = *card;
 	*card = NULL;
 	DEBUG_PRINT("Avatar %d unquipped the card: %s.\n", this->id , (*card)->name );
 	return bye;
 }
+
 void Avatar_draw(Avatar *this, Game *game){
 	this->cards_size ++;
 	this->cards[this->cards_size - 1] = Deck_draw(game->deck);
 	DEBUG_PRINT("Avatar %d draw one card.Remain: %d cards.\n", this->id ,game->deck->top + 1);
 	return;
 }
+
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num){	
+	return NULL;
 }
+
 void Avatar_get(Avatar *this, Game *game, Card *want){
 	this->cards_size ++;
 	this->cards[this->cards_size - 1] = want;
 	DEBUG_PRINT("Avatar %d get the card: %s.\n", this->id , want->name);
 	return;
 }
+
 Card* Avatar_taken(Avatar *this, Game *game, int index){
 	Card *bye = this->cards[index];
 	for( int i = index ; i < this->cards_size - 1 ; i++ ){

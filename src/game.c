@@ -8,8 +8,8 @@
 #include "deck.h"
 #include "card.h"
 #include "game.h"
-
-Game *Game_init(int numAvatar) {
+#include "player.h"
+Game *Game_init(int numAvatar, Player **players) {
 
 	Game *new = malloc(sizeof(Game));
 	
@@ -28,7 +28,7 @@ Game *Game_init(int numAvatar) {
 	new->avatars = malloc(new->numAvatar * sizeof(Avatar *));
 	Character **character_deck = Deck_genCharacter(CHARACTER_SIZE);
 	for(int i = 0; i < numAvatar; i++ ) {
-		new->avatars[i] = Avatar_init(i, character_deck[i], roles[i]);
+		new->avatars[i] = Avatar_init(i, players[i], character_deck[i], roles[i]);
 		for ( int _=0; _<new->avatars[i]->hp; _++ ) {
 			Avatar_draw(new->avatars[i], new);
 		}
@@ -78,7 +78,6 @@ void Game_run(Game *this) {
 		Avatar_onTurn(this->avatars[curIdx], this);
 		curIdx = (curIdx + 1) % this->numAvatar;
 		if( this->deck->top + 1 <= 0){
-			printf("no cards\n");
 			return;
 		}
 		// isDead?
