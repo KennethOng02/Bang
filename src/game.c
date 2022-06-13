@@ -85,3 +85,12 @@ void Game_run(Game *this) {
 		// game over?
 	}
 }
+
+int Game_find_index(Game *this, Avatar *avatar)	{
+	for ( int i=0; i<this->numAvatar; i++ ) {
+		if ( this->avatars[i]->id == avatar->id ) {
+			return i;
+		}
+	}
+	return -1;
+}

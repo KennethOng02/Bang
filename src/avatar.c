@@ -125,14 +125,10 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 
 		} else {
 			// Find next avatar
-			for ( int i=0; i<game->numAvatar; i++ ) {
-				if ( game->avatars[i]->id == this->id ) {
-					Avatar *nextAvatar = game->avatars[(i+1)%game->numAvatar];
-					Avatar_equip(nextAvatar, game, bomb);
-					break;
-				}
-				if ( i == game->numAvatar-1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
-			}
+			int idex = Game_find_index( game, this );
+			if ( idex == -1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
+			Avatar *nextAvatar = game->avatars[(idex+1)%game->numAvatar];
+			Avatar_equip(nextAvatar, game, bomb);
 		}
 		
 	}
@@ -171,6 +167,25 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id) {
 }
 
 void Avatar_dead(Avatar *this, Game *game) {
+	int idex = Game_find_index( game, this );
+	if ( idex == -1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
+	//discard cards
+	for( int i = 0; i < this->cards_size ; i++ ) {
+		Deck_put( game->discardPile, this->cards[i] );
+	}
+	//discard equipment
+	if( this->equipment->armour != NULL) Deck_put( game->discardPile, this->equipment->armour );
+	if( this->equipment->horseMinus != NULL) Deck_put( game->discardPile, this->equipment->horseMinus );
+	if( this->equipment->horsePlus != NULL) Deck_put( game->discardPile, this->equipment->horsePlus );
+	if( this->equipment->gun != NULL) Deck_put( game->discardPile, this->equipment->gun );
+	if( this->equipment->bomb != NULL) Deck_put( game->discardPile, this->equipment->bomb );
+	if( this->equipment->jail != NULL) Deck_put( game->discardPile, this->equipment->jail );
+	//move dead people out
+	for( int i = index ; i < game->numAvatar - 1; i++ ) {
+		game->avatars[i] = game->avatars[i+1];
+	}
+	game->numAvatar --;
+	Avatar_free(this);
 	
 }
 void Avatar_hurt(Avatar *this, Game *game){
@@ -239,7 +254,7 @@ void Avatar_get(Avatar *this, Game *game, Card *want){
 }
 Card* Avatar_taken(Avatar *this, Game *game, int index){
 	Card *bye = this->cards[index];
-	for( size_t i = index ; i < this->cards_size - 1 ; i++ ){
+	for( int i = index ; i < this->cards_size - 1 ; i++ ){
 		this->cards[index] = this->cards[index + 1];
 	}
 	this->cards_size -- ;
