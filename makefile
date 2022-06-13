@@ -7,13 +7,18 @@ debug_dependency_path=$(addprefix ${bin_dir}, ${debug_dependency})
 dependency_path=$(addprefix ${bin_dir}, ${dependency})
 
 all: $(dependency)
-	echo $(debug_dependency_path)
+	make cardid
 	gcc src/main.c $(dependency_path) -o bin/main
 
 run:
 	./bin/main
 
+cardid: mylib.o 
+	gcc src/cardid_generator.c bin/mylib.o -o bin/cardid_generator
+	./bin/cardid_generator
+
 debug: $(debug_dependency)
+	make cardid
 	gcc -D__DEBUG__ src/main.c $(debug_dependency_path) -o bin/main
 
 %.o: src/%.c

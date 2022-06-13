@@ -28,11 +28,13 @@ Game *Game_init(int numAvatar) {
 	new->avatars = malloc(new->numAvatar * sizeof(Avatar *));
 	Character **character_deck = Deck_genCharacter(CHARACTER_SIZE);
 	for(int i = 0; i < numAvatar; i++ ) {
-		new->avatars[i] = Avatar_init(character_deck[i], roles[i]);
+		new->avatars[i] = Avatar_init(i, character_deck[i], roles[i]);
 		for ( int _=0; _<new->avatars[i]->hp; _++ ) {
 			Avatar_draw(new->avatars[i], new);
 		}
 	}
+
+	DEBUG_PRINT("Done Game_init\n");
 	
 	for(int i = 0; i < CHARACTER_SIZE; i++)
 		Character_free(character_deck[i]);
@@ -63,9 +65,12 @@ void Game_run(Game *this) {
 			break;
 		}
 	}
+
 	if ( curIdx >= this->numAvatar ) {
 		ERROR_PRINT("No SHERIFF in this game.\n");
 	}
+
+	DEBUG_PRINT("Stating game loop\n");
 	while ( 1 ) {
 		Avatar_onTurn(this->avatars[curIdx], this);
 		curIdx = (curIdx + 1) % this->numAvatar;

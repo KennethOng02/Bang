@@ -4,24 +4,19 @@
 #include "card.h"
 #include "debug.h"
 #include "avatar.h"
+#include "cardid.h"
 
-#define CARDTYPE_HAND 1
-#define CARDTYPE_EQUIPMENT 2
+Card *Card_init(const int id, const char *name, const int suit) {
 
-Card *Card_init(const char *name, const int type, const int suit) {
+	if ( id <= CARD_START || id >= CARD_END ) ERROR_PRINT("Invalid card id %d\n", id);
 	if(name == NULL) ERROR_PRINT("NULL pointer Mother Fucker !!\n");
-
-	if(type != CARDTYPE_HAND && type != CARDTYPE_EQUIPMENT)
-		ERROR_PRINT("type must within [1, 2]\n");
-
-	if(suit < 0 && suit >= 52)
-		ERROR_PRINT("suit must within [0, 51]\n");
+	if(suit < 0 && suit >= 52) ERROR_PRINT("suit must within [0, 51]\n");
 
 	Card *new = malloc(sizeof(Card));
 
+	new->id = id;
 	new->name = malloc(strlen(name)+1);
 	strcpy(new->name, name);
-	new->type = type;
 	new->suit = suit;
 	new->play = NULL;
 	return new;
