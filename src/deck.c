@@ -6,6 +6,7 @@
 #include "game.h"
 #include "deck.h"
 #include "card.h"
+#include "cardid.h"
 #include "debug.h"
 
 Card *Deck_draw(Deck *this) {
@@ -35,25 +36,53 @@ void Deck_free(Deck *this, int size) {
 }
 
 Deck *Deck_build() {
+	// build deck and generating 'cardid.h' according 'card.txt'
 	FILE *pfile = fopen("src/card.txt", "r");
 	assert(pfile);
-	
-	int j = 0;
+
 	Deck *deck = Deck_init(DECK_SIZE);
-	char *buffer = calloc(1024, sizeof(char));
-	while(fgets(buffer, 1024, pfile) != NULL) {
+
+	int lineNum = 0;
+
+	int bufSize = 1024;
+	char *buffer = calloc(bufSize, sizeof(char));
+	while(fgets(buffer, bufSize, pfile) != NULL) {
+
 		char **line;
 		int counter;
 		mystrsplit(&line, &counter, buffer, ",");
 
-		char *card_str = line[3];
-		char **card_list;
-		mystrsplit(&card_list, &counter, card_str, NULL);
-		for(int i = 0; i < counter; i++) {
-			Card *new_card = Card_init(line[0], strtod(line[1], NULL), strtod(card_list[i], NULL));
-			Deck_put(deck, new_card);
+		if ( counter == 4 ) {
+
+			char *card_str = line[3];
+			char **card_list;
+			int cardCounter;
+			mystrsplit(&card_list, &cardCounter, card_str, NULL);
+
+			if ( cardCounter != strtod(line[2], NULL) ) {
+				ERROR_PRINT("number of card inconsistent with suit list in line %d\n", lineNum);
+			}
+
+			for(int i = 0; i < cardCounter; i++) {
+				Card *new_card = Card_init(lineNum, line[0], strtod(card_list[i], NULL));
+				Deck_put(deck, new_card);
+			}
+
+			for ( int i=0; i<cardCounter; i++ ) {
+				free(card_list[i]);
+			}
+			free(card_list);
+
 		}
+
+		lineNum++;
+
+		for ( int i=0; i<counter; i++ ) {
+			free(line[i]);
+		}
+		free(line);
 	}
+	fclose(pfile);
 	free(buffer);
 	return deck;
 }

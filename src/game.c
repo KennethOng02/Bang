@@ -33,6 +33,8 @@ Game *Game_init(int numAvatar) {
 			Avatar_draw(new->avatars[i], new);
 		}
 	}
+
+	DEBUG_PRINT("Done Game_init\n");
 	
 	for(int i = 0; i < CHARACTER_SIZE; i++)
 		Character_free(character_deck[i]);
@@ -63,9 +65,12 @@ void Game_run(Game *this) {
 			break;
 		}
 	}
+
 	if ( curIdx >= this->numAvatar ) {
 		ERROR_PRINT("No SHERIFF in this game.\n");
 	}
+
+	DEBUG_PRINT("Stating game loop\n");
 	while ( 1 ) {
 		Avatar_onTurn(this->avatars[curIdx], this);
 		curIdx = (curIdx + 1) % this->numAvatar;
