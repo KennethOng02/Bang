@@ -125,9 +125,9 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 
 		} else {
 			// Find next avatar
-			int idex = Game_find_index( game, this );
-			if ( idex == -1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
-			Avatar *nextAvatar = game->avatars[(idex+1)%game->numAvatar];
+			int index = Game_find_index( game, this );
+			if ( index == -1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
+			Avatar *nextAvatar = game->avatars[(index+1)%game->numAvatar];
 			Avatar_equip(nextAvatar, game, bomb);
 		}
 		
@@ -167,8 +167,8 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id) {
 }
 
 void Avatar_dead(Avatar *this, Game *game) {
-	int idex = Game_find_index( game, this );
-	if ( idex == -1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
+	int index = Game_find_index( game, this );
+	if ( index == -1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
 	//discard cards
 	for( int i = 0; i < this->cards_size ; i++ ) {
 		Deck_put( game->discardPile, this->cards[i] );
