@@ -28,7 +28,7 @@ Game *Game_init(int numAvatar) {
 	new->avatars = malloc(new->numAvatar * sizeof(Avatar *));
 	Character **character_deck = Deck_genCharacter(CHARACTER_SIZE);
 	for(int i = 0; i < numAvatar; i++ ) {
-		new->avatars[i] = Avatar_init(character_deck[i], roles[i]);
+		new->avatars[i] = Avatar_init(i, character_deck[i], roles[i]);
 		for ( int _=0; _<new->avatars[i]->hp; _++ ) {
 			Avatar_draw(new->avatars[i], new);
 		}

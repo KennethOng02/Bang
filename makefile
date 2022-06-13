@@ -7,7 +7,6 @@ debug_dependency_path=$(addprefix ${bin_dir}, ${debug_dependency})
 dependency_path=$(addprefix ${bin_dir}, ${dependency})
 
 all: $(dependency)
-	echo $(debug_dependency_path)
 	gcc src/main.c $(dependency_path) -o bin/main
 
 run:
