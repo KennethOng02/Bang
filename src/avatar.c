@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "avatar.h"
 #include "debug.h"
@@ -49,9 +50,11 @@ void Equipment_free(Equipment *this) {
 }
 
 
-Avatar *Avatar_init(Character *character, Role role) {
+Avatar *Avatar_init(int id, Character *character, Role role) {
 
 	Avatar *new = malloc(sizeof(Avatar));
+
+	new->id = id;
 
 	new->character = Character_init(character->name, character->hp, character->intro);
 
@@ -86,28 +89,82 @@ void Avatar_free(Avatar *this) {
 	free(this);
 }
 
-//void Avatar_onTurn(Avatar *this, Game *game) {
+void Avatar_onTurn(Avatar *this, Game *game)  {
+
+	DEBUG_PRINT("Avatar %d's turn.\n", this->id);
+
+	bool jailed = false;
+	Avatar_onJudge(this, game, &jailed);
+	if ( jailed ) return;
+
+	Avatar_onDraw(this, game);
+
+}
 	
 
-void Avatar_onJudge(Avatar *this, Game *game) {
-	for ( Card *card = (Card *)this->equipment; card < (Card*)(this->equipment+sizeof(Equipment)); card++ ) {
-		printf("HI\n");
+void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
+
+	// Lucky Duke
+
+	if ( this->equipment->bomb != NULL ) {
+	
+		DEBUG_PRINT("Avatar %d judge for bomb.\n", this->id);
+
+		Card *card = Deck_draw(game->deck);
+		int suit = card->suit;
+		Deck_put(game->discardPile, card);
+
+		Card *bomb = Avatar_unequip(this, game, &(this->equipment->bomb));
+		if ( suit >= 1 && suit <= 8 ) {
+			// suit is between [Spade 2, Spade 9]
+
+			Deck_put(game->discardPile, bomb);
+			for ( int _=0; _<3; _++ ) Avatar_hurt(this, game);
+
+		} else {
+			// Find next avatar
+			for ( int i=0; i<game->numAvatar; i++ ) {
+				if ( game->avatars[i]->id == this->id ) {
+					Avatar *nextAvatar = game->avatars[(i+1)%game->numAvatar];
+					Avatar_equip(nextAvatar, game, bomb);
+					break;
+				}
+				if ( i == game->numAvatar-1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
+			}
+		}
+		
+	}
+	if ( this->equipment->jail != NULL ) {
+
+		DEBUG_PRINT("Avatar %d judge for Jail.\n", this->id);
+
+		Card *card = Deck_draw(game->deck);
+		int suit = card->suit;
+		Deck_put(game->discardPile, card);
+
+		if ( suit < 13 || suit >= 26 ) {
+			// suit is not heart
+			*jailed = true;
+		}
 	}
 	return;
 }
 
-void Avatar_onTurn(Avatar *this, Game *game) {
-	return;
+void Avatar_onDraw(Avatar *this, Game *game) {
+	// Black Jack
+	// Jesse Jones
+	// Kit Carlson
+	for ( int _=0; _<2; _++ ) Avatar_draw(this, game);
 }
 
+void Avatar_onPlay(Avatar *this, Game *game) {
+}
+
+void Avatar_onDump(Avatar *this, Game *game) {
+	
+}
+
+//void Avatar_onReact(Avatar *this, Game *game);
 void Avatar_draw(Avatar *this, Game *game) {
 	return;
 }
-
-//void Avatar_onDraw(Avatar *this, Game *game);
-
-//void Avatar_onPlay(Avatar *this, Game *game);
-//void Avatar_onDump(Avatar *this, Game *game);
-//void Avatar_onReact(Avatar *this, Game *game);
-//void Avatar_onDead(Avatar *this, Game *game);
-//void Avatar_onHurt(Avatar *this, Game *game);

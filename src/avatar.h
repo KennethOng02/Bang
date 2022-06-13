@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 typedef struct character Character;
 typedef struct equipment Equipment;
 typedef enum role Role;
@@ -46,6 +48,7 @@ enum role {
 #define CARDS_SIZE_MAX 80
 
 struct avatar {
+	int			id;
 	int			hp;
 	Character	*character;
 	Role		role;
@@ -56,12 +59,12 @@ struct avatar {
 	int			distanceMinus;
 };
 
-Avatar *Avatar_init(Character *character, Role role);
+Avatar *Avatar_init(int id, Character *character, Role role);
 
 void Avatar_free(Avatar *this);
 
 void Avatar_onTurn(Avatar *this, Game *game);
-void Avatar_onJudge(Avatar *this, Game *game);
+void Avatar_onJudge(Avatar *this, Game *game, bool *jailed);
 void Avatar_onDraw(Avatar *this, Game *game);
 void Avatar_onPlay(Avatar *this, Game *game);
 void Avatar_onDump(Avatar *this, Game *game);
@@ -70,6 +73,7 @@ void Avatar_dead(Avatar *this, Game *game);
 void Avatar_hurt(Avatar *this, Game *game);
 void Avatar_heal(Avatar *this, Game *game);
 void Avatar_equip(Avatar *this, Game *game, Card *card);
+Card *Avatar_unequip(Avatar *this, Game *game, Card **card);
 void Avatar_draw(Avatar *this, Game *game);
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num);
 void Avatar_take(Avatar *this, Game *game, Card *choosen);
