@@ -10,6 +10,9 @@
 #include "mylib.h"
 #include "ANSI-color-codes.h"
 
+// 救命，幫我改介面跟英文=w=
+// 我沒有美術天分，英文又很破...
+
 void interface_printCards(Card **cards, int cards_size) {
 	for ( int i=0; i<cards_size; i++ ) {
 		printf("%d) %s\n", i+1, cards[i]->name);
@@ -31,7 +34,7 @@ bool interface_yesOrNo(void) {
 	return false;
 }
 
-int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, int n, char *msg) {
+int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, int n, char *msg, bool notChoose) {
 	bool wanted[cards_size];
 	bool done = false;
 	int *choices = malloc(n * sizeof(int));
@@ -44,6 +47,7 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		memset(wanted, false, cards_size * sizeof(bool));
 
 		printf("%s\n", msg);
+		if ( notChoose ) printf("You can enter '0' if you don't want/have card to use.\n");
 		printf("Or enter 'q' to check other game info.\n");
 		interface_printCards(cards, cards_size);
 
@@ -53,7 +57,13 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 
 		if ( strcmp(buffer, "q\n") == 0 ) {
 			// TODO: Switch to game menu
-			break;
+			DEBUG_PRINT("This feature is not supported in your region.\n");
+			continue;
+		}
+
+		if ( notChoose && strcmp(buffer, "0\n") == 0 ) {
+			free(choices);
+			return NULL;
 		}
 
 		char **idxs;
@@ -114,28 +124,36 @@ int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 	snprintf(buffer, bufSize, "Please choose %d cards from following list.", n);
-	return interface_choose(this, game, cards, cards_size, n, buffer);
+	return interface_choose(this, game, cards, cards_size, n, buffer, false);
 }
 
 int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, int n) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 	snprintf(buffer, bufSize, "Please choose %d card(s) to drop.", n);
-	return interface_choose(this, game, cards, cards_size, n, buffer);
+	return interface_choose(this, game, cards, cards_size, n, buffer, false);
 }
 
 int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
-	snprintf(buffer, bufSize, "Please choose a card to use");
-	return interface_choose(this, game, cards, cards_size, 1, buffer)[0];
+	snprintf(buffer, bufSize, "Please choose a card to use.");
+	int *ret = interface_choose(this, game, cards, cards_size, 1, buffer, true);
+	if ( ret != NULL ) {
+		return ret[0];
+	}
+	return -1;
 }
 
 int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
-	snprintf(buffer, bufSize, "Please choose a card to react");
-	return interface_choose(this, game, cards, cards_size, 1, buffer)[0];
+	snprintf(buffer, bufSize, "Please choose a card to respond.");
+	int *ret = interface_choose(this, game, cards, cards_size, 1, buffer, true);
+	if ( ret != NULL ) {
+		return ret[0];
+	}
+	return -1;
 }
 
 bool interface_useAbility(Player *this, Game *game) {

@@ -6,7 +6,7 @@
 #include "game.h"
 #include "card.h"
 
-int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, int n, char *msg);
+int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, int n, char *msg, bool notChoose);
 bool interface_yesOrNo();
 
 int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n);

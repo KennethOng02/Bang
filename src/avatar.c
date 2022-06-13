@@ -106,7 +106,8 @@ void Avatar_onTurn(Avatar *this, Game *game)  {
 	Avatar_onDraw(this, game);
 
 	Avatar_onPlay(this, game);
-
+	
+	Avatar_onDump(this, game);
 }
 	
 
@@ -162,12 +163,17 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 }
 
 void Avatar_onPlay(Avatar *this, Game *game) {
-	// Test
-	Player_chooseTake(this->player, game, this->cards, this->cards_size, 2);
+	int retIdx;
+	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size) ) != -1 ) {
+		DEBUG_PRINT("Player %s want to use card \"%s\".\n", this->player->username, this->cards[retIdx]->name);
+		DEBUG_PRINT("But he can't HAHAHAHA!\n");
+	}
 }
 
 void Avatar_onDump(Avatar *this, Game *game) {
-	
+	if ( this->cards_size > this->hp ) {
+		Player_chooseDrop(this->player, game, this->cards, this->cards_size, this->cards_size-this->hp);
+	}
 }
 
 int Avatar_onReact(Avatar *this, Game *game, int card_id) {

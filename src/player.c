@@ -25,19 +25,46 @@ void Player_free(Player *this) {
 
 
 int *Player_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n) {
-	if ( this->isComputer ) {
+	if ( !this->isComputer ) {
 		return interface_chooseTake(this, game, cards, cards_size, n);
 	} else {
-		return interface_chooseTake(this, game, cards, cards_size, n);
+		DEBUG_PRINT("Computer ah north down.\n");
+		return NULL;
 	}
 }
 
-/*
-int *Player_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, int n);
+int *Player_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, int n) {
+	if ( !this->isComputer ) {
+		return interface_chooseDrop(this, game, cards, cards_size, n);
+	} else {
+		DEBUG_PRINT("Computer ah north down.\n");
+		return NULL;
+	}
+}
 
-int Player_selectUse(Player *this, Game *game, Card **cards, int cards_size);
+int Player_selectUse(Player *this, Game *game, Card **cards, int cards_size) {
+	if ( !this->isComputer ) {
+		return interface_selectUse(this, game, cards, cards_size);
+	} else {
+		DEBUG_PRINT("Computer ah north down.\n");
+		return -1;
+	}
+}
 
-int Player_selectReact(Player *this, Game *game, Card **cards, int cards_size);
+int Player_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
+	if ( !this->isComputer ) {
+		return interface_selectReact(this, game, cards, cards_size);
+	} else {
+		DEBUG_PRINT("Computer ah north down.\n");
+		return -1;
+	}
+}
 
-bool Player_useAbility(Player *this, Game *game);
-*/
+bool Player_useAbility(Player *this, Game *game) {
+	if ( !this->isComputer ) {
+		return interface_useAbility(this, game);
+	} else {
+		DEBUG_PRINT("Computer ah north down.\n");
+		return false;
+	}
+}
