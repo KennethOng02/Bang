@@ -11,9 +11,10 @@
 		fprintf(stderr, __VA_ARGS__)
 
 #ifdef __DEBUG__
-#define DEBUG_PRINT(...) \
+#define DEBUG_PRINT(...) { \
 		fprintf(stderr, "[DEBUG] "); \
-		fprintf(stderr, __VA_ARGS__ )
+		fprintf(stderr, __VA_ARGS__ ); \
+		}
 #else
 #define DEBUG_PRINT(...) 
 #endif

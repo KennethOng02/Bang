@@ -88,6 +88,7 @@ void Avatar_free(Avatar *this) {
 	}
 	free(this->cards);
 	free(this);
+	DEBUG_PRINT("Avatar_free Done !\n");
 }
 
 void Avatar_onTurn(Avatar *this, Game *game)  {
@@ -165,13 +166,23 @@ void Avatar_onDump(Avatar *this, Game *game) {
 	
 }
 
-//void Avatar_onReact(Avatar *this, Game *game);
-void Avatar_dead(Avatar *this, Game *game){
+int Avatar_onReact(Avatar *this, Game *game, int card_id) {
+	return 0;
+}
 
+void Avatar_dead(Avatar *this, Game *game) {
+	
 }
 void Avatar_hurt(Avatar *this, Game *game){
 	this->hp -- ;
-	// if(this->hp == 0)
+	if(this->hp == 0) {
+		if( Avatar_onReact(this, game, CARD_BEER) == 0 ) {
+			Avatar_dead(this, game);
+		}else {
+			this->hp ++ ;
+		}
+	}
+
 	DEBUG_PRINT("Avatar %d hurt.\n", this->id);
 	return;
 }
@@ -182,11 +193,11 @@ void Avatar_heal(Avatar *this, Game *game){
 }
 void Avatar_equip(Avatar *this, Game *game, Card *card) {
 	if( card->id > CARD_ARMOUR_START && card->id < CARD_ARMOUR_END ) {
-		if( card.id == CARD_BARREL ) {
+		if( card->id == CARD_BARREL ) {
 			this->equipment->armour = card;
-		}else if ( card.id == CARD_SCOPE ) {
+		}else if ( card->id == CARD_SCOPE ) {
 			this->equipment->horseMinus = card;
-		}else if ( card.id == CARD_MUSTANG ) {
+		}else if ( card->id == CARD_MUSTANG ) {
 			this->equipment->horsePlus = card;
 		}
 	}else if ( card->id > CARD_GUN_START && card->id < CARD_GUN_END ) {
@@ -197,9 +208,9 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 			this->equipment->gun = card;
 		}
 	}else if ( card->id > CARD_JUDGE_START && card->id < CARD_JUDGE_END ) {
-		if( card.id == CARD_JAIL ) {
+		if( card->id == CARD_JAIL ) {
 			this->equipment->jail = card;
-		}else if ( card.id == CARD_DYNAMITE ) {
+		}else if ( card->id == CARD_DYNAMITE ) {
 			this->equipment->bomb = card;
 		}
 	}
@@ -215,7 +226,7 @@ Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
 void Avatar_draw(Avatar *this, Game *game){
 	this->cards_size ++;
 	this->cards[this->cards_size - 1] = Deck_draw(game->deck);
-	DEBUG_PRINT("Avatar %d draw one card.\n", this->id );
+	DEBUG_PRINT("Avatar %d draw one card.Remain: %d cards.\n", this->id ,game->deck->top + 1);
 	return;
 }
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num){	

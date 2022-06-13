@@ -25,6 +25,7 @@ Card *Card_init(const int id, const char *name, const int suit) {
 void Card_free(Card *this) {
 	free(this->name);
 	free(this);
+	DEBUG_PRINT("Card_free Done !\n");
 }
 
 // int Card_playBang(Avatar * user, Avatar * target, Game * game, Card * card) {
