@@ -177,7 +177,19 @@ void Avatar_onDump(Avatar *this, Game *game) {
 }
 
 int Avatar_onReact(Avatar *this, Game *game, int card_id) {
-	return 0;
+	while(1) {
+		int react = Player_selectReact(this->player, game, this->cards, this->cards_size);
+		if ( react == -1) {
+			return -1;
+		}else {
+			if( this->cards[react]->id == card_id ) {
+				return 0;
+			}else {
+				WARNING_PRINT("You can't react with this card !");
+				continue;
+			}
+		}
+	}
 }
 
 void Avatar_dead(Avatar *this, Game *game) {
@@ -206,7 +218,7 @@ void Avatar_dead(Avatar *this, Game *game) {
 void Avatar_hurt(Avatar *this, Game *game){
 	this->hp -- ;
 	if(this->hp == 0) {
-		if( Avatar_onReact(this, game, CARD_BEER) == 0 ) {
+		if( Avatar_onReact(this, game, CARD_BEER) == -1 ) {
 			Avatar_dead(this, game);
 		}else {
 			this->hp ++ ;
@@ -264,8 +276,8 @@ void Avatar_draw(Avatar *this, Game *game){
 	return;
 }
 
-int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num){	
-	return NULL;
+int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num) {
+	return Player_chooseTake( this->player, game, options, size, num );
 }
 
 void Avatar_get(Avatar *this, Game *game, Card *want){
