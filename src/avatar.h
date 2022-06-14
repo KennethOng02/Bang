@@ -53,13 +53,12 @@ struct avatar {
 	bool		isDead;
 	Player		*player;
 	int			hp;
+	int         hp_max;
 	Character	*character;
 	Role		role;
 	int			cards_size;
 	Card 		**cards;
 	Equipment	*equipment;
-	int 		distancePlus;
-	int			distanceMinus;
 };
 
 Avatar *Avatar_init(int id, Character *character, Role role);
@@ -79,4 +78,5 @@ void Avatar_equip(Avatar *this, Game *game, Card *card);
 Card *Avatar_unequip(Avatar *this, Game *game, Card **card);
 void Avatar_draw(Avatar *this, Game *game);
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num);
+void Avatar_get(Avatar *this, Game *game, Card *want);
 Card *Avatar_taken(Avatar *this, Game *game,int index);

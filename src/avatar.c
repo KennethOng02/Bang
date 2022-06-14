@@ -61,18 +61,17 @@ Avatar *Avatar_init(int id, Character *character, Role role) {
 
 	new->character = Character_init(character->name, character->hp, character->intro);
 
-	new->hp = new->character->hp;
+	new->hp_max = new->character->hp;
 	new->role = role;
 	if(new->role == SHERIFF) {
 		DEBUG_PRINT("SHERIFF is avatar %d.\n", id);
-		new->hp++;
+		new->hp_max++;
 	}
+	new->hp = new->hp_max;
 	new->cards_size = 0;
 	new->cards = malloc(CARDS_SIZE_MAX * sizeof(Card *));
 
 	new->equipment = Equipment_init();
-	new->distancePlus = 0;
-	new->distanceMinus = 0;
 
 	if(strcmp(new->character->name, "Paul Regret") == 0)
 		new->distancePlus++;
@@ -218,17 +217,21 @@ void Avatar_dead(Avatar *this, Game *game) {
 	//move dead people out
 	this->isDead = true;
 	game->numAvailablePlayer--;
+	printf("%s is dead\n",this->player->username);
 }
 
 void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 	// TODO: Character ability - Bart Cassidy 
 	// TODO: Character ability - El Gringoy
 	this->hp -- ;
+	printf("%s's hp -1\n",this->player->username);
 	if(this->hp == 0) {
-		if( Avatar_onReact(this, game, CARD_BEER) == -1 ) {
+		printf("Oh no %s's hp equal 0,",this->player->username);
+		if( Avatar_onReact(this, game, CARD_BEER) == -1 || game->numAvailablePlayer <= 2) {
 			Avatar_dead(this, game);
 		}else {
 			this->hp ++ ;
+			printf("but he use beer to heal himself\n");
 		}
 	}
 
@@ -238,6 +241,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 
 void Avatar_heal(Avatar *this, Game *game){
 	this->hp ++ ;
+	printf("%s's hp +1\n",this->player->username);
 	DEBUG_PRINT("Avatar %d heal.\n", this->id);
 	return;
 }
@@ -245,23 +249,43 @@ void Avatar_heal(Avatar *this, Game *game){
 void Avatar_equip(Avatar *this, Game *game, Card *card) {
 	if( card->id > CARD_ARMOUR_START && card->id < CARD_ARMOUR_END ) {
 		if( card->id == CARD_BARREL ) {
-			this->equipment->armour = card;
+			if( this->equipment->armour != NULL) {
+				Card *trash = Avatar_unequip(this,game,&(this->equipment->armour));
+				Deck_put(game->discardPile,trash);
+				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
+			}
+				this->equipment->armour = card;
 		}else if ( card->id == CARD_SCOPE ) {
-			this->equipment->horseMinus = card;
+			if( this->equipment->horseMinus != NULL) {
+				Card *trash = Avatar_unequip(this,game,&(this->equipment->horseMinus));
+				Deck_put(game->discardPile,trash);
+				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
+			}
+				this->equipment->horseMinus = card;
 		}else if ( card->id == CARD_MUSTANG ) {
-			this->equipment->horsePlus = card;
+			if( this->equipment->horsePlus != NULL) {
+				Card *trash = Avatar_unequip(this,game,&(this->equipment->horsePlus));
+				Deck_put(game->discardPile,trash);
+				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
+			}
+				this->equipment->horsePlus = card;
 		}
 	}else if ( card->id > CARD_GUN_START && card->id < CARD_GUN_END ) {
-		if( this->equipment->gun != NULL){
+		if( this->equipment->gun != NULL) {
 			Card *trash = Avatar_unequip(this,game,&(this->equipment->gun));
 			Deck_put(game->discardPile,trash);
-		}else {
-			this->equipment->gun = card;
+			WARNING_PRINT("Because %s can only have one gun,the previous card had been discard!\n",this->player->username);
 		}
+			this->equipment->gun = card;
 	}else if ( card->id > CARD_JUDGE_START && card->id < CARD_JUDGE_END ) {
 		if( card->id == CARD_JAIL ) {
 			this->equipment->jail = card;
 		}else if ( card->id == CARD_DYNAMITE ) {
+			if( this->equipment->bomb != NULL) {
+				Card *trash = Avatar_unequip(this,game,&(this->equipment->bomb));
+				Deck_put(game->discardPile,trash);
+				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
+			}
 			this->equipment->bomb = card;
 		}
 	}
@@ -298,7 +322,7 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 	// TODO: Character ability - Suzy Lafayette
 	Card *bye = this->cards[index];
 	for( int i = index ; i < this->cards_size - 1 ; i++ ){
-		this->cards[index] = this->cards[index + 1];
+		this->cards[i] = this->cards[i + 1];
 	}
 	this->cards_size -- ;
 	DEBUG_PRINT("Avatar %d's card: %s had been taken.\n", this->id , bye->name );
