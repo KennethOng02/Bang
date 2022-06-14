@@ -163,10 +163,69 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 void Avatar_onPlay(Avatar *this, Game *game) {
 	// TODO: implimentation
 	int retIdx;
-	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size) ) != -1 ) {
+	Player *tarPlayer;
+	bool banged = false;
+	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size, &tarPlayer) ) != -1 ) {
 		DEBUG_PRINT("Player %s want to use card \"%s\".\n", this->player->username, this->cards[retIdx]->name);
-		// if ( (*this->cards[retIdx]->play)()
+
+		bool valid = true;
+		Avatar *tar = tarPlayer ? tarPlayer->avatar : NULL;
+
+		Card *card = this->cards[retIdx];
+
+		for( int i = retIdx ; i < this->cards_size - 1 ; i++ ){
+			this->cards[i] = this->cards[i + 1];
+		}
+		this->cards_size-- ;
+
+		if ( tar->isDead ) {
+			WARNING_PRINT("Cannot play %s on dead player.\n", card->name);
+			valid = false;
+		}
+		if ( card->type != CARD_DIST_NON ) {
+			if ( tar == NULL ) {
+				WARNING_PRINT("No target when playing %s.\n", card->name);
+				valid = false;
+			}
+			if ( tar->id == this->id ) {
+				WARNING_PRINT("Cannot play %s on self.\n", card->name);
+				valid = false;
+			}
+			if ( card->type == CARD_DIST_ONE && Avatar_calcDist(game, this, tar) > 1 ) {
+				WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, tar->player->username);
+				valid = false;
+			}
+			if ( card->type == CARD_DIST_VISION && Avatar_calcDist(game, this, tar) > Avatar_calcVision(this) ) {
+				WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, tar->player->username);
+				valid = false;
+			}
+		}
+		if ( banged && card->play == &play_CARD_BANG ) {
+			// TODO: Character ability - Willy the Kid
+			// TODO: VOLCANIC
+			WARNING_PRINT("You cannot use BANG! twice.\n");
+			valid = false;
+		}
+
+		if ( valid ) {
+			if ( card->play(this, tar, game, card) == -1 ) {
+				valid = false;
+			}
+		}
+
+		if ( valid ) {
+			if ( card->play == &play_CARD_BANG ) {
+				banged = true;
+			}
+		} else {
+			for( int i = this->cards_size-1 ; i >= retIdx ; i-- ){
+				this->cards[i+1] = this->cards[i];
+			}
+			this->cards[retIdx] = card;
+			this->cards_size++;
+		}
 	}
+	DEBUG_PRINT("Player %s's turn end.\n", this->player->username);
 }
 
 void Avatar_onDump(Avatar *this, Game *game) {
@@ -322,10 +381,39 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 	// TODO: Character ability - Suzy Lafayette
 	Card *bye = this->cards[index];
 	for( int i = index ; i < this->cards_size - 1 ; i++ ){
-		this->cards[i] = this->cards[i + 1];
+		this->cards[i] = this->cards[i+1];
 	}
 	this->cards_size -- ;
 	DEBUG_PRINT("Avatar %d's card: %s had been taken.\n", this->id , bye->name );
 	return bye;
 }
 
+int Avatar_calcDist(Game *game, Avatar *this, Avatar *that) {
+	int idx_1 = Game_findIndex(game, this);
+	int idx_2 = Game_findIndex(game, that);
+
+	int dist = abs(idx_2 - idx_1);
+	if(dist <= game->numAvailablePlayer / 2) {
+		return dist;
+	}else {
+		return -1 * dist + game->numAvailablePlayer; 
+	}
+}
+
+int Avatar_calcVision(Avatar *this) {
+	int dist = 1;
+
+	for(Card **p = (Card **)this->equipment; p < (Card **)this->equipment+sizeof(Equipment *); p++) {
+		if((*p)->id == CARD_VOLCANIC)
+			dist = 1;
+		if((*p)->id == CARD_SCHOFIELD)
+			dist = 2;
+		if((*p)->id == CARD_REMINGTON)
+			dist = 3;
+		if((*p)->id == CARD_CARABINE)
+			dist = 4;
+		if((*p)->id == CARD_WINCHEDTER)
+			dist = 5;
+	}
+	return dist;
+}

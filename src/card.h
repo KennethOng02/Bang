@@ -5,10 +5,15 @@ typedef struct card Card;
 #include "avatar.h"
 #include "game.h"
 
+#define CARD_DIST_NON 0
+#define CARD_DIST_ONE 1
+#define CARD_DIST_VISION 2
+#define CARD_DIST_ALL 3
+
 struct card {
 	int id;	
 	char *name;
-	int dist; // {0, 1, 2, 3}
+	int type; // {0, 1, 2, 3}
 	int suit; // [0 - 51] //[Spade, Heart, Diamond, Club]
 	int (* play)(Avatar * user, Avatar * target, Game * game, Card * card);
 };
