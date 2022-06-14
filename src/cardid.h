@@ -1,3 +1,4 @@
+#pragma once
 #include "card.h"
 #define CARD_START 0
 #define CARD_HAND_START 1
@@ -31,4 +32,4 @@
 #define CARD_DYNAMITE 29
 #define CARD_JUDGE_END 30
 #define CARD_END 31
-int (*Card_funArr[])(Avatar *,Avatar *, Game *, Card *) = { NULL, NULL, &play_CARD_BANG, &play_CARD_MISS, &play_CARD_GATLING, &play_CARD_INDIANS, &play_CARD_PANIC, &play_CARD_BALOU, &play_CARD_STAGECOACH, &play_CARD_FARGO, &play_CARD_STORE, &play_CARD_BEER, &play_CARD_SALOON, &play_CARD_DUEL, NULL, NULL, &play_CARD_BARREL, &play_CARD_SCOPE, &play_CARD_MUSTANG, NULL, NULL, &play_CARD_VOLCANIC, &play_CARD_SCHOFIELD, &play_CARD_REMINGTON, &play_CARD_CARABINE, &play_CARD_WINCHEDTER, NULL, NULL, &play_CARD_JAIL, &play_CARD_DYNAMITE, NULL, NULL, };
+static int (*Card_funArr[])(Avatar *,Avatar *, Game *, Card *) = { NULL, NULL, &play_CARD_BANG, &play_CARD_MISS, &play_CARD_GATLING, &play_CARD_INDIANS, &play_CARD_PANIC, &play_CARD_BALOU, &play_CARD_STAGECOACH, &play_CARD_FARGO, &play_CARD_STORE, &play_CARD_BEER, &play_CARD_SALOON, &play_CARD_DUEL, NULL, NULL, &play_CARD_BARREL, &play_CARD_SCOPE, &play_CARD_MUSTANG, NULL, NULL, &play_CARD_VOLCANIC, &play_CARD_SCHOFIELD, &play_CARD_REMINGTON, &play_CARD_CARABINE, &play_CARD_WINCHEDTER, NULL, NULL, &play_CARD_JAIL, &play_CARD_DYNAMITE, NULL, NULL, };

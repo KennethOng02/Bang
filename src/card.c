@@ -149,7 +149,7 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
 	printf("%s use %s\n",user->player->username,card->name);
 	int *choose = Avatar_choose(user,game,target->cards,target->cards_size,1);
-	Avatar_taken(target,game,target->cards[choose[0]]);
+	Avatar_taken(target,game,choose[0]);
 	return 0;
 }
 int play_CARD_STAGECOACH(Avatar * user, Avatar * target, Game * game, Card * card) {
@@ -174,13 +174,13 @@ int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	}
 	int* choose = Avatar_choose(user,game,options,game->numAvailablePlayer,1);
 	Avatar_get(user,game,options[choose[0]]);
-	for(int i = choose[0];i < numAvailablePlayer - 1 ; i++) {
+	for(int i = choose[0];i < game->numAvailablePlayer - 1 ; i++) {
 		options[i] = options[i+1];
 	}
 	while(next->id != user->id) {
 		choose = Avatar_choose(next,game,options,game->numAvailablePlayer,1);	
 		Avatar_get(next,game,options[choose[0]]);
-		for(int i = choose[0];i < numAvailablePlayer - 1 ; i++) {
+		for(int i = choose[0];i < game->numAvailablePlayer - 1 ; i++) {
 			options[i] = options[i+1];
 		}
 		next = Game_nextAvailableAvatar(game, next);

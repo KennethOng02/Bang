@@ -20,7 +20,7 @@ int main () {
 	int bufSize = 1024;
 	char *buffer = calloc(bufSize, sizeof(char));
 	
-	snprintf(buffer, bufSize, "#include \"card.h\"\n");
+	snprintf(buffer, bufSize, "#pragma once\n#include \"card.h\"\n");
 	if ( fwrite( buffer, 1, strlen(buffer), pIDFile ) != strlen(buffer) ) {
 		ERROR_PRINT("Failed to write file: %s\n", idFilename);
 	}
@@ -74,7 +74,7 @@ int main () {
 
 	fseek(pfile, 0, SEEK_SET);
 	
-	snprintf(buffer, bufSize, "int (*Card_funArr[])(Avatar *,Avatar *, Game *, Card *) = { ");
+	snprintf(buffer, bufSize, "static int (*Card_funArr[])(Avatar *,Avatar *, Game *, Card *) = { ");
 	if ( fwrite( buffer, 1, strlen(buffer), pIDFile ) != strlen(buffer) ) {
 		ERROR_PRINT("Failed to write file: %s\n", idFilename);
 	}

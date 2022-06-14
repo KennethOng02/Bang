@@ -73,11 +73,6 @@ Avatar *Avatar_init(int id, Character *character, Role role) {
 
 	new->equipment = Equipment_init();
 
-	if(strcmp(new->character->name, "Paul Regret") == 0)
-		new->distancePlus++;
-
-	if(strcmp(new->character->name, "Rose Doolan") == 0)
-		new->distanceMinus++;
 
 	return new;
 }
