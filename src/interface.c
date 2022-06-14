@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "interface.h"
 #include "player.h"
@@ -12,6 +13,41 @@
 
 // 救命，幫我改介面跟英文=w=
 // 我沒有美術天分，英文又很破...
+
+char *interface_askName() {
+	char *name = calloc(32, sizeof(char));
+	while(1) {
+		printf("Please input your name: ");
+
+		if(fgets(name, 32, stdin) == NULL) {
+			clearerr(stdin);
+			printf("\n");
+			continue;
+		}
+
+		while(isspace((unsigned char)*name)) name++;
+		
+		char *end = name + strlen(name) - 1;
+		while(end > name && isspace((unsigned char)*end)) end--;
+		end[1] = '\0';
+
+		if(*name != 0) {
+			break;
+		}
+	}
+	printf("|%s|\n", name);
+	return name;
+}
+
+void interface_welcome() {
+	printf(CYN"____________________   __________\n"
+			   "___  __ )__    |__  | / /_  ____/\n"
+			   "__  __  |_  /| |_   |/ /_  / __  \n"
+			   "_  /_/ /_  ___ |  /|  / / /_/ /  \n"
+			   "/_____/ /_/  |_/_/ |_/  \\____/   \n"
+				 MAG"COPYRIGHT to Din, Brian, Kenneth\n"reset);
+	return;
+}
 
 void interface_printCards(Card **cards, int cards_size) {
 	for ( int i=0; i<cards_size; i++ ) {
@@ -181,7 +217,7 @@ void interface_playerInfo(Avatar **avatars) {
 	for(int i = 0; i < 4; i++) {
 		printf("Player %d\n", ++i);
 		if(!avatars[i]) {
-			printf("DEAD\n")
+			printf("DEAD\n");
 		}
 		if(avatars[i]->player->isComputer) {
 		}

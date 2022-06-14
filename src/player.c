@@ -9,12 +9,19 @@
 #include "interface.h"
 #include "debug.h"
 
-void Player_initWithoutMalloc(Player **player, bool isComputer, char *username, Avatar *avatar) {
+void Player_initWithoutMalloc(Player **player, bool isComputer, Avatar *avatar) {
 	Player *this = *player;
 	this->isComputer = isComputer;
+	this->avatar = avatar;
+	char *username;
+	if(!this->isComputer) {
+		interface_welcome();
+		username = interface_askName();
+	}else {
+
+	}
 	this->username = malloc(strlen(username)+1);
 	strcpy(this->username, username);
-	this->avatar = avatar;
 	DEBUG_PRINT("Finish initiation of player %s. His avatar: %d\n", username, this->avatar->id);
 }
 

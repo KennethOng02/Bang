@@ -6,6 +6,10 @@
 #include "game.h"
 #include "card.h"
 
+char *interface_askName();
+
+void interface_welcome();
+
 int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, int n, char *msg, bool notChoose);
 bool interface_yesOrNo();
 
