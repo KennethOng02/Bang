@@ -205,9 +205,19 @@ int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size, 
 
 	snprintf(buffer, bufSize, "Please choose which player as target.");
 	for(int i = 0; i < game->numPlayer; i++) {
-		printf("%d) Player %d | %s\n", i, game->avatars[i]->id, game->avatars[i]->player->username);
+		printf("%d) Player %d (%s) %s\n", i, game->avatars[i]->id, game->avatars[i]->player->username, game->avatars[i]->role == SHERIFF ? "(SHERIFF)" : "");
 	}
-
+	int choice;
+	while(1) {
+		printf("Choice: ");
+		scanf("%d", &choice);
+		if(choice < 0 && choice > game->numPlayer) {
+			printf("Please input within range 0 to %d\n", game->numPlayer);
+			continue;
+		}
+		break;
+	}
+	*target = game->avatars[choice]->player;
 	return ret[0];
 }
 
