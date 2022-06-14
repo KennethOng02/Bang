@@ -20,7 +20,7 @@ int main () {
 	int bufSize = 1024;
 	char *buffer = calloc(bufSize, sizeof(char));
 	
-	snprintf(buffer, bufSize, "#include<stdlib.h>\n#include \"card.h\"\n");
+	snprintf(buffer, bufSize, "#include \"card.h\"\n");
 	if ( fwrite( buffer, 1, strlen(buffer), pIDFile ) != strlen(buffer) ) {
 		ERROR_PRINT("Failed to write file: %s\n", idFilename);
 	}
@@ -38,14 +38,14 @@ int main () {
 
 			snprintf(buffer, bufSize, "#define %s %d\n", line[0], lineNum);
 
-		} else if ( counter == 4 ) {
+		} else if ( counter == 5 ) {
 
-			char *card_str = line[3];
+			char *card_str = line[4];
 			char **card_list;
 			int cardCounter;
 			mystrsplit(&card_list, &cardCounter, card_str, NULL);
 
-			if ( cardCounter != strtod(line[2], NULL) ) {
+			if ( cardCounter != strtod(line[3], NULL) ) {
 				ERROR_PRINT("number of card inconsistent with suit list in line %d\n", lineNum);
 			}
 
@@ -74,7 +74,7 @@ int main () {
 
 	fseek(pfile, 0, SEEK_SET);
 	
-	snprintf(buffer, bufSize, "bool (*Card_funArr[])(Avatar *,Avatar *, Game *, Card *) = { ");
+	snprintf(buffer, bufSize, "int (*Card_funArr[])(Avatar *,Avatar *, Game *, Card *) = { ");
 	if ( fwrite( buffer, 1, strlen(buffer), pIDFile ) != strlen(buffer) ) {
 		ERROR_PRINT("Failed to write file: %s\n", idFilename);
 	}
@@ -88,7 +88,7 @@ int main () {
 		
 		mystrsplit(&line, &counter, buffer, ",");
 		
-		if ( counter == 4 ) {
+		if ( counter == 5 ) {
 			snprintf(buffer, bufSize, "&play_%s, ", line[1]);
 		} else {
 			snprintf(buffer, bufSize, "NULL, ");

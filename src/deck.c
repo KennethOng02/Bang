@@ -54,19 +54,19 @@ Deck *Deck_build() {
 		int counter;
 		mystrsplit(&line, &counter, buffer, ",");
 
-		if ( counter == 4 ) {
+		if ( counter == 5 ) {
 
-			char *card_str = line[3];
+			char *card_str = line[4];
 			char **card_list;
 			int cardCounter;
 			mystrsplit(&card_list, &cardCounter, card_str, NULL);
 
-			if ( cardCounter != strtod(line[2], NULL) ) {
+			if ( cardCounter != strtod(line[3], NULL) ) {
 				ERROR_PRINT("number of card inconsistent with suit list in line %d\n", lineNum);
 			}
 
 			for(int i = 0; i < cardCounter; i++) {
-				Card *new_card = Card_init(lineNum, line[0], strtod(card_list[i], NULL));
+				Card *new_card = Card_init(lineNum, line[0], strtol(line[2],NULL,10), strtod(card_list[i], NULL), Card_funArr[lineNum]);
 				Deck_put(deck, new_card);
 			}
 
