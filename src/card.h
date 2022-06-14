@@ -8,7 +8,7 @@ typedef struct card Card;
 struct card {
 	int id;	
 	char *name;
-	int dist; // {0, 1, 2, 3}
+	int type; // {0, 1, 2, 3}
 	int suit; // [0 - 51] //[Spade, Heart, Diamond, Club]
 	int (* play)(Avatar * user, Avatar * target, Game * game, Card * card);
 };

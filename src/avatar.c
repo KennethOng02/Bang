@@ -298,7 +298,7 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 	// TODO: Character ability - Suzy Lafayette
 	Card *bye = this->cards[index];
 	for( int i = index ; i < this->cards_size - 1 ; i++ ){
-		this->cards[index] = this->cards[index + ];
+		this->cards[i] = this->cards[i+1];
 	}
 	this->cards_size -- ;
 	DEBUG_PRINT("Avatar %d's card: %s had been taken.\n", this->id , bye->name );

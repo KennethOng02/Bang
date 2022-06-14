@@ -189,15 +189,54 @@ int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size
 	return interface_choose(this, game, cards, cards_size, n, buffer, false);
 }
 
-int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size) {
+int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size, Player **target) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 	snprintf(buffer, bufSize, "Please choose a card to use.");
 	int *ret = interface_choose(this, game, cards, cards_size, 1, buffer, true);
-	if ( ret != NULL ) {
+	if ( ret == NULL ) {
+		return -1;
+	}
+
+	if(cards[ret[0]]->type == 0) {
+		*target = NULL;
 		return ret[0];
 	}
-	return -1;
+
+	snprintf(buffer, bufSize, "Please choose which player as target.");
+	for(int i = 0; i < game->numPlayer; i++) {
+		printf("Player %d\n", game->avatars[i]->id);
+		printf("	Username: %s%s%s\n", GRN, game->avatars[i]->player->username, reset);
+		if(game->avatars[i]->isDead) {
+			printf(RED"	---DEAD---\n"reset);
+			printf("	Role: %s%s%s\n", MAG, print_role(game->avatars[i]->role), reset);
+		}else {
+			printf("	Hp: %d\n", game->avatars[i]->hp);
+			printf("	Role: %s\n", game->avatars[i]->role == SHERIFF ? MAG"SHERIFF"reset : "UNKNOWN");
+			printf("	Card Num: %d\n", game->avatars[i]->cards_size);
+			printf("	Equipment: \n");
+			for ( Card **p = (Card **)game->avatars[i]->equipment; p < (Card **)game->avatars[i]->equipment+sizeof(Equipment *); p++ ) {
+				if ( *p != NULL ) printf("		%s\n", (*p)->name);
+			}
+		}
+	}
+
+	int bufSize = 10;
+	char buffer[bufSize];
+	while ( true ) {
+		printf("Choice: ");
+		if ( fgets(buffer, bufSize, stdin) == NULL ) {
+			WARNING_PRINT("Please enter '%sy%s' or '%sn%s'.\n", GRN, reset, RED, reset);
+			clearerr(stdin);
+			continue;
+		}
+		if ( strcmp(buffer, "1\n") == 0 ) return true;
+		if ( strcmp(buffer, "n\n") == 0 ) return false;
+	}
+	return false;
+
+
+	return ret[0];
 }
 
 int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
