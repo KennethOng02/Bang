@@ -44,7 +44,6 @@ char *interface_askName() {
 		}
 		WARNING_PRINT("Empty Username.\n");
 	}
-	printf("|%s|\n", name);
 	return name;
 }
 

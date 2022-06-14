@@ -14,7 +14,7 @@ struct player {
 	Avatar *avatar;
 };
 
-void Player_initWithoutMalloc(Player **player, bool isComputer, Avatar *avatar);
+Player *Player_init();
 
 void Player_free(Player *);
 

@@ -50,6 +50,7 @@ enum role {
 
 struct avatar {
 	int			id;
+	bool		isDead;
 	Player		*player;
 	int			hp;
 	Character	*character;
@@ -61,7 +62,7 @@ struct avatar {
 	int			distanceMinus;
 };
 
-Avatar *Avatar_init(int id, Player *player, Character *character, Role role);
+Avatar *Avatar_init(int id, Character *character, Role role);
 
 void Avatar_free(Avatar *this);
 
@@ -72,7 +73,7 @@ void Avatar_onPlay(Avatar *this, Game *game);
 void Avatar_onDump(Avatar *this, Game *game);
 int Avatar_onReact(Avatar *this, Game *game, int card_id);
 void Avatar_dead(Avatar *this, Game *game);
-void Avatar_hurt(Avatar *this, Game *game);
+void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker);
 void Avatar_heal(Avatar *this, Game *game);
 void Avatar_equip(Avatar *this, Game *game, Card *card);
 Card *Avatar_unequip(Avatar *this, Game *game, Card **card);

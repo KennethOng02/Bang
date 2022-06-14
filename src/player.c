@@ -9,25 +9,27 @@
 #include "interface.h"
 #include "debug.h"
 
-void Player_initWithoutMalloc(Player **player, bool isComputer, Avatar *avatar) {
-	Player *this = *player;
-	this->isComputer = isComputer;
-	this->avatar = avatar;
+Player *Player_init() {
+	Player *new = malloc(sizeof(Player));
+	new->isComputer = false; // TODO: true
+	new->avatar = NULL; // init in game_init
 	char *username;
-	if(!this->isComputer) {
+	if(!new->isComputer) {
 		interface_welcome();
 		username = interface_askName();
 	}else {
 
 	}
-	this->username = malloc(strlen(username)+1);
-	strcpy(this->username, username);
-	DEBUG_PRINT("Finish initiation of player %s. His avatar: %d\n", username, this->avatar->id);
+	new->username = malloc(strlen(username)+1);
+	strcpy(new->username, username);
+	return new;
 }
 
 void Player_free(Player *this) {
+	// NOTE: Avatars does't free here
 	free(this->username);
 	free(this);
+	DEBUG_PRINT("Done Player_free!\n");
 }
 
 
