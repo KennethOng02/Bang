@@ -36,4 +36,4 @@ void interface_printCards(Card **cards, int cards_size);
 
 void interface_menu(Game *game);
 
-void interface_playerInfo(Avatar **avatars);
+void interface_playerInfo(Game *game);

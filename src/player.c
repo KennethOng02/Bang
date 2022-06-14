@@ -14,11 +14,12 @@ Player *Player_init() {
 	new->isComputer = false; // TODO: true
 	new->avatar = NULL; // init in game_init
 	char *username;
+	static int i = 0;
 	if(!new->isComputer) {
-		interface_welcome();
+		printf("---Player %d---\n", ++i);
 		username = interface_askName();
 	}else {
-
+		printf("Player %d automatically generated...\n", ++i);
 	}
 	new->username = malloc(strlen(username)+1);
 	strcpy(new->username, username);
