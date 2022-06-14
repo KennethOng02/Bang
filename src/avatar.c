@@ -298,10 +298,39 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 	// TODO: Character ability - Suzy Lafayette
 	Card *bye = this->cards[index];
 	for( int i = index ; i < this->cards_size - 1 ; i++ ){
-		this->cards[index] = this->cards[index + 1];
+		this->cards[index] = this->cards[index + ];
 	}
 	this->cards_size -- ;
 	DEBUG_PRINT("Avatar %d's card: %s had been taken.\n", this->id , bye->name );
 	return bye;
 }
 
+int Avatar_calcDist(Game *game, Avatar *this, Avatar *that) {
+	int idx_1 = Game_findIndex(game, this);
+	int idx_2 = Game_findIndex(game, that);
+
+	int dist = abs(idx_2 - idx_1);
+	if(dist <= game->numAvailablePlayer / 2) {
+		return dist;
+	}else {
+		return -1 * dist + game->numAvailablePlayer; 
+	}
+}
+
+int Avatar_calcVision(Avatar *this) {
+	int dist = 1;
+
+	for(Card **p = (Card **)this->equipment; p < (Card **)this->equipment+sizeof(Equipment *); p++) {
+		if((*p)->id == CARD_VOLCANIC)
+			dist = 1;
+		if((*p)->id == CARD_SCHOFIELD)
+			dist = 2;
+		if((*p)->id == CARD_REMINGTON)
+			dist = 3;
+		if((*p)->id == CARD_CARABINE)
+			dist = 4;
+		if((*p)->id == CARD_WINCHEDTER)
+			dist = 5;
+	}
+	return dist;
+}
