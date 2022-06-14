@@ -7,6 +7,7 @@
 #include "avatar.h"
 #include "card.h"
 #include "interface.h"
+#include "computer_player.h"
 #include "debug.h"
 
 Player *Player_init() {
@@ -20,6 +21,7 @@ Player *Player_init() {
 		username = interface_askName();
 	}else {
 		printf("Player %d automatically generated...\n", ++i);
+		username = computer_askName();
 	}
 	new->username = malloc(strlen(username)+1);
 	strcpy(new->username, username);
@@ -38,8 +40,7 @@ int *Player_chooseTake(Player *this, Game *game, Card **cards, int cards_size, i
 	if ( !this->isComputer ) {
 		return interface_chooseTake(this, game, cards, cards_size, n);
 	} else {
-		DEBUG_PRINT("Computer ah north down.\n");
-		return NULL;
+		return computer_chooseTake(this, game, cards, cards_size, n);
 	}
 }
 
@@ -47,8 +48,7 @@ int *Player_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, i
 	if ( !this->isComputer ) {
 		return interface_chooseDrop(this, game, cards, cards_size, n);
 	} else {
-		DEBUG_PRINT("Computer ah north down.\n");
-		return NULL;
+		return computer_chooseDrop(this, game, cards, cards_size, n);
 	}
 }
 
@@ -56,8 +56,7 @@ int Player_selectUse(Player *this, Game *game, Card **cards, int cards_size, Pla
 	if ( !this->isComputer ) {
 		return interface_selectUse(this, game, cards, cards_size, target);
 	} else {
-		DEBUG_PRINT("Computer ah north down.\n");
-		return -1;
+		return computer_selectUse(this, game, cards, cards_size, target);
 	}
 }
 
@@ -65,8 +64,7 @@ int Player_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
 	if ( !this->isComputer ) {
 		return interface_selectReact(this, game, cards, cards_size);
 	} else {
-		DEBUG_PRINT("Computer ah north down.\n");
-		return -1;
+		return computer_selectReact(this, game, cards, cards_size);
 	}
 }
 
@@ -74,7 +72,6 @@ bool Player_useAbility(Player *this, Game *game) {
 	if ( !this->isComputer ) {
 		return interface_useAbility(this, game);
 	} else {
-		DEBUG_PRINT("Computer ah north down.\n");
-		return false;
+		return computer_useAbility(this, game);
 	}
 }
