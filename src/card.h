@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdbool.h>
-
 typedef struct card Card;
 
 #include "avatar.h"
@@ -10,11 +8,12 @@ typedef struct card Card;
 struct card {
 	int id;	
 	char *name;
+	int dist; // {0, 1, 2, 3}
 	int suit; // [0 - 51] //[Spade, Heart, Diamond, Club]
-	bool (* play)(Avatar * user, Avatar ** target);
+	int (* play)(Avatar * user, Avatar * target, Game * game, Card * card);
 };
 
-Card *Card_init(const int id, const char *name, const int suit);
+Card *Card_init(const int id, const char *name, const int dist, const int suit, int (*fun)(Avatar *, Avatar *, Game *, Card *));
 
 void Card_free(Card *this);
 

@@ -6,7 +6,7 @@
 #include "avatar.h"
 #include "cardid.h"
 
-Card *Card_init(const int id, const char *name, const int suit) {
+Card *Card_init(const int id, const char *name, const int dist, const int suit, int (*fun)(Avatar *, Avatar *, Game *, Card *)) {
 	// TODO: card -> play
 
 	if ( id <= CARD_START || id >= CARD_END ) ERROR_PRINT("Invalid card id %d\n", id);
@@ -18,8 +18,9 @@ Card *Card_init(const int id, const char *name, const int suit) {
 	new->id = id;
 	new->name = malloc(strlen(name)+1);
 	strcpy(new->name, name);
+	new->dist = dist;
 	new->suit = suit;
-	new->play = NULL;
+	new->play = fun;
 	return new;
 }
 
