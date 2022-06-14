@@ -9,8 +9,11 @@
 #include "card.h"
 #include "game.h"
 #include "player.h"
+#include "interface.h"
 
 Game *Game_init(int numPlayer) {
+
+	interface_welcome();
 
 	Game *new = malloc(sizeof(Game));
 	

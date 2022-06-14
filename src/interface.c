@@ -94,7 +94,7 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		printf("%s\n", msg);
 		if ( notChoose ) printf("You can enter '%s0%s' if you don't want/have card to use.\n", GRN, reset);
 		printf("Or enter '%si%s' to check other game info.\n", GRN, reset);
-		printf("Or enter '%sq%s' to check other game info.\n", GRN, reset);
+		printf("Or enter '%sq%s' to quit\n", GRN, reset);
 		interface_printCards(cards, cards_size);
 
 		if ( fgets(buffer, bufSize, stdin) == NULL ) {
@@ -104,7 +104,7 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 
 		if ( strcmp(buffer, "i\n") == 0 ) {
 			// TODO: Switch to game menu
-			DEBUG_PRINT("This feature is not supported in your region.\n");
+			DEBUG_PRINT("This feature is fully implemented yet.\n");
 			interface_menu(game);
 			continue;
 		}
@@ -217,19 +217,48 @@ bool interface_useAbility(Player *this, Game *game) {
 }
 
 void interface_menu(Game *game) {
-	interface_playerInfo(game->avatars);
+	interface_playerInfo(game);
 	/* interface_discardedPileInfo(game->avatars); */
 	return;
 }
 
-void interface_playerInfo(Avatar **avatars) {
+char *print_role(Role role) {
+	if(role == SHERIFF) {
+		return "SHERIFF";
+	}
+	if(role == DEPUTY) {
+		return "DEPUTY";
+	}
+	if(role == OUTLAW) {
+		return "OUTLAW";
+	}
+	if(role == RENEGADE) {
+		return "RENEGADE";
+	}
+	if(role == ROLE_MAX) {
+		return "ROLE_MAX";
+	}
+	return "NULL";
+}
+
+void interface_playerInfo(Game *game) {
+	Avatar **avatars_list = game->avatars;
+	printf("%d\n", game->numPlayer);
 	printf(MAG"---Player Info---\n"reset);	
-	for(int i = 0; i < 4; i++) {
-		printf("Player %d\n", ++i);
-		if(!avatars[i]) {
-			printf("DEAD\n");
-		}
-		if(avatars[i]->player->isComputer) {
+	for(int i = 0; i < game->numPlayer; i++) {
+		printf("Player %d\n", avatars_list[i]->id);
+		printf("	Username: %s%s%s\n", GRN, avatars_list[i]->player->username, reset);
+		if(avatars_list[i]->isDead) {
+			printf(RED"	---DEAD---\n"reset);
+			printf("	Role: %s%s%s\n", MAG, print_role(avatars_list[i]->role), reset);
+		}else {
+			printf("	Hp: %d\n", avatars_list[i]->hp);
+			printf("	Role: %s\n", avatars_list[i]->role == SHERIFF ? MAG"SHERIFF"reset : "UNKNOWN");
+			printf("	Card Num: %d\n", avatars_list[i]->cards_size);
+			printf("	Equipment: \n");
+			for ( Card **p = (Card **)avatars_list[i]->equipment; p < (Card **)avatars_list[i]->equipment+sizeof(Equipment *); p++ ) {
+				if ( *p != NULL ) printf("		%s\n", (*p)->name);
+			}
 		}
 	}
 	return;
