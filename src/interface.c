@@ -277,9 +277,13 @@ void interface_playerInfo(Game *game) {
 			printf("	Role: %s\n", avatars_list[i]->role == SHERIFF ? MAG"SHERIFF"reset : "UNKNOWN");
 			printf("	Card Num: %d\n", avatars_list[i]->cards_size);
 			printf("	Equipment: \n");
-			for ( Card **p = (Card **)avatars_list[i]->equipment; p < (Card **)avatars_list[i]->equipment+sizeof(Equipment *); p++ ) {
-				if ( *p != NULL ) printf("		%s\n", (*p)->name);
-			}
+			Equipment *eqi = avatars_list[i]->equipment;
+			if( eqi->gun != NULL) printf("Gun: %s\n", eqi->gun->name);
+			if( eqi->armour != NULL) printf("Armour: %s\n", eqi->armour->name);
+			if( eqi->horseMinus != NULL) printf("Horse: %s\n", eqi->horseMinus->name);
+			if( eqi->horsePlus != NULL) printf("Horse: %s\n",eqi->horsePlus->name);
+			if( eqi->bomb != NULL) printf("%s\n", eqi->bomb->name);
+			if( eqi->jail != NULL) printf("%s\n", eqi->jail->name);
 		}
 	}
 	return;

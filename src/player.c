@@ -12,10 +12,11 @@
 
 Player *Player_init() {
 	Player *new = malloc(sizeof(Player));
-	new->isComputer = false; // TODO: true
+	static int i = 0;
+	printf("Player %d is computer?\n", i+1);
+	new->isComputer = interface_yesOrNo();
 	new->avatar = NULL; // init in game_init
 	char *username;
-	static int i = 0;
 	if(!new->isComputer) {
 		printf("---Player %d---\n", ++i);
 		username = interface_askName();

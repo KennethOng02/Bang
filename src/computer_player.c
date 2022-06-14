@@ -31,11 +31,11 @@ int *computer_chooseDrop(Player *this, Game *game, Card **cards, int cards_size,
 }
 
 int computer_selectUse(Player *this, Game *game, Card **cards, int cards_size, Player **target) {
-	return 0;
+	return -1;
 }
 
 int computer_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
-	return 0;
+	return -1;
 }
 
 bool computer_useAbility(Player *this, Game *game) {

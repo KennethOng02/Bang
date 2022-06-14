@@ -90,6 +90,7 @@ void Game_run(Game *this) {
 	DEBUG_PRINT("Stating game loop\n");
 	while ( 1 ) {
 		Avatar_onTurn(curAvatar, this);
+		DEBUG_PRINT("Avatar %d's turn finish.\n", curAvatar->id);
 		if( this->deck->top + 1 <= 0){
 			return;
 		}
@@ -123,5 +124,5 @@ Avatar *Game_nextAvailableAvatar(Game *this, Avatar *avatar) {
 	do {
 		idx = (idx+1) % this->numPlayer;
 	} while ( this->avatars[idx]->isDead );
-	return this->avatars[ (idx+1) % this->numPlayer ];
+	return this->avatars[idx];
 }

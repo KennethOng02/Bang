@@ -173,7 +173,7 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 		}
 		this->cards_size-- ;
 
-		if ( tar->isDead ) {
+		if ( tar && tar->isDead ) {
 			WARNING_PRINT("Cannot play %s on dead player.\n", card->name);
 			valid = false;
 		}
@@ -181,16 +181,13 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			if ( tar == NULL ) {
 				WARNING_PRINT("No target when playing %s.\n", card->name);
 				valid = false;
-			}
-			if ( tar->id == this->id ) {
+			} else if ( tar->id == this->id ) {
 				WARNING_PRINT("Cannot play %s on self.\n", card->name);
 				valid = false;
-			}
-			if ( card->type == CARD_DIST_ONE && Avatar_calcDist(game, this, tar) > 1 ) {
+			} else if ( card->type == CARD_DIST_ONE && Avatar_calcDist(game, this, tar) > 1 ) {
 				WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, tar->player->username);
 				valid = false;
-			}
-			if ( card->type == CARD_DIST_VISION && Avatar_calcDist(game, this, tar) > Avatar_calcVision(this) ) {
+			} else if ( card->type == CARD_DIST_VISION && Avatar_calcDist(game, this, tar) > Avatar_calcVision(this) ) {
 				WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, tar->player->username);
 				valid = false;
 			}
@@ -201,9 +198,10 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			WARNING_PRINT("You cannot use BANG! twice.\n");
 			valid = false;
 		}
-
+		
 		if ( valid ) {
 			if ( card->play(this, tar, game, card) == -1 ) {
+				WARNING_PRINT("Cannot play %s here\n", card->name);
 				valid = false;
 			}
 		}
@@ -212,6 +210,7 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			if ( card->play == &play_CARD_BANG ) {
 				banged = true;
 			}
+			Deck_put(game->discardPile, card);
 		} else {
 			for( int i = this->cards_size-1 ; i >= retIdx ; i-- ){
 				this->cards[i+1] = this->cards[i];
@@ -308,21 +307,21 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 				Deck_put(game->discardPile,trash);
 				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
 			}
-				this->equipment->armour = card;
+			this->equipment->armour = card;
 		}else if ( card->id == CARD_SCOPE ) {
 			if( this->equipment->horseMinus != NULL) {
 				Card *trash = Avatar_unequip(this,game,&(this->equipment->horseMinus));
 				Deck_put(game->discardPile,trash);
 				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
 			}
-				this->equipment->horseMinus = card;
+			this->equipment->horseMinus = card;
 		}else if ( card->id == CARD_MUSTANG ) {
 			if( this->equipment->horsePlus != NULL) {
 				Card *trash = Avatar_unequip(this,game,&(this->equipment->horsePlus));
 				Deck_put(game->discardPile,trash);
 				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
 			}
-				this->equipment->horsePlus = card;
+			this->equipment->horsePlus = card;
 		}
 	}else if ( card->id > CARD_GUN_START && card->id < CARD_GUN_END ) {
 		if( this->equipment->gun != NULL) {
@@ -330,7 +329,7 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 			Deck_put(game->discardPile,trash);
 			WARNING_PRINT("Because %s can only have one gun,the previous card had been discard!\n",this->player->username);
 		}
-			this->equipment->gun = card;
+		this->equipment->gun = card;
 	}else if ( card->id > CARD_JUDGE_START && card->id < CARD_JUDGE_END ) {
 		if( card->id == CARD_JAIL ) {
 			this->equipment->jail = card;
@@ -340,7 +339,7 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 				Deck_put(game->discardPile,trash);
 				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
 			}
-			this->equipment->bomb = card;
+		this->equipment->bomb = card;
 		}
 	}
 	DEBUG_PRINT("Avatar %d quipped the card: %s.\n", this->id , card->name);
@@ -349,8 +348,8 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 
 Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
 	Card *bye = *card;
-	*card = NULL;
 	DEBUG_PRINT("Avatar %d unquipped the card: %s.\n", this->id , (*card)->name );
+	*card = NULL;
 	return bye;
 }
 
@@ -397,17 +396,19 @@ int Avatar_calcDist(Game *game, Avatar *this, Avatar *that) {
 
 int Avatar_calcVision(Avatar *this) {
 	int dist = 1;
+	DEBUG_PRINT("Calc vision for avatar %d\n", this->id);
 
-	for(Card **p = (Card **)this->equipment; p < (Card **)this->equipment+sizeof(Equipment *); p++) {
-		if((*p)->id == CARD_VOLCANIC)
+	if ( this->equipment->gun ) {
+		Card *gun = this->equipment->gun;
+		if(gun->id == CARD_VOLCANIC)
 			dist = 1;
-		if((*p)->id == CARD_SCHOFIELD)
+		if(gun->id == CARD_SCHOFIELD)
 			dist = 2;
-		if((*p)->id == CARD_REMINGTON)
+		if(gun->id == CARD_REMINGTON)
 			dist = 3;
-		if((*p)->id == CARD_CARABINE)
+		if(gun->id == CARD_CARABINE)
 			dist = 4;
-		if((*p)->id == CARD_WINCHEDTER)
+		if(gun->id == CARD_WINCHEDTER)
 			dist = 5;
 	}
 	return dist;
