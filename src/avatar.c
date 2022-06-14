@@ -183,7 +183,7 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			WARNING_PRINT("Cannot play %s on dead player.\n", card->name);
 			valid = false;
 		}
-		if ( card->dist != CARD_DIST_NON ) {
+		if ( card->type != CARD_DIST_NON ) {
 			if ( tar == NULL ) {
 				WARNING_PRINT("No target when playing %s.\n", card->name);
 				valid = false;
@@ -192,11 +192,11 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 				WARNING_PRINT("Cannot play %s on self.\n", card->name);
 				valid = false;
 			}
-			if ( card->dist == CARD_DIST_ONE && Avatar_calcDist(game, this, tar) > 1 ) {
+			if ( card->type == CARD_DIST_ONE && Avatar_calcDist(game, this, tar) > 1 ) {
 				WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, tar->player->username);
 				valid = false;
 			}
-			if ( card->dist == CARD_DIST_VISION && Avatar_calcDist(game, this, tar) > Avatar_calcVision(this) ) {
+			if ( card->type == CARD_DIST_VISION && Avatar_calcDist(game, this, tar) > Avatar_calcVision(this) ) {
 				WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, tar->player->username);
 				valid = false;
 			}

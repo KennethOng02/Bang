@@ -205,36 +205,8 @@ int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size, 
 
 	snprintf(buffer, bufSize, "Please choose which player as target.");
 	for(int i = 0; i < game->numPlayer; i++) {
-		printf("Player %d\n", game->avatars[i]->id);
-		printf("	Username: %s%s%s\n", GRN, game->avatars[i]->player->username, reset);
-		if(game->avatars[i]->isDead) {
-			printf(RED"	---DEAD---\n"reset);
-			printf("	Role: %s%s%s\n", MAG, print_role(game->avatars[i]->role), reset);
-		}else {
-			printf("	Hp: %d\n", game->avatars[i]->hp);
-			printf("	Role: %s\n", game->avatars[i]->role == SHERIFF ? MAG"SHERIFF"reset : "UNKNOWN");
-			printf("	Card Num: %d\n", game->avatars[i]->cards_size);
-			printf("	Equipment: \n");
-			for ( Card **p = (Card **)game->avatars[i]->equipment; p < (Card **)game->avatars[i]->equipment+sizeof(Equipment *); p++ ) {
-				if ( *p != NULL ) printf("		%s\n", (*p)->name);
-			}
-		}
+		printf("%d) Player %d | %s\n", i, game->avatars[i]->id, game->avatars[i]->player->username);
 	}
-
-	int bufSize = 10;
-	char buffer[bufSize];
-	while ( true ) {
-		printf("Choice: ");
-		if ( fgets(buffer, bufSize, stdin) == NULL ) {
-			WARNING_PRINT("Please enter '%sy%s' or '%sn%s'.\n", GRN, reset, RED, reset);
-			clearerr(stdin);
-			continue;
-		}
-		if ( strcmp(buffer, "1\n") == 0 ) return true;
-		if ( strcmp(buffer, "n\n") == 0 ) return false;
-	}
-	return false;
-
 
 	return ret[0];
 }

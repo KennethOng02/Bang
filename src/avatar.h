@@ -80,3 +80,5 @@ Card *Avatar_unequip(Avatar *this, Game *game, Card **card);
 void Avatar_draw(Avatar *this, Game *game);
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num);
 Card *Avatar_taken(Avatar *this, Game *game,int index);
+int Avatar_calcDist(Game *game, Avatar *this, Avatar *that);
+int Avatar_calcVision(Avatar *this);
