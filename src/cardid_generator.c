@@ -19,6 +19,11 @@ int main () {
 
 	int bufSize = 1024;
 	char *buffer = calloc(bufSize, sizeof(char));
+	
+	snprintf(buffer, bufSize, "#include<stdlib.h>\n#include \"card.h\"\n");
+	if ( fwrite( buffer, 1, strlen(buffer), pIDFile ) != strlen(buffer) ) {
+		ERROR_PRINT("Failed to write file: %s\n", idFilename);
+	}
 	while(fgets(buffer, bufSize, pfile) != NULL) {
 		
 		if ( buffer[strlen(buffer)-1] == '\n' ) {
@@ -66,6 +71,43 @@ int main () {
 		}
 		free(line);
 	}
+
+	fseek(pfile, 0, SEEK_SET);
+	
+	snprintf(buffer, bufSize, "bool (*Card_funArr[])(Avatar *,Avatar *, Game *, Card *) = { ");
+	if ( fwrite( buffer, 1, strlen(buffer), pIDFile ) != strlen(buffer) ) {
+		ERROR_PRINT("Failed to write file: %s\n", idFilename);
+	}
+
+	while(fgets(buffer, bufSize, pfile) != NULL) {
+		if ( buffer[strlen(buffer)-1] == '\n' ) {
+			buffer[strlen(buffer)-1] = '\0';
+		}
+		char **line;
+		int counter;
+		
+		mystrsplit(&line, &counter, buffer, ",");
+		
+		if ( counter == 4 ) {
+			snprintf(buffer, bufSize, "&play_%s, ", line[1]);
+		} else {
+			snprintf(buffer, bufSize, "NULL, ");
+		}
+
+		if ( fwrite( buffer, 1, strlen(buffer), pIDFile ) != strlen(buffer) ) {
+			ERROR_PRINT("Failed to write file: %s\n", idFilename);
+		}
+
+		for ( int i=0; i<counter; i++ ) {
+			free(line[i]);
+		}
+		free(line);
+	}
+	snprintf(buffer, bufSize, "};");
+	if ( fwrite( buffer, 1, strlen(buffer), pIDFile ) != strlen(buffer) ) {
+		ERROR_PRINT("Failed to write file: %s\n", idFilename);
+	}
+
 	fclose(pfile);
 	fclose(pIDFile);
 	free(buffer);
