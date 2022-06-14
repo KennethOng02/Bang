@@ -33,4 +33,4 @@ void Game_run(Game *this);
 
 int Game_find_index(Game *this, Avatar *avatar);
 
-
+void Game_exit(Game *game);

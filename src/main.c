@@ -24,7 +24,6 @@ int main(int argc, char ** argv) {
 
 	Game_run(game);
 
-	puts("---Exit BANG---");
-	Game_free(game);
+	Game_exit(game);
 	return 0;
 }

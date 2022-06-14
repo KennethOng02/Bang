@@ -23,9 +23,9 @@ bool interface_yesOrNo(void) {
 	int bufSize = 10;
 	char buffer[bufSize];
 	while ( true ) {
-		printf("(y/n):");
+		printf("(%sy%s/%sn%s):", GRN, reset, RED, reset);
 		if ( fgets(buffer, bufSize, stdin) == NULL ) {
-			WARNING_PRINT("Please enter 'y' or 'n'.\n");
+			WARNING_PRINT("Please enter '%sy%s' or '%sn%s'.\n", GRN, reset, RED, reset);
 			continue;
 		}
 		if ( strcmp(buffer, "y\n") == 0 ) return true;
@@ -47,17 +47,26 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		memset(wanted, false, cards_size * sizeof(bool));
 
 		printf("%s\n", msg);
-		if ( notChoose ) printf("You can enter '0' if you don't want/have card to use.\n");
-		printf("Or enter 'q' to check other game info.\n");
+		if ( notChoose ) printf("You can enter '%s0%s' if you don't want/have card to use.\n", GRN, reset);
+		printf("Or enter '%si%s' to check other game info.\n", GRN, reset);
+		printf("Or enter '%sq%s' to check other game info.\n", GRN, reset);
 		interface_printCards(cards, cards_size);
 
 		if ( fgets(buffer, bufSize, stdin) == NULL ) {
 			ERROR_PRINT("Input error.\n");
 		}
 
-		if ( strcmp(buffer, "q\n") == 0 ) {
+		if ( strcmp(buffer, "i\n") == 0 ) {
 			// TODO: Switch to game menu
 			DEBUG_PRINT("This feature is not supported in your region.\n");
+			interface_menu(game);
+			continue;
+		}
+
+		if ( strcmp(buffer, "q\n") == 0 ) {
+			if(interface_yesOrNo()) {
+				Game_exit(game);
+			}
 			continue;
 		}
 
@@ -159,4 +168,23 @@ int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size
 bool interface_useAbility(Player *this, Game *game) {
 	printf("Do you want to use your characteristic ability?\n");
 	return interface_yesOrNo();
+}
+
+void interface_menu(Game *game) {
+	interface_playerInfo(game->avatars);
+	/* interface_discardedPileInfo(game->avatars); */
+	return;
+}
+
+void interface_playerInfo(Avatar **avatars) {
+	printf(MAG"---Player Info---\n"reset);	
+	for(int i = 0; i < 4; i++) {
+		printf("Player %d\n", ++i);
+		if(!avatars[i]) {
+			printf("DEAD\n")
+		}
+		if(avatars[i]->player->isComputer) {
+		}
+	}
+	return;
 }

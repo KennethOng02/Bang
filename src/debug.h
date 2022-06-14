@@ -11,7 +11,7 @@
 		}
 
 #define WARNING_PRINT(...) { \
-		fprintf(stderr, RED); \
+		fprintf(stderr, YEL); \
 		fprintf(stderr, "[WARNING] "); \
 		fprintf(stderr, __VA_ARGS__); \
 		fprintf(stderr, COLOR_RESET); \

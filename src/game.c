@@ -93,3 +93,10 @@ int Game_find_index(Game *this, Avatar *avatar)	{
 	}
 	return -1;
 }
+
+void Game_exit(Game *game) {
+	puts(GRN"---Exit BANG---"reset);
+	Game_free(game);
+	exit(0);
+	return;
+}
