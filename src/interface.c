@@ -24,6 +24,14 @@ char *interface_askName() {
 			printf("\n");
 			continue;
 		}
+		if ( name[strlen(name)-1] != '\n' ) {
+			WARNING_PRINT("Username too long, at most 31 characters.\n");
+			char ch = 0;
+			while ( ch != '\n' ) {
+				scanf("%c", &ch);
+			}
+			continue;
+		}
 
 		while(isspace((unsigned char)*name)) name++;
 		
@@ -34,6 +42,7 @@ char *interface_askName() {
 		if(*name != 0) {
 			break;
 		}
+		WARNING_PRINT("Empty Username.\n");
 	}
 	printf("|%s|\n", name);
 	return name;
@@ -62,6 +71,7 @@ bool interface_yesOrNo(void) {
 		printf("(%sy%s/%sn%s):", GRN, reset, RED, reset);
 		if ( fgets(buffer, bufSize, stdin) == NULL ) {
 			WARNING_PRINT("Please enter '%sy%s' or '%sn%s'.\n", GRN, reset, RED, reset);
+			clearerr(stdin);
 			continue;
 		}
 		if ( strcmp(buffer, "y\n") == 0 ) return true;
@@ -89,7 +99,8 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		interface_printCards(cards, cards_size);
 
 		if ( fgets(buffer, bufSize, stdin) == NULL ) {
-			ERROR_PRINT("Input error.\n");
+			clearerr(stdin);
+			continue;
 		}
 
 		if ( strcmp(buffer, "i\n") == 0 ) {
