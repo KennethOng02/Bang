@@ -12,6 +12,7 @@ typedef struct game Game;
 
 struct game {
 	int numAvatar;
+	int remainAvatar;
 	Avatar ** avatars;
 	Deck * deck;
 	Deck * discardPile;
@@ -31,6 +32,5 @@ void Game_free(Game *this);
 void Game_run(Game *this);
 
 
-int Game_find_index(Game *this, Avatar *avatar);
-
-
+int Game_findIndex(Game *this, Avatar *avatar);
+Avatar *Game_nextAliveAvatar(Game *this, Avatar *avatar);

@@ -7,6 +7,7 @@
 #include "cardid.h"
 
 Card *Card_init(const int id, const char *name, const int suit) {
+	// TODO: card -> play
 
 	if ( id <= CARD_START || id >= CARD_END ) ERROR_PRINT("Invalid card id %d\n", id);
 	if(name == NULL) ERROR_PRINT("NULL pointer Mother Fucker !!\n");

@@ -57,6 +57,7 @@ Avatar *Avatar_init(int id, Player *player, Character *character, Role role) {
 	Avatar *new = malloc(sizeof(Avatar));
 
 	new->id = id;
+	new->isDead = false;
 	new->player = player;
 
 	new->character = Character_init(character->name, character->hp, character->intro);
@@ -84,7 +85,7 @@ Avatar *Avatar_init(int id, Player *player, Character *character, Role role) {
 }
 
 void Avatar_free(Avatar *this) {
-	// Free players in main.c
+	// NOTE: Players does't free here
 	Character_free(this->character);
 	Equipment_free(this->equipment);
 	for ( int i=0; i<this->cards_size; i++ ) {
@@ -113,7 +114,7 @@ void Avatar_onTurn(Avatar *this, Game *game)  {
 
 void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 
-	// Lucky Duke
+	// TODO: Character ability - Lucky Duke
 
 	if ( this->equipment->bomb != NULL ) {
 	
@@ -128,13 +129,11 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 			// suit is between [Spade 2, Spade 9]
 
 			Deck_put(game->discardPile, bomb);
-			for ( int _=0; _<3; _++ ) Avatar_hurt(this, game);
+			for ( int _=0; _<3; _++ ) Avatar_hurt(this, game, NULL);
 
 		} else {
 			// Find next avatar
-			int index = Game_find_index( game, this );
-			if ( index == -1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
-			Avatar *nextAvatar = game->avatars[(index+1)%game->numAvatar];
+			Avatar *nextAvatar = Game_nextAliveAvatar(game, this);
 			Avatar_equip(nextAvatar, game, bomb);
 		}
 		
@@ -156,27 +155,38 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 }
 
 void Avatar_onDraw(Avatar *this, Game *game) {
-	// Black Jack
-	// Jesse Jones
-	// Kit Carlson
+	// TODO: Character ability - Black Jack
+	// TODO: Character ability - Jesse Jones
+	// TODO: Character ability - Kit Carlson
+	// TODO: Character ability - Pedro Ramirez 
 	for ( int _=0; _<2; _++ ) Avatar_draw(this, game);
 }
 
 void Avatar_onPlay(Avatar *this, Game *game) {
+	// TODO: implimentation
 	int retIdx;
 	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size) ) != -1 ) {
 		DEBUG_PRINT("Player %s want to use card \"%s\".\n", this->player->username, this->cards[retIdx]->name);
-		DEBUG_PRINT("But he can't HAHAHAHA!\n");
+		// if ( (*this->cards[retIdx]->play)()
 	}
 }
 
 void Avatar_onDump(Avatar *this, Game *game) {
 	if ( this->cards_size > this->hp ) {
-		Player_chooseDrop(this->player, game, this->cards, this->cards_size, this->cards_size-this->hp);
+		int n = this->cards_size - this->hp;
+		int *indexes = Player_chooseDrop(this->player, game, this->cards, this->cards_size, n);
+		for ( int i=0; i<n; i++ ) {
+			Deck_put( game->discardPile, Avatar_taken(this, game, indexes[i]) );
+		}
+		free(indexes);
 	}
 }
 
 int Avatar_onReact(Avatar *this, Game *game, int card_id) {
+	// TODO: Character ability - Calamity Janet
+	// TODO: Character ability - Jourdonnais
+	// TODO: Equipment - Barrel
+	// TODO: Character ability - Sid Ketchum
 	while(1) {
 		int react = Player_selectReact(this->player, game, this->cards, this->cards_size);
 		if ( react == -1) {
@@ -193,8 +203,7 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id) {
 }
 
 void Avatar_dead(Avatar *this, Game *game) {
-	int index = Game_find_index( game, this );
-	if ( index == -1 ) ERROR_PRINT("Cannot find avatar %d in this game.\n", this->id);
+	// TODO: Character ability - Vulture Sam
 	//discard cards
 	for( int i = 0; i < this->cards_size ; i++ ) {
 		Deck_put( game->discardPile, this->cards[i] );
@@ -206,16 +215,15 @@ void Avatar_dead(Avatar *this, Game *game) {
 	if( this->equipment->gun != NULL) Deck_put( game->discardPile, this->equipment->gun );
 	if( this->equipment->bomb != NULL) Deck_put( game->discardPile, this->equipment->bomb );
 	if( this->equipment->jail != NULL) Deck_put( game->discardPile, this->equipment->jail );
+	// TODO: Show role card
 	//move dead people out
-	for( int i = index ; i < game->numAvatar - 1; i++ ) {
-		game->avatars[i] = game->avatars[i+1];
-	}
-	game->numAvatar --;
-	Avatar_free(this);
-	
+	this->isDead = true;
+	game->remainAvatar--;
 }
 
-void Avatar_hurt(Avatar *this, Game *game){
+void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
+	// TODO: Character ability - Bart Cassidy 
+	// TODO: Character ability - El Gringoy
 	this->hp -- ;
 	if(this->hp == 0) {
 		if( Avatar_onReact(this, game, CARD_BEER) == -1 ) {
@@ -288,6 +296,7 @@ void Avatar_get(Avatar *this, Game *game, Card *want){
 }
 
 Card* Avatar_taken(Avatar *this, Game *game, int index){
+	// TODO: Character ability - Suzy Lafayette
 	Card *bye = this->cards[index];
 	for( int i = index ; i < this->cards_size - 1 ; i++ ){
 		this->cards[index] = this->cards[index + 1];

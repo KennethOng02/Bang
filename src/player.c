@@ -19,6 +19,7 @@ void Player_initWithoutMalloc(Player **player, bool isComputer, char *username, 
 }
 
 void Player_free(Player *this) {
+	// NOTE: Avatars does't free here
 	free(this->username);
 	free(this);
 }

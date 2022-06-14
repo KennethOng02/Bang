@@ -24,6 +24,7 @@ Game *Game_init(int numAvatar, Player **players) {
 
 	// initiate Avatar *avatars[numAvatar]
 	new->numAvatar = numAvatar;
+	new->remainAvatar = numAvatar;
 	Role *roles = genRoles(numAvatar);
 	new->avatars = malloc(new->numAvatar * sizeof(Avatar *));
 	Character **character_deck = Deck_genCharacter(CHARACTER_SIZE);
@@ -62,34 +63,46 @@ void Game_free(Game *this) {
 }
 
 void Game_run(Game *this) {
-	int curIdx;
-	for ( curIdx = 0; curIdx<this->numAvatar; curIdx++ ) {
-		if ( this->avatars[curIdx]->role == SHERIFF ) {
+	Avatar *curAvatar = NULL;
+	for ( int i=0; i<this->numAvatar; i++ ) {
+		if ( this->avatars[i]->role == SHERIFF ) {
+			curAvatar = this->avatars[i];
 			break;
 		}
 	}
 
-	if ( curIdx >= this->numAvatar ) {
+	if ( curAvatar == NULL ) {
 		ERROR_PRINT("No SHERIFF in this game.\n");
 	}
 
 	DEBUG_PRINT("Stating game loop\n");
 	while ( 1 ) {
-		Avatar_onTurn(this->avatars[curIdx], this);
-		curIdx = (curIdx + 1) % this->numAvatar;
+		Avatar_onTurn(curAvatar, this);
 		if( this->deck->top + 1 <= 0){
 			return;
 		}
+		curAvatar = Game_nextAliveAvatar(this, curAvatar);
 		// isDead?
 		// game over?
 	}
 }
 
-int Game_find_index(Game *this, Avatar *avatar)	{
+int Game_findIndex(Game *this, Avatar *avatar)	{
 	for ( int i=0; i<this->numAvatar; i++ ) {
 		if ( this->avatars[i]->id == avatar->id ) {
 			return i;
 		}
 	}
 	return -1;
+}
+
+Avatar *Game_nextAliveAvatar(Game *this, Avatar *avatar) {
+	int idx = Game_findIndex(this, avatar);
+	if ( idx == -1 ) {
+		ERROR_PRINT("Avatar %d not in this game.\n", avatar->id);
+	}
+	do {
+		idx = (idx+1) % this->numAvatar;
+	} while ( this->avatars[idx]->isDead );
+	return this->avatars[ (idx+1) % this->numAvatar ];
 }
