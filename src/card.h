@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdbool.h>
-
 typedef struct card Card;
 
 #include "avatar.h"
