@@ -21,9 +21,10 @@ int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size
 // select n cards from cards[0..cards_size) to drop
 // return their indexes
 
-int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size, Player **target);
+int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size);
 // select 1 card from cards[0..cards_size) to use
 // return its index
+Player *interface_selectTarget(Player *this, Game *game);
 
 int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size);
 // select 1 card from cards[0..cards_size) to use to react

@@ -1,8 +1,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-
+#include <ctype.h> 
 #include "interface.h"
 #include "player.h"
 #include "game.h"
@@ -194,7 +193,7 @@ int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size
 	return interface_choose(this, game, cards, cards_size, n, buffer, false);
 }
 
-int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size, Player **target) {
+int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 	snprintf(buffer, bufSize, "Please choose a card to use.");
@@ -202,28 +201,32 @@ int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size, 
 	if ( ret == NULL ) {
 		return -1;
 	}
+	return ret[0];
+}
 
-	if(cards[ret[0]]->type == 0) {
-		*target = NULL;
-		return ret[0];
-	}
-
+Player *interface_selectTarget(Player *this, Game *game) {
+	int bufSize = 1024;
+	char *buffer = malloc(bufSize);
 	snprintf(buffer, bufSize, "Please choose which player as target.");
+	int counter = 1;
 	for(int i = 0; i < game->numAvatar; i++) {
-		printf("%d) Player %d (%s) %s\n", i, game->avatars[i]->id, game->avatars[i]->player->username, game->avatars[i]->role == SHERIFF ? "(SHERIFF)" : "");
+		if ( game->avatars[i]->isDead ) {
+			continue;
+		}
+		printf("%d) Player %d (%s) %s\n", counter, game->avatars[i]->id, game->avatars[i]->player->username, game->avatars[i]->role == SHERIFF ? "(SHERIFF)" : "");
+		counter++;
 	}
 	int choice;
 	while(1) {
 		printf("Choice: ");
 		scanf("%d", &choice);
-		if(choice < 0 && choice > game->numAvatar) {
-			printf("Please input within range 0 to %d\n", game->numAvatar);
+		if(choice < 1 && choice >= game->numAvatar) {
+			printf("Please input within range 1 to %d\n", game->numAvatar);
 			continue;
 		}
 		break;
 	}
-	*target = game->avatars[choice]->player;
-	return ret[0];
+	return game->avatars[choice-1]->player;
 }
 
 int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size) {

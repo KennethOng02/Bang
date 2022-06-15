@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "player.h"
 #include "game.h"
@@ -32,34 +33,46 @@ int *computer_chooseDrop(Player *this, Game *game, Card **cards, int cards_size,
 	return idxs;
 }
 
-int computer_selectUse(Player *this, Game *game, Card **cards, int cards_size, Player **target) {
-	*target = NULL;
-	/*
-	Avatar *avatar = Game_nextAvailableAvatar(this->avatar);
-	while ( avatar->id != this->avatar->id ) {
+int computer_selectUse(Player *this, Game *game, Card **cards, int cards_size) {
+	usleep(500);
+	return rand() % (cards_size+1) - 1;
+}
+
+Player *computer_selectTarget(Player *this, Game *game) {
+	Avatar *avatar = NULL;
+	Player *target = NULL;
+	for ( int i=0; i<game->numAvatar; i++ ) {
+		if ( game->avatars[i]->id == this->id ) {
+			avatar = game->avatars[i];
+			break;
+		}
+	}
+	Avatar *self = avatar;
+	avatar = Game_nextAvailableAvatar(avatar);
+	while ( avatar->id != this->id ) {
 
 		Role role = avatar->role;
 
-		switch ( this->avatar->role ) {
+		switch ( self->role ) {
 		
 		case SHERIFF:
 		case DEPUTY:
 			if ( role != SHERIFF ) {
-				*target = avatar->player;
+				target = avatar->player;
 			}
 			break;
 
 		case OUTLAW:
 			if ( role == SHERIFF ) {
-				*target = avatar->player;
+				target = avatar->player;
 			}
 			break;
 
 		case RENEGADE:
 			if ( role != SHERIFF ) {
-				*target = avatar->player;
-			} else if ( *target == NULL ) {
-				*target = avatar->player;
+				target = avatar->player;
+			} else if ( target == NULL ) {
+				target = avatar->player;
 			}
 			break;
 
@@ -68,12 +81,11 @@ int computer_selectUse(Player *this, Game *game, Card **cards, int cards_size, P
 		}
 		avatar = Game_nextAvailableAvatar(avatar);
 	}
-	*/
-	return rand() % (cards_size+1) - 1;
+	return target;
 }
 
 int computer_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
-	srand(time(0));
+	usleep(500);
 	return rand() % (cards_size+1) - 1;
 }
 

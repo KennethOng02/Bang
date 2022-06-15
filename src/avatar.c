@@ -38,7 +38,6 @@ void Character_free(Character *this) {
 	free(this->name);
 	free(this->intro);
 	free(this);
-	DEBUG_PRINT("Done Character_free\n");
 }
 
 
@@ -218,16 +217,15 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 		}
 	}
 	if( this->character->id == Jesse_Jones) {
-		if( Player_useAbility == true) {
-			Card* card = Deck_draw(game->deck);
-			Avatar_get(this,game,card);
-		}else {
-			Avatar_draw(this,game);
+		if( Player_useAbility(this->player,game) == true) {
+			
 		}
 	}
-	if( this->character->id == Pedro_Ramirez) {
-		if( Player_useAbility == true) {
-			
+	if( this->character->id == Pedro_Ramirez && game->discardPile->top >= 0) {
+		if( Player_useAbility(this->player,game) == true) {
+			Avatar_get(this,game,Deck_draw(game->discardPile));
+		}else {
+			Avatar_draw(this,game);
 		}
 	}
 	

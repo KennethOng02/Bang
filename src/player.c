@@ -54,11 +54,19 @@ int *Player_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, i
 	}
 }
 
-int Player_selectUse(Player *this, Game *game, Card **cards, int cards_size, Player **target) {
+int Player_selectUse(Player *this, Game *game, Card **cards, int cards_size) {
 	if ( !this->isComputer ) {
-		return interface_selectUse(this, game, cards, cards_size, target);
+		return interface_selectUse(this, game, cards, cards_size);
 	} else {
-		return computer_selectUse(this, game, cards, cards_size, target);
+		return computer_selectUse(this, game, cards, cards_size);
+	}
+}
+
+Player *Player_selectTarget(Player *this, Game *game) {
+	if ( !this->isComputer ) {
+		return interface_selectTarget(this, game);
+	} else {
+		return computer_selectTarget(this, game);
 	}
 }
 
