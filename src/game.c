@@ -137,6 +137,11 @@ Avatar *Game_nextAvailableAvatar(Avatar *avatar) {
 	return game->avatars[idx];
 }
 
+void Game_reShuffle() {
+	SWAP(game->discardPile, game->deck, Deck *);
+	SHUFFLE(game->deck->card_pile, game->deck->top+1, Card *);
+}
+
 void Game_checkWin() {
 	Avatar *sheriff = NULL;
 	bool teamSheriff = false;

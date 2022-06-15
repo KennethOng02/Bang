@@ -10,9 +10,12 @@
 #include "debug.h"
 
 Card *Deck_draw(Deck *this) {
-	if ( this->top < 0 ) ERROR_PRINT("No card remain.\n");
 	Card *new = this->card_pile[this->top];
 	this->card_pile[this->top--] = NULL;
+	if ( this->top < 0 ) {
+		DEBUG_PRINT("No card remain. reshuffling...\n");
+		Game_reShuffle();
+	}
 	return new;
 }
 
