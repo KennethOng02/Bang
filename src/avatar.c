@@ -493,11 +493,24 @@ int Avatar_calcDist(Game *game, Avatar *this, Avatar *that) {
 	int idx_2 = Game_findIndex(that);
 
 	int dist = abs(idx_2 - idx_1);
-	if(dist <= game->numAvailableAvatar / 2) {
-		return dist;
-	}else {
-		return -1 * dist + game->numAvailableAvatar; 
+	if(dist < game->numAvailableAvatar / 2) {
+		dist = -1 * dist + game->numAvailableAvatar; 
 	}
+
+	if ( this->character->id == Rose_Doolan ) {
+		dist--;
+	}
+	if ( this->equipment->horseMinus ) {
+		dist--;
+	}
+	if ( that->character->id == Paul_Regret ) {
+		dist++;
+	}
+	if ( that->equipment->horsePlus ) {
+		dist++;
+	}
+
+	return dist;
 }
 
 int Avatar_calcVision(Avatar *this) {
