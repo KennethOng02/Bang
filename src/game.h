@@ -37,5 +37,6 @@ void Game_exit();
 
 void Game_checkWin();
 int Game_findIndex(Avatar *avatar);
+void Game_reShuffle();
 Avatar *Game_nextAvailableAvatar(Avatar *avatar);
 Game *Game_queryInfo( Player *player );
