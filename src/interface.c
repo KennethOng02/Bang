@@ -226,7 +226,7 @@ Player *interface_selectTarget(Player *this, Game *game) {
 		}
 		break;
 	}
-	return game->avatars[choice]->player;
+	return game->avatars[choice-1]->player;
 }
 
 int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
