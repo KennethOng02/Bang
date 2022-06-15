@@ -158,7 +158,7 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 void Avatar_onPlay(Avatar *this, Game *game) {
 	// TODO: implimentation
 	int retIdx;
-	Player *tarPlayer;
+	Player *tarPlayer = NULL;
 	bool banged = false;
 	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size, &tarPlayer) ) != -1 ) {
 		DEBUG_PRINT("Player %s want to use card \"%s\".\n", this->player->username, this->cards[retIdx]->name);
