@@ -210,7 +210,9 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			if ( card->play == &play_CARD_BANG ) {
 				banged = true;
 			}
-			Deck_put(game->discardPile, card);
+			if ( CARD_HAND_START < card->id && card->id < CARD_HAND_END ) {
+				Deck_put(game->discardPile, card);
+			}
 		} else {
 			for( int i = this->cards_size-1 ; i >= retIdx ; i-- ){
 				this->cards[i+1] = this->cards[i];
