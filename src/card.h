@@ -20,6 +20,8 @@ struct card {
 
 Card *Card_init(const int id, const char *name, const int dist, const int suit, int (*fun)(Avatar *, Avatar *, Game *, Card *));
 
+Card *Card_copy(Card *this);
+
 void Card_free(Card *this);
 
 int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card);

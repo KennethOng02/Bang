@@ -9,9 +9,9 @@ typedef struct player Player ;
 #include "card.h"
 
 struct player {
-	bool isComputer;
 	char *username;
-	Avatar *avatar;
+	bool isComputer;
+	int id;
 };
 
 Player *Player_init();
