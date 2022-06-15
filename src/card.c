@@ -24,7 +24,19 @@ Card *Card_init(const int id, const char *name, const int type, const int suit, 
 	return new;
 }
 
+Card *Card_copy(Card *this) {
+	Card *new = malloc(sizeof(Card));
+	new->id = this->id;
+	new->name = malloc(strlen(this->name)+1);
+	strcpy(new->name, this->name);
+	new->type = this->type;
+	new->suit = this->suit;
+	new->play = this->play;
+	return new;
+}
+
 void Card_free(Card *this) {
+	if ( this==NULL ) return;
 	free(this->name);
 	free(this);
 }
@@ -169,18 +181,18 @@ int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s\n",user->player->username,card->name);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	Card** options = calloc(4,sizeof(Card));
-	for(int i = 0; i<game->numAvailablePlayer;i++) {
+	for(int i = 0; i<game->numAvailableAvatar;i++) {
 		options[i] = Deck_draw(game->deck);
 	}
-	int* choose = Avatar_choose(user,game,options,game->numAvailablePlayer,1);
+	int* choose = Avatar_choose(user,game,options,game->numAvailableAvatar,1);
 	Avatar_get(user,game,options[choose[0]]);
-	for(int i = choose[0];i < game->numAvailablePlayer - 1 ; i++) {
+	for(int i = choose[0];i < game->numAvailableAvatar - 1 ; i++) {
 		options[i] = options[i+1];
 	}
 	while(next->id != user->id) {
-		choose = Avatar_choose(next,game,options,game->numAvailablePlayer,1);	
+		choose = Avatar_choose(next,game,options,game->numAvailableAvatar,1);	
 		Avatar_get(next,game,options[choose[0]]);
-		for(int i = choose[0];i < game->numAvailablePlayer - 1 ; i++) {
+		for(int i = choose[0];i < game->numAvailableAvatar - 1 ; i++) {
 			options[i] = options[i+1];
 		}
 		next = Game_nextAvailableAvatar(next);
@@ -188,7 +200,7 @@ int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return 0;
 }
 int play_CARD_BEER(Avatar * user, Avatar * target, Game * game, Card * card) {
-	if( game->numAvailablePlayer <= 2) {
+	if( game->numAvailableAvatar <= 2) {
 		WARNING_PRINT("You can't use beer when only two player left!\n");
 		return -1;
 	}else if( user->hp >= user->hp_max) {

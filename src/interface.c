@@ -59,7 +59,12 @@ void interface_welcome() {
 
 void interface_printCards(Card **cards, int cards_size) {
 	for ( int i=0; i<cards_size; i++ ) {
-		printf("%d) %s\n", i+1, cards[i]->name);
+		printf("%d) ", i+1);
+		if ( cards[i] ) {
+			printf("%s\n", cards[i]->name);
+		} else {
+			printf("UNKNOWN\n");
+		}
 	}
 }
 
@@ -204,15 +209,15 @@ int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size, 
 	}
 
 	snprintf(buffer, bufSize, "Please choose which player as target.");
-	for(int i = 0; i < game->numPlayer; i++) {
+	for(int i = 0; i < game->numAvatar; i++) {
 		printf("%d) Player %d (%s) %s\n", i, game->avatars[i]->id, game->avatars[i]->player->username, game->avatars[i]->role == SHERIFF ? "(SHERIFF)" : "");
 	}
 	int choice;
 	while(1) {
 		printf("Choice: ");
 		scanf("%d", &choice);
-		if(choice < 0 && choice > game->numPlayer) {
-			printf("Please input within range 0 to %d\n", game->numPlayer);
+		if(choice < 0 && choice > game->numAvatar) {
+			printf("Please input within range 0 to %d\n", game->numAvatar);
 			continue;
 		}
 		break;
@@ -262,25 +267,33 @@ char *print_role(Role role) {
 	return "NULL";
 }
 
-void interface_playerInfo(Game *game, Player* self) {
+void interface_playerInfo(Game *gametmp, Player* self) {
+	Game *game = Game_queryInfo(self);
 	Avatar **avatars_list = game->avatars;
-	printf("%d\n", game->numPlayer);
+	printf("%d\n", game->numAvatar);
 	printf(MAG"---Player Info---\n"reset);	
-	for(int i = 0; i < game->numPlayer; i++) {
+	for(int i = 0; i < game->numAvatar; i++) {
 		printf("Player %d\n", avatars_list[i]->id);
 		printf("	Username: %s%s%s\n", GRN, avatars_list[i]->player->username, reset);
 		if(avatars_list[i]->isDead) {
 			printf(RED"	---DEAD---\n"reset);
 			printf("	Role: %s%s%s\n", MAG, print_role(avatars_list[i]->role), reset);
+			printf("	Character: %s%s%s\n", MAG, avatars_list[i]->character->name, reset);
 		}else {
+
 			printf("	Hp: %d\n", avatars_list[i]->hp);
+
 			printf("	Role: " );
-			if ( avatars_list[i]->role == SHERIFF || avatars_list[i]->id == self->avatar->id ) {
+			if ( avatars_list[i]->role != UNKNOWN ) {
 				printf( MAG"%s"reset"\n", print_role(avatars_list[i]->role));
 			} else {
 				printf("UNKNOWN\n");
 			}
+
+			printf("	Character: %s%s%s\n", MAG, avatars_list[i]->character->name, reset);
+
 			printf("	Card Num: %d\n", avatars_list[i]->cards_size);
+
 			printf("	Equipment: \n");
 			Equipment *eqi = avatars_list[i]->equipment;
 			if( eqi->gun != NULL) printf("		Gun: %s\n", eqi->gun->name);
@@ -291,5 +304,6 @@ void interface_playerInfo(Game *game, Player* self) {
 			if( eqi->jail != NULL) printf("		%s\n", eqi->jail->name);
 		}
 	}
+	Game_freeCopy(game);
 	return;
 }

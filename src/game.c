@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-
 #include "debug.h"
 #include "mylib.h"
 #include "avatar.h"
@@ -13,8 +12,7 @@
 
 static Game * game;
 
-void Game_init(int numPlayer) {
-
+void Game_init(int numAvatar) {
 	interface_welcome();
 
 	game = malloc(sizeof(Game));
@@ -29,22 +27,17 @@ void Game_init(int numPlayer) {
 	}
 
 	Character **character_deck = Deck_genCharacter(CHARACTER_SIZE);
-	// initiate Avatar *avatars[numPlayer]
-	game->numPlayer = numPlayer;
-	game->numAvailablePlayer = numPlayer;
-	Role *roles = genRoles(numPlayer);
-	game->players = malloc(game->numPlayer * sizeof(Player *));
-	game->avatars = malloc(game->numPlayer * sizeof(Avatar *));
-	for(int i = 0; i < numPlayer; i++ ) {
+	// initiate Avatar *avatars[numAvatar]
+	game->numAvatar = numAvatar;
+	game->numAvailableAvatar = numAvatar;
+	Role *roles = genRoles(numAvatar);
+	game->avatars = malloc(game->numAvatar * sizeof(Avatar *));
+	for(int i = 0; i < numAvatar; i++ ) {
 		// Initiate player and avatar
-		game->players[i] = Player_init();
-		game->avatars[i] = Avatar_init(i, character_deck[i], roles[i]);
-		game->players[i]->avatar = game->avatars[i];
-		game->avatars[i]->player = game->players[i];
+		game->avatars[i] = Avatar_init(i+1, character_deck[i], roles[i]);
 		for ( int _=0; _<game->avatars[i]->hp; _++ ) {
 			Avatar_draw(game->avatars[i], game);
 		}
-		DEBUG_PRINT("Finish initiation of player %s with avatar %d\n", game->players[i]->username, game->avatars[i]->id);
 	}
 
 	DEBUG_PRINT("Done Game_init\n");
@@ -55,13 +48,23 @@ void Game_init(int numPlayer) {
 	free(roles);
 }
 
-void Game_free() {
-
-	for ( int i=0; i<game->numPlayer; i++ ) {
-		Avatar_free(game->avatars[i]);
-		Player_free(game->players[i]);
+Game *Game_copy(Game *this) {
+	Game *copy = malloc(sizeof(Game));
+	copy->deck = Deck_copy(this->deck);
+	copy->discardPile = Deck_copy(this->discardPile);
+	copy->numAvatar = this->numAvatar;
+	copy->numAvailableAvatar = this->numAvailableAvatar;
+	copy->avatars = malloc(this->numAvatar * sizeof(Avatar *));
+	for ( int i=0; i<this->numAvatar; i++ ) {
+		copy->avatars[i] = Avatar_copy(this->avatars[i]);
 	}
-	free(game->players);
+	return copy;
+}
+
+void Game_free() {
+	for ( int i=0; i<game->numAvatar; i++ ) {
+		Avatar_free(game->avatars[i]);
+	}
 	free(game->avatars);
 
 	Deck_free(game->deck, DECK_SIZE);
@@ -74,9 +77,20 @@ void Game_free() {
 	return;
 }
 
+void Game_freeCopy(Game *this) {
+	for ( int i=0; i<this->numAvatar; i++ ) {
+		Avatar_freeCopy(this->avatars[i]);
+	}
+	free(this->avatars);
+	Deck_free(this->deck, DECK_SIZE);
+	Deck_free(this->discardPile, DECK_SIZE);
+	free(this);
+	return;
+}
+
 void Game_run() {
 	Avatar *sheriff = NULL;
-	for ( int i=0; i<game->numPlayer; i++ ) {
+	for ( int i=0; i<game->numAvatar; i++ ) {
 		if ( game->avatars[i]->role == SHERIFF ) {
 			sheriff = game->avatars[i];
 			break;
@@ -104,7 +118,7 @@ void Game_exit() {
 }
 
 int Game_findIndex(Avatar *avatar)	{
-	for ( int i=0; i<game->numPlayer; i++ ) {
+	for ( int i=0; i<game->numAvatar; i++ ) {
 		if ( game->avatars[i]->id == avatar->id ) {
 			return i;
 		}
@@ -118,7 +132,7 @@ Avatar *Game_nextAvailableAvatar(Avatar *avatar) {
 		ERROR_PRINT("Avatar %d not in game game.\n", avatar->id);
 	}
 	do {
-		idx = (idx+1) % game->numPlayer;
+		idx = (idx+1) % game->numAvatar;
 	} while ( game->avatars[idx]->isDead );
 	return game->avatars[idx];
 }
@@ -128,7 +142,7 @@ void Game_checkWin() {
 	bool teamSheriff = false;
 	bool teamOutlaw = false;
 	bool teamRenegade = false;
-	for ( int i=0; i<game->numPlayer; i++ ) {
+	for ( int i=0; i<game->numAvatar; i++ ) {
 		if ( game->avatars[i]->role == SHERIFF ) {
 			sheriff = game->avatars[i];
 		}
@@ -162,4 +176,25 @@ void Game_checkWin() {
 		printf("Sheriff wins!\n");
 		Game_exit();
 	}
+}
+
+Game *Game_queryInfo( Player *player ) {
+	Game *copy = Game_copy(game);
+	for ( int i=0; i<copy->deck->top+1; i++ ) {
+		copy->deck->card_pile[i] = NULL;
+	}
+	for ( int i=0; i<copy->numAvatar; i++ ) {
+		if ( copy->avatars[i]->isDead ) {
+			continue;
+		}
+		if ( copy->avatars[i]->id != player->id ) {
+			for ( int j=0; j<copy->avatars[i]->cards_size; j++ ) {
+				copy->avatars[i]->cards[j] = NULL;
+			}
+			if ( copy->avatars[i]->role != SHERIFF ) {
+				copy->avatars[i]->role = UNKNOWN;
+			}
+		}
+	}
+	return copy;
 }

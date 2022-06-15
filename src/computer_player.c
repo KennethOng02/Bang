@@ -34,6 +34,7 @@ int *computer_chooseDrop(Player *this, Game *game, Card **cards, int cards_size,
 
 int computer_selectUse(Player *this, Game *game, Card **cards, int cards_size, Player **target) {
 	*target = NULL;
+	/*
 	Avatar *avatar = Game_nextAvailableAvatar(this->avatar);
 	while ( avatar->id != this->avatar->id ) {
 
@@ -66,8 +67,8 @@ int computer_selectUse(Player *this, Game *game, Card **cards, int cards_size, P
 			ERROR_PRINT("Unknown role.\n");
 		}
 		avatar = Game_nextAvailableAvatar(avatar);
-		
 	}
+	*/
 	return rand() % (cards_size+1) - 1;
 }
 

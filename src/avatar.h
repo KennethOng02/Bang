@@ -3,8 +3,7 @@
 #include <stdbool.h>
 
 typedef struct character Character;
-typedef struct equipment Equipment;
-typedef enum role Role;
+typedef struct equipment Equipment; typedef enum role Role;
 typedef struct avatar Avatar;
 
 #include "card.h"
@@ -19,11 +18,12 @@ struct character {
 
 Character *Character_init(const char *name, const int hp, const char *intro);
 
+Character * Character_copy(Character *this);
+
 void Character_free(Character *this);
 
 
 struct equipment {
-	// Only card pointers
 	Card *gun;
 	Card *armour;
 	Card *horsePlus;
@@ -34,8 +34,12 @@ struct equipment {
 
 Equipment * Equipment_init();
 
+Equipment *Equipment_copy(Equipment *this);
+
 void Equipment_free(Equipment *this);
 
+
+#define UNKNOWN 1000
 
 enum role {
 	SHERIFF,
@@ -63,7 +67,11 @@ struct avatar {
 
 Avatar *Avatar_init(int id, Character *character, Role role);
 
+Avatar *Avatar_copy(Avatar *this);
+
 void Avatar_free(Avatar *this);
+
+void Avatar_freeCopy(Avatar *this);
 
 void Avatar_onTurn(Avatar *this, Game *game);
 void Avatar_onJudge(Avatar *this, Game *game, bool *jailed);
