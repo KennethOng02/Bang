@@ -6,6 +6,7 @@ typedef struct deck Deck;
 
 struct deck {
 	int top;
+	int size;
 	Card ** card_pile;
 };
 
@@ -14,6 +15,8 @@ Card *Deck_draw(Deck *this);
 void Deck_put(Deck *this, Card *new);
 
 Deck *Deck_init(int num);
+
+Deck *Deck_copy(Deck *this);
 
 void Deck_free(Deck *this, int size);
 

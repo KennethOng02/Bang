@@ -24,8 +24,20 @@ void Deck_put(Deck *this, Card *new) {
 
 Deck *Deck_init(int size) {
 	Deck *new = calloc(1, sizeof(Deck));
+	new->size = size;
 	new->card_pile = calloc(size, sizeof(Card *));
 	new->top = -1;
+	return new;
+}
+
+Deck *Deck_copy(Deck *this) {
+	Deck *new = malloc(sizeof(Deck));
+	new->size = this->size;
+	new->card_pile = calloc(new->size, sizeof(Card *));
+	new->top = this->top;
+	for ( int i=0; i<=this->top; i++ ) {
+		new->card_pile[i] = Card_copy(this->card_pile[i]);
+	}
 	return new;
 }
 

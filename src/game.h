@@ -11,31 +11,31 @@ typedef struct game Game;
 #define CHARACTER_SIZE 16
 
 struct game {
-	int numPlayer;
-	int numAvailablePlayer;
-	Player ** players;
+	int numAvatar;
+	int numAvailableAvatar;
 	Avatar ** avatars;
 	Deck * deck;
 	Deck * discardPile;
 };
 
-Game *Game_init(int numPlayer);
-Card **buildDeck();
-Card **genDeck(int deck_size);
-Role *genRoles(int numAvatar);
-Character **buildCharacterDeck();
-Character **genCharacterDeck(int deck_size);
+void Game_init(int numPlayer);
 
 
-void Game_free(Game *this);
+Game *Game_copy(Game *this);
 
 
-void Game_run(Game *this);
+void Game_free();
+
+void Game_freeCopy(Game *this);
 
 
-void Game_exit(Game *this);
+void Game_run();
 
-void Game_checkWin(Game *this);
 
-int Game_findIndex(Game *this, Avatar *avatar);
-Avatar *Game_nextAvailableAvatar(Game *this, Avatar *avatar);
+void Game_exit();
+
+
+void Game_checkWin();
+int Game_findIndex(Avatar *avatar);
+Avatar *Game_nextAvailableAvatar(Avatar *avatar);
+Game *Game_queryInfo( Player *player );

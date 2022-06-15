@@ -9,11 +9,11 @@
 
 int main(int argc, char ** argv) {
 
-	Game *game = Game_init(PLAYER_SIZE);
+	Game_init(PLAYER_SIZE);
 
-	Game_run(game);
+	Game_run();
 
-	Game_exit(game);
+	Game_exit();
 
 	return 0;
 }

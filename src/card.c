@@ -24,7 +24,19 @@ Card *Card_init(const int id, const char *name, const int type, const int suit, 
 	return new;
 }
 
+Card *Card_copy(Card *this) {
+	Card *new = malloc(sizeof(Card));
+	new->id = this->id;
+	new->name = malloc(strlen(this->name)+1);
+	strcpy(new->name, this->name);
+	new->type = this->type;
+	new->suit = this->suit;
+	new->play = this->play;
+	return new;
+}
+
 void Card_free(Card *this) {
+	if ( this==NULL ) return;
 	free(this->name);
 	free(this);
 }
@@ -45,7 +57,7 @@ int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s,",user->player->username,card->name);
-	Avatar* next = Game_nextAvailableAvatar(game, user);
+	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
 		if( Avatar_onReact( next, game, CARD_MISS, card ) == -1 ) 
@@ -57,13 +69,13 @@ int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) 
 		{
 			printf("%s react with MISSED!,nothing happened.\n",next->player->username);
 		}
-		next = Game_nextAvailableAvatar(game, next);
+		next = Game_nextAvailableAvatar(next);
 	}
 	return 0;
 }
 int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s,",user->player->username,card->name);
-	Avatar* next = Game_nextAvailableAvatar(game, user);
+	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
 		if( Avatar_onReact( next, game, CARD_BANG, card ) == -1 ) 
@@ -75,7 +87,7 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 		{
 			printf("%s react with BANG!,nothing happened.\n",next->player->username);
 		}
-		next = Game_nextAvailableAvatar(game, next);
+		next = Game_nextAvailableAvatar(next);
 	}
 	return 0;
 }
@@ -98,7 +110,8 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	}
 	printf("%s use %s\n",user->player->username,card->name);
 	int *choose = Avatar_choose(user,game,target->cards,target->cards_size,1);
-	Avatar_taken(target,game,choose[0]);
+	Card* trash = Avatar_taken(target,game,choose[0]);
+	Deck_put(game->discardPile,trash);
 	return 0;
 }
 int play_CARD_STAGECOACH(Avatar * user, Avatar * target, Game * game, Card * card) {
@@ -119,7 +132,7 @@ int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar* next = user;
 	Card** options = calloc(4,sizeof(Card));
 	int* choose = calloc(4,1);
-	int opt_size = game->numAvailablePlayer;
+	int opt_size = game->numAvailableAvatar;
 	for(int i = 0; i<opt_size;i++) {
 		options[i] = Deck_draw(game->deck);
 	}
@@ -130,12 +143,12 @@ int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 			options[i] = options[i+1];
 		}
 		opt_size --;
-		next = Game_nextAvailableAvatar(game, next);
+		next = Game_nextAvailableAvatar(next);
 	}while(next->id != user->id);
 	return 0;
 }
 int play_CARD_BEER(Avatar * user, Avatar * target, Game * game, Card * card) {
-	if( game->numAvailablePlayer <= 2) {
+	if( game->numAvailableAvatar <= 2) {
 		WARNING_PRINT("You can't use beer when only two player left!\n");
 		return -1;
 	}else if( user->hp >= user->hp_max) {
@@ -155,7 +168,7 @@ int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card) {
 			check = 0;
 			break;
 		}
-		next = Game_nextAvailableAvatar(game, next);
+		next = Game_nextAvailableAvatar(next);
 		}while(next->id != user->id);
 		if( check == -1) {
 			WARNING_PRINT("Everyone hp is max!\n");
@@ -169,7 +182,7 @@ int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card) {
 			else {
 				printf("%s hp is max\n",next->player->username);
 			}
-			next = Game_nextAvailableAvatar(game, next);
+			next = Game_nextAvailableAvatar(next);
 		}while(next->id != user->id);
 	return 0;
 }

@@ -24,12 +24,21 @@ Character *Character_init(int id, const char *name, const int hp, const char *in
 	new->intro = malloc(strlen(intro)+1);
 	strcpy(new->intro, intro);
 	return new;
+} 
+Character *Character_copy(Character *this) {
+	Character *new = malloc(sizeof(Character));
+	new->name = malloc(strlen(this->name) + 1);
+	strcpy(new->name, this->name);
+	new->hp = this->hp;
+	new->intro = malloc(strlen(this->intro)+1);
+	strcpy(new->intro, this->intro);
+	return new;
 }
-
 void Character_free(Character *this) {
 	free(this->name);
 	free(this->intro);
 	free(this);
+	DEBUG_PRINT("Done Character_free\n");
 }
 
 
@@ -44,6 +53,18 @@ Equipment * Equipment_init() {
 	return new;
 }
 
+Equipment * Equipment_copy(Equipment *this) {
+	Equipment * new = malloc(sizeof(Equipment));
+	memset ( new, 0, sizeof(Equipment) );
+	if ( this->gun ) new->gun = Card_copy(this->gun);
+	if ( this->armour ) new->armour = Card_copy(this->armour);
+	if ( this->horsePlus ) new->horsePlus = Card_copy(this->horsePlus);
+	if ( this->horseMinus ) new->horseMinus = Card_copy(this->horseMinus);
+	if ( this->jail ) new->jail = Card_copy(this->jail);
+	if ( this->bomb ) new->bomb = Card_copy(this->bomb);
+	return new;
+}
+
 void Equipment_free(Equipment *this) {
 	if ( this->gun ) Card_free(this->gun);
 	if ( this->armour ) Card_free(this->armour);
@@ -51,6 +72,7 @@ void Equipment_free(Equipment *this) {
 	if ( this->horseMinus ) Card_free(this->horseMinus);
 	if ( this->jail ) Card_free(this->jail);
 	if ( this->bomb ) Card_free(this->bomb);
+	DEBUG_PRINT("Done Equipment_free\n");
 }
 
 
@@ -59,6 +81,7 @@ Avatar *Avatar_init(int id, Character *character, Role role) {
 	Avatar *new = malloc(sizeof(Avatar));
 
 	new->id = id;
+	new->player = Player_init(id); // NOTE: avatar->id == avatar->player->id
 	new->isDead = false;
 
 	new->character = Character_init(character->id, character->name, character->hp, character->intro);
@@ -75,12 +98,31 @@ Avatar *Avatar_init(int id, Character *character, Role role) {
 
 	new->equipment = Equipment_init();
 
+	DEBUG_PRINT("Finish initiation of player %s with avatar %d\n", new->player->username, new->id);
 
 	return new;
 }
 
+Avatar *Avatar_copy(Avatar *this) {
+	Avatar *new = malloc(sizeof(Avatar));
+	new->id = this->id;
+	new->player = this->player; // Note: not deep copy
+	new->isDead = this->isDead;
+	new->character = Character_copy(this->character);
+	new->hp_max = this->hp_max;
+	new->hp = this->hp;
+	new->role = this->role;
+	new->cards_size = this->cards_size;
+	new->cards = malloc(this->cards_size * sizeof(Card *));
+	for ( int i=0; i<this->cards_size; i++ ) {
+		new->cards[i] = Card_copy(this->cards[i]);
+	}
+	new->equipment = Equipment_copy(this->equipment);
+	return new;
+}
+
 void Avatar_free(Avatar *this) {
-	// NOTE: Players does't free here
+	Player_free(this->player);
 	Character_free(this->character);
 	Equipment_free(this->equipment);
 	for ( int i=0; i<this->cards_size; i++ ) {
@@ -88,7 +130,19 @@ void Avatar_free(Avatar *this) {
 	}
 	free(this->cards);
 	free(this);
-	DEBUG_PRINT("Avatar_free Done !\n");
+	DEBUG_PRINT("Done Avatar_free!\n");
+}
+
+void Avatar_freeCopy(Avatar *this) {
+	//Player_free(this->player); THIS IS WHERE DIFFERENT
+	Character_free(this->character);
+	Equipment_free(this->equipment);
+	for ( int i=0; i<this->cards_size; i++ ) {
+		Card_free(this->cards[i]);
+	}
+	free(this->cards);
+	free(this);
+	DEBUG_PRINT("Done Avatar_freeCopy!\n");
 }
 
 void Avatar_onTurn(Avatar *this, Game *game)  {
@@ -122,7 +176,7 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 
 		} else {
 			// Find next avatar
-			Avatar *nextAvatar = Game_nextAvailableAvatar(game, this);
+			Avatar *nextAvatar = Game_nextAvailableAvatar(this);
 			Avatar_equip(nextAvatar, game, bomb);
 		}
 		
@@ -158,7 +212,7 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 		DEBUG_PRINT("Player %s want to use card \"%s\".\n", this->player->username, this->cards[retIdx]->name);
 
 		bool valid = true;
-		Avatar *tar = tarPlayer ? tarPlayer->avatar : NULL;
+		Avatar *tar = tarPlayer ? game->avatars[tarPlayer->id-1] : NULL;
 
 		Card *card = this->cards[retIdx];
 
@@ -290,7 +344,7 @@ void Avatar_dead(Avatar *this, Game *game) {
 	// TODO: Show role card
 	//move dead people out
 	this->isDead = true;
-	game->numAvailablePlayer--;
+	game->numAvailableAvatar--;
 	Game_checkWin(game);
 	printf("%s is dead\n",this->player->username);
 }
@@ -311,7 +365,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 	}
 	if(this->hp == 0) {
 		printf("Oh no %s's hp equal 0,",this->player->username);
-		if( Avatar_onReact(this, game, CARD_BEER, NULL) == -1 || game->numAvailablePlayer <= 2) {
+		if( Avatar_onReact(this, game, CARD_BEER, NULL) == -1 || game->numAvailableAvatar <= 2) {
 			Avatar_dead(this, game);
 		}else {
 			this->hp ++ ;
@@ -418,14 +472,14 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 }
 
 int Avatar_calcDist(Game *game, Avatar *this, Avatar *that) {
-	int idx_1 = Game_findIndex(game, this);
-	int idx_2 = Game_findIndex(game, that);
+	int idx_1 = Game_findIndex(this);
+	int idx_2 = Game_findIndex(that);
 
 	int dist = abs(idx_2 - idx_1);
-	if(dist <= game->numAvailablePlayer / 2) {
+	if(dist <= game->numAvailableAvatar / 2) {
 		return dist;
 	}else {
-		return -1 * dist + game->numAvailablePlayer; 
+		return -1 * dist + game->numAvailableAvatar; 
 	}
 }
 

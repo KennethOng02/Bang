@@ -10,18 +10,20 @@
 #include "computer_player.h"
 #include "debug.h"
 
-Player *Player_init() {
+Player *Player_init(int id) {
 	Player *new = malloc(sizeof(Player));
-	static int i = 0;
-	printf("Player %d is computer?\n", i+1);
+
+	new->id = id;
+	printf("Player %d is computer?\n", new->id);
+
 	new->isComputer = interface_yesOrNo();
-	new->avatar = NULL; // init in game_init
+
 	char *username;
 	if(!new->isComputer) {
-		printf("---Player %d---\n", ++i);
+		printf("---Player %d---\n", new->id);
 		username = interface_askName();
 	}else {
-		printf("Player %d automatically generated...\n", ++i);
+		printf("Player %d automatically generated...\n", new->id);
 		username = computer_askName();
 	}
 	new->username = malloc(strlen(username)+1);
@@ -30,7 +32,6 @@ Player *Player_init() {
 }
 
 void Player_free(Player *this) {
-	// NOTE: Avatars does't free here
 	free(this->username);
 	free(this);
 	DEBUG_PRINT("Done Player_free!\n");
