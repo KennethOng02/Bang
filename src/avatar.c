@@ -199,8 +199,38 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 	// TODO: Character ability - Black Jack
 	// TODO: Character ability - Jesse Jones
 	// TODO: Character ability - Kit Carlson
-	// TODO: Character ability - Pedro Ramirez 
-	for ( int _=0; _<2; _++ ) Avatar_draw(this, game);
+	// TODO: Character ability - Pedro Ramirez
+	if(this->character->id == Black_Jack) {
+		Avatar_draw(this, game);
+		Card* card = Deck_draw(game->deck);
+		int suit = card->id ;
+		while(1) {
+			Avatar_get(this,game,card);
+			DEBUG_PRINT("%s using his ability, the card he draw is %s,and the suit is %d,",this->player->username,card->name,card->suit);
+			if ( suit >= 13 && suit <= 38 ) {
+				DEBUG_PRINT("he can draw onemore card!\n");
+			}else {
+				DEBUG_PRINT("so sad stop at here\n");
+				break ;
+			}
+			card = Deck_draw(game->deck);
+			suit = card->id ;
+		}
+	}
+	if( this->character->id == Jesse_Jones) {
+		if( Player_useAbility == true) {
+			Card* card = Deck_draw(game->deck);
+			Avatar_get(this,game,card);
+		}else {
+			Avatar_draw(this,game);
+		}
+	}
+	if( this->character->id == Pedro_Ramirez) {
+		if( Player_useAbility == true) {
+			
+		}
+	}
+	
 }
 
 void Avatar_onPlay(Avatar *this, Game *game) {
@@ -319,28 +349,91 @@ int Avatar_judge(Avatar *this, Game *game, int card_id) {
 		}else {
 			return -1;
 		}
-	}else if( card_id == CARD_JAIL || card_id == CARD_BARREL ) { 
+	}
+	if( card_id == CARD_JAIL || card_id == CARD_BARREL ) { 
 		if ( suit >= 13 && suit <= 25 ) {
 			return 0;
 		}else {
 			return -1;
 		}
-
 	}
+
 }
 void Avatar_dead(Avatar *this, Game *game) {
 	// TODO: Character ability - Vulture Sam
 	//discard cards
+	Avatar* next = this;
+	int check = -1;
+	do {
+		if(next->character->id == Vulture_Sam) {
+			check = 0;
+			break;
+		}
+		next = Game_nextAvailableAvatar(next);
+	}while(next->character->id != this->character->id) ;
 	for( int i = 0; i < this->cards_size ; i++ ) {
-		Deck_put( game->discardPile, this->cards[i] );
+		if( check == 0 ) {
+			Avatar_get(next,game,Avatar_taken(this, game, i));
+		}else {
+			Deck_put( game->discardPile, this->cards[i] );
+		}
+		
 	}
 	//discard equipment
-	if( this->equipment->armour != NULL) Deck_put( game->discardPile, this->equipment->armour );
-	if( this->equipment->horseMinus != NULL) Deck_put( game->discardPile, this->equipment->horseMinus );
-	if( this->equipment->horsePlus != NULL) Deck_put( game->discardPile, this->equipment->horsePlus );
-	if( this->equipment->gun != NULL) Deck_put( game->discardPile, this->equipment->gun );
-	if( this->equipment->bomb != NULL) Deck_put( game->discardPile, this->equipment->bomb );
-	if( this->equipment->jail != NULL) Deck_put( game->discardPile, this->equipment->jail );
+	if( this->equipment->armour != NULL) {
+		if( check == 0) {
+			Avatar_get(next,game,this->equipment->armour);
+		}
+		else {
+			Deck_put( game->discardPile, this->equipment->armour );
+		}
+		
+	}
+	if( this->equipment->horseMinus != NULL) {
+		if( check == 0) {
+			Avatar_get(next,game,this->equipment->horseMinus);
+		}
+		else {
+			Deck_put( game->discardPile, this->equipment->horseMinus );
+		}
+		
+	}
+	if( this->equipment->horsePlus != NULL) {
+		if( check == 0) {
+			Avatar_get(next,game,this->equipment->horsePlus);
+		}
+		else {
+			Deck_put( game->discardPile, this->equipment->horsePlus );
+		}
+		
+	}
+	if( this->equipment->gun != NULL) {
+		if( check == 0) {
+			Avatar_get(next,game,this->equipment->gun);
+		}
+		else {
+			Deck_put( game->discardPile, this->equipment->gun );
+		}
+		
+	}
+	if( this->equipment->bomb != NULL) {
+		if( check == 0) {
+			Avatar_get(next,game,this->equipment->bomb);
+		}
+		else {
+			Deck_put( game->discardPile, this->equipment->bomb );
+		}
+		
+	}
+	if( this->equipment->jail != NULL) {
+		if( check == 0) {
+			Avatar_get(next,game,this->equipment->jail);
+		}
+		else {
+			Deck_put( game->discardPile, this->equipment->jail );
+		}
+		
+	}
 	// TODO: Show role card
 	//move dead people out
 	this->isDead = true;
@@ -439,8 +532,7 @@ Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
 }
 
 void Avatar_draw(Avatar *this, Game *game){
-	this->cards_size ++;
-	this->cards[this->cards_size - 1] = Deck_draw(game->deck);
+	Avatar_get(this,game, Deck_draw(game->deck));
 	DEBUG_PRINT("Avatar %d draw one card.Remain: %d cards.\n", this->id ,game->deck->top + 1);
 	return;
 }
