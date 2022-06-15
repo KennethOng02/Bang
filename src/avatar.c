@@ -38,7 +38,6 @@ void Character_free(Character *this) {
 	free(this->name);
 	free(this->intro);
 	free(this);
-	DEBUG_PRINT("Done Character_free\n");
 }
 
 
@@ -72,7 +71,6 @@ void Equipment_free(Equipment *this) {
 	if ( this->horseMinus ) Card_free(this->horseMinus);
 	if ( this->jail ) Card_free(this->jail);
 	if ( this->bomb ) Card_free(this->bomb);
-	DEBUG_PRINT("Done Equipment_free\n");
 }
 
 
@@ -142,7 +140,6 @@ void Avatar_freeCopy(Avatar *this) {
 	}
 	free(this->cards);
 	free(this);
-	DEBUG_PRINT("Done Avatar_freeCopy!\n");
 }
 
 void Avatar_onTurn(Avatar *this, Game *game)  {
@@ -204,17 +201,26 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 }
 
 void Avatar_onPlay(Avatar *this, Game *game) {
-	// TODO: implimentation
 	int retIdx;
-	Player *tarPlayer = NULL;
 	bool banged = false;
-	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size, &tarPlayer) ) != -1 ) {
+	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size) ) != -1 ) {
+
 		DEBUG_PRINT("Player %s want to use card \"%s\".\n", this->player->username, this->cards[retIdx]->name);
+
+		Card *card = this->cards[retIdx];
+		if ( this->character->id == Calamity_Janet && card->id == CARD_MISS ) {
+			card -> type = CARD_DIST_VISION;
+			card -> play = &play_CARD_BANG;
+		}
+
+		Player *tarPlayer = NULL;
+		if ( card->type != CARD_DIST_NON ) {
+			tarPlayer = Player_selectTarget(this->player, game);
+		}
 
 		bool valid = true;
 		Avatar *tar = tarPlayer ? game->avatars[tarPlayer->id-1] : NULL;
 
-		Card *card = this->cards[retIdx];
 
 		for( int i = retIdx ; i < this->cards_size - 1 ; i++ ){
 			this->cards[i] = this->cards[i + 1];
@@ -248,6 +254,8 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			valid = false;
 			}
 		}
+
+		DEBUG_PRINT("Finish checking validation: %d\n", valid);
 		
 		if ( valid ) {
 			if ( card->play(this, tar, game, card) == -1 ) {
@@ -264,6 +272,10 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 				Deck_put(game->discardPile, card);
 			}
 		} else {
+			if ( this->character->id == Calamity_Janet && card->id == CARD_MISS ) {
+				card -> type = CARD_DIST_NON;
+				card -> play = &play_CARD_MISS;
+			}
 			for( int i = this->cards_size-1 ; i >= retIdx ; i-- ){
 				this->cards[i+1] = this->cards[i];
 			}
@@ -286,7 +298,6 @@ void Avatar_onDump(Avatar *this, Game *game) {
 }
 
 int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
-	// TODO: Character ability - Calamity Janet
 	// fin TODO: Character ability - Jourdonnais
 	// fin TODO: Equipment - Barrel 
 	// TODO: Character ability - Sid Ketchum
@@ -298,10 +309,16 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 		if ( react == -1) {
 			return -1;
 		}else {
-			if( this->cards[react]->id == card_id ) {
+			Card *reactCard = this->cards[react];
+			if( reactCard->id == card_id ) {
 				Deck_put(game->discardPile, Avatar_taken(this, game, react));
 				return 0;
-			}else {
+			} else if ( this->character->id == Calamity_Janet && 
+				 	( ( reactCard->id == CARD_BANG && card_id == CARD_MISS )
+					|| ( reactCard->id == CARD_MISS && card_id == CARD_BANG ) ) ) {
+				Deck_put(game->discardPile, Avatar_taken(this, game, react));
+				return 0;
+			} else {
 				WARNING_PRINT("You can't react with this card !\n");
 				continue;
 			}
@@ -325,8 +342,8 @@ int Avatar_judge(Avatar *this, Game *game, int card_id) {
 		}else {
 			return -1;
 		}
-
 	}
+	return -1;
 }
 void Avatar_dead(Avatar *this, Game *game) {
 	// TODO: Character ability - Vulture Sam
