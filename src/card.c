@@ -104,7 +104,7 @@ int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s,",user->player->username,card->name);
-	Avatar* next = Game_nextAvailableAvatar(game, user);
+	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id == user->id) 
 	{
 		if( Avatar_onReact( next, game, CARD_MISS ) == -1 ) 
@@ -116,13 +116,13 @@ int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) 
 		{
 			printf("%s react with MISSED!,nothing happened.\n",next->player->username);
 		}
-		next = Game_nextAvailableAvatar(game, next);
+		next = Game_nextAvailableAvatar(next);
 	}
 	return 0;
 }
 int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s,",user->player->username,card->name);
-	Avatar* next = Game_nextAvailableAvatar(game, user);
+	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
 		if( Avatar_onReact( next, game, CARD_BANG ) == -1 ) 
@@ -134,7 +134,7 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 		{
 			printf("%s react with BANG!,nothing happened.\n",next->player->username);
 		}
-		next = Game_nextAvailableAvatar(game, next);
+		next = Game_nextAvailableAvatar(next);
 	}
 	return 0;
 }
@@ -167,7 +167,7 @@ int play_CARD_FARGO(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s\n",user->player->username,card->name);
-	Avatar* next = Game_nextAvailableAvatar(game, user);
+	Avatar* next = Game_nextAvailableAvatar(user);
 	Card** options = calloc(4,sizeof(Card));
 	for(int i = 0; i<game->numAvailablePlayer;i++) {
 		options[i] = Deck_draw(game->deck);
@@ -183,7 +183,7 @@ int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 		for(int i = choose[0];i < game->numAvailablePlayer - 1 ; i++) {
 			options[i] = options[i+1];
 		}
-		next = Game_nextAvailableAvatar(game, next);
+		next = Game_nextAvailableAvatar(next);
 	}
 	return 0;
 }
@@ -202,7 +202,7 @@ int play_CARD_BEER(Avatar * user, Avatar * target, Game * game, Card * card) {
 int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s\n",user->player->username,card->name);
 	int check = -1;
-	Avatar* next = Game_nextAvailableAvatar(game, user);
+	Avatar* next = Game_nextAvailableAvatar(user);
 	if(user->hp == user->hp_max)
 	{
 		while(next->id != user->id) 
@@ -212,7 +212,7 @@ int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card) {
 				check = 0;
 				break;
 			}
-			next = Game_nextAvailableAvatar(game, next);
+			next = Game_nextAvailableAvatar(next);
 		}
 		if( check == -1)
 		{
@@ -233,7 +233,7 @@ int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card) {
 			{
 				printf("%s hp is max\n",next->player->username);
 			}
-			next = Game_nextAvailableAvatar(game, next);
+			next = Game_nextAvailableAvatar(next);
 		}
 	}
 	return 0;

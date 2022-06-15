@@ -126,7 +126,7 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 
 		} else {
 			// Find next avatar
-			Avatar *nextAvatar = Game_nextAvailableAvatar(game, this);
+			Avatar *nextAvatar = Game_nextAvailableAvatar(this);
 			Avatar_equip(nextAvatar, game, bomb);
 		}
 		
@@ -384,8 +384,8 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 }
 
 int Avatar_calcDist(Game *game, Avatar *this, Avatar *that) {
-	int idx_1 = Game_findIndex(game, this);
-	int idx_2 = Game_findIndex(game, that);
+	int idx_1 = Game_findIndex(this);
+	int idx_2 = Game_findIndex(that);
 
 	int dist = abs(idx_2 - idx_1);
 	if(dist <= game->numAvailablePlayer / 2) {
