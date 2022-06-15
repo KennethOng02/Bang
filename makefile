@@ -8,6 +8,7 @@ dependency_path=$(addprefix ${bin_dir}, ${dependency})
 
 all: $(dependency)
 	make cardid
+	make characterid
 	gcc src/main.c $(dependency_path) -lncurses -o bin/main
 
 run:
@@ -17,8 +18,13 @@ cardid: mylib.o
 	gcc src/cardid_generator.c bin/mylib.o -o bin/cardid_generator
 	./bin/cardid_generator
 
+characterid: mylib.o
+	gcc src/characterid_generator.c bin/mylib.o -o bin/characterid_generator
+	./bin/characterid_generator
+
 debug: $(debug_dependency)
 	make cardid
+	make characterid
 	gcc -D__DEBUG__ src/main.c $(debug_dependency_path) -o bin/main
 
 %.o: src/%.c

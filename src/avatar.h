@@ -12,18 +12,18 @@ typedef struct avatar Avatar;
 #include "player.h"
 
 struct character {
+	int id;
 	char *name;
 	int hp;
 	char *intro;
 };
 
-Character *Character_init(const char *name, const int hp, const char *intro);
+Character *Character_init(int id, const char *name, const int hp, const char *intro);
 
 void Character_free(Character *this);
 
 
 struct equipment {
-	// Only card pointers
 	Card *gun;
 	Card *armour;
 	Card *horsePlus;
@@ -70,7 +70,8 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed);
 void Avatar_onDraw(Avatar *this, Game *game);
 void Avatar_onPlay(Avatar *this, Game *game);
 void Avatar_onDump(Avatar *this, Game *game);
-int Avatar_onReact(Avatar *this, Game *game, int card_id);
+int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react);
+int Avatar_judge(Avatar *this, Game *game, int card_id);
 void Avatar_dead(Avatar *this, Game *game);
 void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker);
 void Avatar_heal(Avatar *this, Game *game);

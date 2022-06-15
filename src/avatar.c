@@ -6,8 +6,10 @@
 #include "debug.h"
 #include "cardid.h"
 #include "player.h"
+#include "card.h"
+#include "characterid.h"
 
-Character *Character_init(const char *name, const int hp, const char *intro) {
+Character *Character_init(int id, const char *name, const int hp, const char *intro) {
 	if(name == NULL || intro == NULL)
 		ERROR_PRINT("NULL pointer Mother Fucker !!\n");
 
@@ -15,7 +17,7 @@ Character *Character_init(const char *name, const int hp, const char *intro) {
 		ERROR_PRINT("hp must be between 0 and 4");
 
 	Character *new = malloc(sizeof(Character));
-
+	new->id = id;
 	new->name = malloc(strlen(name) + 1);
 	strcpy(new->name, name);
 	new->hp = hp;
@@ -59,7 +61,7 @@ Avatar *Avatar_init(int id, Character *character, Role role) {
 	new->id = id;
 	new->isDead = false;
 
-	new->character = Character_init(character->name, character->hp, character->intro);
+	new->character = Character_init(character->id, character->name, character->hp, character->intro);
 
 	new->hp_max = new->character->hp;
 	new->role = role;
@@ -112,15 +114,9 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 	if ( this->equipment->bomb != NULL ) {
 	
 		DEBUG_PRINT("Avatar %d judge for bomb.\n", this->id);
-
-		Card *card = Deck_draw(game->deck);
-		int suit = card->suit;
-		Deck_put(game->discardPile, card);
-
 		Card *bomb = Avatar_unequip(this, game, &(this->equipment->bomb));
-		if ( suit >= 1 && suit <= 8 ) {
+		if ( Avatar_judge(this, game, CARD_DYNAMITE) == 0) {
 			// suit is between [Spade 2, Spade 9]
-
 			Deck_put(game->discardPile, bomb);
 			for ( int _=0; _<3; _++ ) Avatar_hurt(this, game, NULL);
 
@@ -135,14 +131,12 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 
 		DEBUG_PRINT("Avatar %d judge for Jail.\n", this->id);
 
-		Card *card = Deck_draw(game->deck);
-		int suit = card->suit;
-		Deck_put(game->discardPile, card);
-
-		if ( suit < 13 || suit >= 26 ) {
+		if (Avatar_judge(this,game,CARD_JAIL) == -1) {
 			// suit is not heart
 			*jailed = true;
 		}
+		Card *jail = Avatar_unequip(this, game, &(this->equipment->jail));
+		Deck_put(game->discardPile, jail);
 	}
 	return;
 }
@@ -195,8 +189,10 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 		if ( banged && card->play == &play_CARD_BANG ) {
 			// TODO: Character ability - Willy the Kid
 			// TODO: VOLCANIC
+			if ( ( this->equipment->gun == NULL || this->equipment->gun->id != CARD_VOLCANIC ) && this->character->id != Willy_the_Kid ) {
 			WARNING_PRINT("You cannot use BANG! twice.\n");
 			valid = false;
+			}
 		}
 		
 		if ( valid ) {
@@ -235,26 +231,49 @@ void Avatar_onDump(Avatar *this, Game *game) {
 	}
 }
 
-int Avatar_onReact(Avatar *this, Game *game, int card_id) {
+int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 	// TODO: Character ability - Calamity Janet
-	// TODO: Character ability - Jourdonnais
-	// TODO: Equipment - Barrel
+	// fin TODO: Character ability - Jourdonnais
+	// fin TODO: Equipment - Barrel 
 	// TODO: Character ability - Sid Ketchum
+	if(this->equipment->armour != NULL || this->character->id == Jourdonnais) {
+		if( Avatar_judge(this,game,CARD_BARREL) == 0)return 0;
+	}
 	while(1) {
 		int react = Player_selectReact(this->player, game, this->cards, this->cards_size);
 		if ( react == -1) {
 			return -1;
 		}else {
 			if( this->cards[react]->id == card_id ) {
+				Deck_put(game->discardPile, Avatar_taken(this, game, react));
 				return 0;
 			}else {
-				WARNING_PRINT("You can't react with this card !");
+				WARNING_PRINT("You can't react with this card !\n");
 				continue;
 			}
 		}
 	}
 }
 
+int Avatar_judge(Avatar *this, Game *game, int card_id) {
+	Card *card = Deck_draw(game->deck);
+	int suit = card->suit;
+	Deck_put(game->discardPile, card);
+	if( card_id == CARD_DYNAMITE) {
+		if ( suit >= 1 && suit <= 8 ) {
+			return 0;
+		}else {
+			return -1;
+		}
+	}else if( card_id == CARD_JAIL || card_id == CARD_BARREL ) { 
+		if ( suit >= 13 && suit <= 25 ) {
+			return 0;
+		}else {
+			return -1;
+		}
+
+	}
+}
 void Avatar_dead(Avatar *this, Game *game) {
 	// TODO: Character ability - Vulture Sam
 	//discard cards
@@ -281,9 +300,18 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 	// TODO: Character ability - El Gringoy
 	this->hp -- ;
 	printf("%s's hp -1\n",this->player->username);
+	if( this->character->id == Bart_Cassidy) {
+		DEBUG_PRINT("%s hurt, using his aility.\n",this->player->username);
+		Avatar_draw(this,game);
+	}
+	if( this->character->id == El_Gringo) {
+		DEBUG_PRINT("%s hurt, using his aility.\n",this->player->username);
+		int *choose = Avatar_choose(this,game,attacker->cards,attacker->cards_size,1);
+		Avatar_get(this,game,Avatar_taken(attacker,game,choose[0]));
+	}
 	if(this->hp == 0) {
 		printf("Oh no %s's hp equal 0,",this->player->username);
-		if( Avatar_onReact(this, game, CARD_BEER) == -1 || game->numAvailablePlayer <= 2) {
+		if( Avatar_onReact(this, game, CARD_BEER, NULL) == -1 || game->numAvailablePlayer <= 2) {
 			Avatar_dead(this, game);
 		}else {
 			this->hp ++ ;
@@ -296,7 +324,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 }
 
 void Avatar_heal(Avatar *this, Game *game){
-	this->hp ++ ;
+	this->hp ++;
 	printf("%s's hp +1\n",this->player->username);
 	DEBUG_PRINT("Avatar %d heal.\n", this->id);
 	return;
@@ -381,6 +409,10 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 		this->cards[i] = this->cards[i+1];
 	}
 	this->cards_size -- ;
+	if( this->character->id == Suzy_Lafayette && this->cards_size == 0) {
+		Avatar_draw(this,game);
+		printf("%s have no card! Using his ability.\n",this->player->username);
+	}
 	DEBUG_PRINT("Avatar %d's card: %s had been taken.\n", this->id , bye->name );
 	return bye;
 }
@@ -414,5 +446,7 @@ int Avatar_calcVision(Avatar *this) {
 		if(gun->id == CARD_WINCHEDTER)
 			dist = 5;
 	}
+	
+	DEBUG_PRINT("Calc vision for avatar %d Done.\n", this->id);
 	return dist;
 }

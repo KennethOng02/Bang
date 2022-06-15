@@ -117,11 +117,13 @@ Character **Deck_buildCharacter() {
 
 	char *buffer = calloc(1024, sizeof(char));
 	int i = 0;
+	int lineNum = 0;
 	while(fgets(buffer, 1024, pfile) != NULL) {
 		char **line;
 		int counter;
 		mystrsplit(&line, &counter, buffer, "\"");
-		character[i++] = Character_init(line[1], strtod(line[3], NULL), line[5]);
+		character[i++] = Character_init( lineNum, line[1], strtod(line[3], NULL), line[5]);
+		lineNum++;
 	}
 	return character;
 }

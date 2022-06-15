@@ -29,69 +29,10 @@ void Card_free(Card *this) {
 	free(this);
 }
 
-// int Card_playBang(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	if ( Avatar_onReact( target , game , card ) == 0 ){
-// 		target->hp -- ;
-// 	}
-// 	return 0;
-// }
-
-// int Card_playMiss(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	return 0;
-// }
-
-// int Card_playBeer(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	user->hp ++ ;
-// 	return 0;
-// }
-
-// int Card_playBeer(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	user->hp ++ ;
-// 	return 0;
-// }
-
-// int Card_playSallon(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	for(size_t i = 0 ; i < game->numAvatar ; i++)
-// 		game->avatars[i]->hp ++ ;
-// 	return 0;
-// }
-
-
-// int Card_playWellsFargo(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	Game_Draw(game, user, 3);
-// 	return 0;
-// }
-
-// int Card_playStagecoach(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	Game_DrawTo(game, user, 2);
-// 	return 0;
-// }
-
-// int Card_playStagecoach(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	Game_DrawTo(game, user, 2);
-// 	return 0;
-// }
-
-// int Card_playGeneralStore(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	Game_Draw(game, user, game->numAvatar);
-// 	return 0;
-// }
-
-// int Card_playPanic(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	Game_Draw(game, user, game->numAvatar);
-// 	return 0;
-// }
-
-// int Card_playGatling(Avatar * user, Avatar * target, Game * game, Card * card) {
-// 	if ( Avatar_onReact( target , game , card ) == 0 ){
-// 		target->hp -- ;
-// 	}
-// 	return 0;
-// }
 
 int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use BANG! to %s,",user->player->username,target->player->username);
-	if( Avatar_onReact(target, game, CARD_MISS) == -1 ) {
+	if( Avatar_onReact(target, game, CARD_MISS, card ) == -1 ) {
 		printf("%s do not have MISS,",target->player->username);
 		Avatar_hurt(target, game, user);
 	}else {
@@ -105,9 +46,9 @@ int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
 int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s,",user->player->username,card->name);
 	Avatar* next = Game_nextAvailableAvatar(game, user);
-	while(next->id == user->id) 
+	while(next->id != user->id) 
 	{
-		if( Avatar_onReact( next, game, CARD_MISS ) == -1 ) 
+		if( Avatar_onReact( next, game, CARD_MISS, card ) == -1 ) 
 		{
 			printf("%s do not react with MISSED!,",next->player->username);
 			Avatar_hurt(next, game, user);	
@@ -125,7 +66,7 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 	Avatar* next = Game_nextAvailableAvatar(game, user);
 	while(next->id != user->id) 
 	{
-		if( Avatar_onReact( next, game, CARD_BANG ) == -1 ) 
+		if( Avatar_onReact( next, game, CARD_BANG, card ) == -1 ) 
 		{
 			printf("%s do not react with BANG!,",next->player->username);
 			Avatar_hurt(next, game, user);	
@@ -140,13 +81,21 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 }
 int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
+	if(target->cards_size == 0 && target->equipment->armour == NULL && target->equipment->bomb == NULL && target->equipment->gun == NULL && target->equipment->horseMinus == NULL && target->equipment->horsePlus == NULL && target->equipment->jail == NULL) {
+		WARNING_PRINT("The target you choose have no cards left!\n");
+		return -1;
+	}
 	printf("%s use %s\n",user->player->username,card->name);
 	int *choose = Avatar_choose(user,game,target->cards,target->cards_size,1);
-	Avatar_get(user,game,target->cards[choose[0]]);
+	Avatar_get(user,game,Avatar_taken(target, game, choose[0]));
 	return 0;
 }
 int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
+	if(target->cards_size == 0 && target->equipment->armour == NULL && target->equipment->bomb == NULL && target->equipment->gun == NULL && target->equipment->horseMinus == NULL && target->equipment->horsePlus == NULL && target->equipment->jail == NULL) {
+		WARNING_PRINT("The target you choose have no cards left!\n");
+		return -1;
+	}
 	printf("%s use %s\n",user->player->username,card->name);
 	int *choose = Avatar_choose(user,game,target->cards,target->cards_size,1);
 	Avatar_taken(target,game,choose[0]);
@@ -167,24 +116,22 @@ int play_CARD_FARGO(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s\n",user->player->username,card->name);
-	Avatar* next = Game_nextAvailableAvatar(game, user);
+	Avatar* next = user;
 	Card** options = calloc(4,sizeof(Card));
-	for(int i = 0; i<game->numAvailablePlayer;i++) {
+	int* choose = calloc(4,1);
+	int opt_size = game->numAvailablePlayer;
+	for(int i = 0; i<opt_size;i++) {
 		options[i] = Deck_draw(game->deck);
 	}
-	int* choose = Avatar_choose(user,game,options,game->numAvailablePlayer,1);
-	Avatar_get(user,game,options[choose[0]]);
-	for(int i = choose[0];i < game->numAvailablePlayer - 1 ; i++) {
-		options[i] = options[i+1];
-	}
-	while(next->id != user->id) {
-		choose = Avatar_choose(next,game,options,game->numAvailablePlayer,1);	
+	do{
+		choose = Avatar_choose(next,game,options,opt_size,1);	
 		Avatar_get(next,game,options[choose[0]]);
-		for(int i = choose[0];i < game->numAvailablePlayer - 1 ; i++) {
+		for(int i = choose[0];i < opt_size - 1 ; i++) {
 			options[i] = options[i+1];
 		}
+		opt_size --;
 		next = Game_nextAvailableAvatar(game, next);
-	}
+	}while(next->id != user->id);
 	return 0;
 }
 int play_CARD_BEER(Avatar * user, Avatar * target, Game * game, Card * card) {
@@ -202,52 +149,40 @@ int play_CARD_BEER(Avatar * user, Avatar * target, Game * game, Card * card) {
 int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s\n",user->player->username,card->name);
 	int check = -1;
-	Avatar* next = Game_nextAvailableAvatar(game, user);
-	if(user->hp == user->hp_max)
-	{
-		while(next->id != user->id) 
-		{
-			if( next->hp != next->hp_max) 
-			{
-				check = 0;
-				break;
-			}
-			next = Game_nextAvailableAvatar(game, next);
+	Avatar* next = user;
+	do {
+		if( next->hp != next->hp_max) {
+			check = 0;
+			break;
 		}
-		if( check == -1)
-		{
+		next = Game_nextAvailableAvatar(game, next);
+		}while(next->id != user->id);
+		if( check == -1) {
 			WARNING_PRINT("Everyone hp is max!\n");
 			return -1;
-		}
-	}
-	else
-	{
-		Avatar_heal(user,game);
-		while(next->id != user->id) 
-		{
-			if( next->hp != next->hp_max) 
-			{
+		} 
+		next = user;
+		do {
+			if( next->hp != next->hp_max) {
 				Avatar_heal(next,game);
 			}
-			else 
-			{
+			else {
 				printf("%s hp is max\n",next->player->username);
 			}
 			next = Game_nextAvailableAvatar(game, next);
-		}
-	}
+		}while(next->id != user->id);
 	return 0;
 }
 int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s to %s\n",user->player->username,card->name,target->player->username);
 	while(1) {
-		if( Avatar_onReact(target, game, CARD_BANG) == -1) {
+		if( Avatar_onReact(target, game, CARD_BANG, card) == -1) {
 			printf("%s lose the duel,",target->player->username);
 			Avatar_hurt(target, game, user);
 			return 0;
 		}else {
 			printf("%s has a Bang!\n",target->player->username);
-			if( Avatar_onReact(user, game, CARD_BANG) == -1) {
+			if( Avatar_onReact(user, game, CARD_BANG, card) == -1) {
 				printf("%s lose the duel,",user->player->username);
 				Avatar_hurt(user, game, target);
 				return 0;
