@@ -8,7 +8,7 @@ dependency_path=$(addprefix ${bin_dir}, ${dependency})
 
 all: $(dependency)
 	make cardid
-	gcc src/main.c $(dependency_path) -o bin/main
+	gcc src/main.c $(dependency_path) -lncurses -o bin/main
 
 run:
 	./bin/main
