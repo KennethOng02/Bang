@@ -92,9 +92,9 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		memset(wanted, false, cards_size * sizeof(bool));
 
 		printf("%s\n", msg);
-		if ( notChoose ) printf("You can enter '%s0%s' if you don't want/have card to use.\n", GRN, reset);
-		printf("Or enter '%si%s' to check other game info.\n", GRN, reset);
-		printf("Or enter '%sq%s' to quit\n", GRN, reset);
+		if ( notChoose ) printf("Enter '%s0%s' to pass.\n", GRN, reset);
+		printf("Enter '%si%s' to check other game info.\n", GRN, reset);
+		printf("Enter '%sq%s' to quit\n", GRN, reset);
 		interface_printCards(cards, cards_size);
 
 		if ( fgets(buffer, bufSize, stdin) == NULL ) {
