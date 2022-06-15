@@ -75,28 +75,25 @@ void Game_free(Game *this) {
 }
 
 void Game_run(Game *this) {
-	Avatar *curAvatar = NULL;
+	Avatar *sheriff = NULL;
 	for ( int i=0; i<this->numPlayer; i++ ) {
 		if ( this->avatars[i]->role == SHERIFF ) {
-			curAvatar = this->avatars[i];
+			sheriff = this->avatars[i];
 			break;
 		}
 	}
 
-	if ( curAvatar == NULL ) {
+	if ( sheriff == NULL ) {
 		ERROR_PRINT("No SHERIFF in this game.\n");
 	}
+	Avatar *curAvatar = sheriff;
 
 	DEBUG_PRINT("Stating game loop\n");
 	while ( 1 ) {
 		Avatar_onTurn(curAvatar, this);
 		DEBUG_PRINT("Avatar %d's turn finish.\n", curAvatar->id);
-		if( this->deck->top + 1 <= 0){
-			return;
-		}
+
 		curAvatar = Game_nextAvailableAvatar(this, curAvatar);
-		// isDead?
-		// game over?
 	}
 }
 
@@ -125,4 +122,45 @@ Avatar *Game_nextAvailableAvatar(Game *this, Avatar *avatar) {
 		idx = (idx+1) % this->numPlayer;
 	} while ( this->avatars[idx]->isDead );
 	return this->avatars[idx];
+}
+
+void Game_checkWin(Game *this) {
+	Avatar *sheriff = NULL;
+	bool teamSheriff = false;
+	bool teamOutlaw = false;
+	bool teamRenegade = false;
+	for ( int i=0; i<this->numPlayer; i++ ) {
+		if ( this->avatars[i]->role == SHERIFF ) {
+			sheriff = this->avatars[i];
+		}
+		if ( !this->avatars[i]->isDead ) {
+			switch ( this->avatars[i]->role ) {
+			case SHERIFF:
+			case DEPUTY:
+				teamSheriff = true;
+				break;
+			case OUTLAW:
+				teamOutlaw = true;
+				break;
+			case RENEGADE:
+				teamRenegade = true;
+				break;
+			default:
+				ERROR_PRINT("Unknown role.\n");
+			}
+		}
+	}
+	if ( sheriff->isDead ) {
+		if ( teamOutlaw ) {
+			printf("Outlaws win!\n");
+			Game_exit(this);
+		} else if ( teamRenegade && !teamSheriff ) {
+			printf("Renegade wins!\n");
+			Game_exit(this);
+		}
+	}
+	if ( !teamOutlaw && !teamRenegade ) {
+		printf("Sheriff wins!\n");
+		Game_exit(this);
+	}
 }

@@ -105,7 +105,7 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		if ( strcmp(buffer, "i\n") == 0 ) {
 			// TODO: Switch to game menu
 			DEBUG_PRINT("This feature is fully implemented yet.\n");
-			interface_menu(game);
+			interface_menu(game, this);
 			continue;
 		}
 
@@ -237,8 +237,8 @@ bool interface_useAbility(Player *this, Game *game) {
 	return interface_yesOrNo();
 }
 
-void interface_menu(Game *game) {
-	interface_playerInfo(game);
+void interface_menu(Game *game, Player *self) {
+	interface_playerInfo(game, self);
 	/* interface_discardedPileInfo(game->avatars); */
 	return;
 }
@@ -262,7 +262,7 @@ char *print_role(Role role) {
 	return "NULL";
 }
 
-void interface_playerInfo(Game *game) {
+void interface_playerInfo(Game *game, Player* self) {
 	Avatar **avatars_list = game->avatars;
 	printf("%d\n", game->numPlayer);
 	printf(MAG"---Player Info---\n"reset);	
@@ -274,16 +274,21 @@ void interface_playerInfo(Game *game) {
 			printf("	Role: %s%s%s\n", MAG, print_role(avatars_list[i]->role), reset);
 		}else {
 			printf("	Hp: %d\n", avatars_list[i]->hp);
-			printf("	Role: %s\n", avatars_list[i]->role == SHERIFF ? MAG"SHERIFF"reset : "UNKNOWN");
+			printf("	Role: " );
+			if ( avatars_list[i]->role == SHERIFF || avatars_list[i]->id == self->avatar->id ) {
+				printf( MAG"%s"reset"\n", print_role(avatars_list[i]->role));
+			} else {
+				printf("UNKNOWN\n");
+			}
 			printf("	Card Num: %d\n", avatars_list[i]->cards_size);
 			printf("	Equipment: \n");
 			Equipment *eqi = avatars_list[i]->equipment;
-			if( eqi->gun != NULL) printf("Gun: %s\n", eqi->gun->name);
-			if( eqi->armour != NULL) printf("Armour: %s\n", eqi->armour->name);
-			if( eqi->horseMinus != NULL) printf("Horse: %s\n", eqi->horseMinus->name);
-			if( eqi->horsePlus != NULL) printf("Horse: %s\n",eqi->horsePlus->name);
-			if( eqi->bomb != NULL) printf("%s\n", eqi->bomb->name);
-			if( eqi->jail != NULL) printf("%s\n", eqi->jail->name);
+			if( eqi->gun != NULL) printf("		Gun: %s\n", eqi->gun->name);
+			if( eqi->armour != NULL) printf("		Armour: %s\n", eqi->armour->name);
+			if( eqi->horseMinus != NULL) printf("		Horse: %s\n", eqi->horseMinus->name);
+			if( eqi->horsePlus != NULL) printf("		Horse: %s\n",eqi->horsePlus->name);
+			if( eqi->bomb != NULL) printf("		%s\n", eqi->bomb->name);
+			if( eqi->jail != NULL) printf("		%s\n", eqi->jail->name);
 		}
 	}
 	return;

@@ -35,6 +35,7 @@ void Game_run(Game *this);
 
 void Game_exit(Game *this);
 
+void Game_checkWin(Game *this);
 
 int Game_findIndex(Game *this, Avatar *avatar);
 Avatar *Game_nextAvailableAvatar(Game *this, Avatar *avatar);

@@ -1,10 +1,12 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "player.h"
 #include "game.h"
 #include "card.h"
+#include "debug.h"
 
 static int computerCounter = 0;
 char *computer_askName() {
@@ -31,11 +33,48 @@ int *computer_chooseDrop(Player *this, Game *game, Card **cards, int cards_size,
 }
 
 int computer_selectUse(Player *this, Game *game, Card **cards, int cards_size, Player **target) {
-	return -1;
+	*target = NULL;
+	Avatar *avatar = game->avatars[Game_findIndex(game, this->avatar)];
+	avatar = Game_nextAvailableAvatar(game, avatar);
+	while ( avatar->id != this->avatar->id ) {
+
+		Role role = avatar->role;
+
+		switch ( this->avatar->role ) {
+		
+		case SHERIFF:
+		case DEPUTY:
+			if ( role != SHERIFF ) {
+				*target = avatar->player;
+			}
+			break;
+
+		case OUTLAW:
+			if ( role == SHERIFF ) {
+				*target = avatar->player;
+			}
+			break;
+
+		case RENEGADE:
+			if ( role != SHERIFF ) {
+				*target = avatar->player;
+			} else if ( *target == NULL ) {
+				*target = avatar->player;
+			}
+			break;
+
+		default:
+			ERROR_PRINT("Unknown role.\n");
+		}
+		avatar = Game_nextAvailableAvatar(game, avatar);
+		
+	}
+	return rand() % (cards_size+1) - 1;
 }
 
 int computer_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
-	return -1;
+	srand(time(0));
+	return rand() % (cards_size+1) - 1;
 }
 
 bool computer_useAbility(Player *this, Game *game) {

@@ -270,6 +270,7 @@ void Avatar_dead(Avatar *this, Game *game) {
 	//move dead people out
 	this->isDead = true;
 	game->numAvailablePlayer--;
+	Game_checkWin(game);
 	printf("%s is dead\n",this->player->username);
 }
 
