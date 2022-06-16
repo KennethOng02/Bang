@@ -107,6 +107,7 @@ int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s\n",user->player->username,card->name);
 	int list_size;
 	Card **list = Avatar_giveToChoose(target, &list_size);
+	DEBUG_PRINT("%s ,list generated Done\n",card->name);
 	int *choose = Avatar_choose(user,game,list,list_size,1);
 	if ( choose[0] < target->cards_size ) {
 		Avatar_get(user,game,Avatar_taken(target, game, choose[0]));
@@ -126,8 +127,10 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s\n",user->player->username,card->name);
 	int list_size;
 	Card **list = Avatar_giveToChoose(target, &list_size);
+	DEBUG_PRINT("%s ,list generated Done\n",card->name);
 	int *choose = Avatar_choose(user,game,list,list_size,1);
-	Card *trash;
+	DEBUG_PRINT("%s ,list choose Done\n",card->name);
+	Card* trash = calloc(1,sizeof(trash));
 	if ( choose[0] < target->cards_size ) {
 		trash = Avatar_taken(target, game, choose[0]);
 	} else {

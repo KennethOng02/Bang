@@ -243,7 +243,10 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 					WARNING_PRINT("The target you choose have no cards left!\n");
 					continue;
 				}else {
-					int *choose = Avatar_choose(this,game,target->cards,target->cards_size,1);
+					Card **list = malloc( target->cards_size * sizeof(Card *) );
+					memset(list, 0, target->cards_size * sizeof(Card *));
+					int *choose = Avatar_choose(this,game,list,target->cards_size,1);
+					
 					Avatar_get(this,game,Avatar_taken(target, game, choose[0]));
 					break;
 				}
@@ -529,7 +532,9 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 	}
 	if( attacker && this->character->id == El_Gringo && attacker->cards_size != 0) {
 		DEBUG_PRINT("%s hurt, using his ability.\n",this->player->username);
-		int *choose = Avatar_choose(this,game,attacker->cards,attacker->cards_size,1);
+		Card **list = malloc( attacker->cards_size * sizeof(Card *) );
+		memset(list, 0, attacker->cards_size * sizeof(Card *));
+		int *choose = Avatar_choose(this,game,list,attacker->cards_size,1);
 		Avatar_get(this,game,Avatar_taken(attacker,game,choose[0]));
 	}
 
@@ -604,7 +609,9 @@ void Avatar_draw(Avatar *this, Game *game){
 }
 
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num) {
+	DEBUG_PRINT("%s start to choose\n",this->player->username);
 	return Player_chooseTake( this->player, game, options, size, num );
+	
 }
 
 void Avatar_get(Avatar *this, Game *game, Card *want){

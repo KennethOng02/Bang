@@ -165,8 +165,11 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		int counter = 0;
 		printf("Your choice(s) is:\n");
 		for ( int i=0; i<cards_size; i++ ) {
-			if ( wanted[i] ) {
+			if ( wanted[i] && cards[i]) {
 				printf("	%d. %s\n", counter+1, cards[i]->name);
+				choices[counter++] = i;
+			}else if ( wanted[i] ) {
+				printf("	NO.%d card\n",i+1);
 				choices[counter++] = i;
 			}
 		}
