@@ -231,6 +231,7 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 	switch(card->id) {
 		
 	case CARD_BANG:
+		return true;
 		break;
 		
 	case CARD_MISS:

@@ -101,6 +101,8 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		printf("Enter '%sq%s' to quit\n", GRN, reset);
 		interface_printCards(cards, cards_size);
 
+		scanf("%*[ \t\n]");
+		
 		if ( fgets(buffer, bufSize, stdin) == NULL ) {
 			clearerr(stdin);
 			continue;
@@ -272,6 +274,12 @@ char *print_role(Role role) {
 
 void interface_playerInfo(Game *gametmp, Player* self) {
 	Game *game = Game_queryInfo(self);
+	Avatar *selfAvatar;
+	for ( int i=0; i<game->numAvatar; i++ ) {
+		if ( game->avatars[i]->id == self->id ) {
+			selfAvatar = game->avatars[i];
+		}
+	}
 	Avatar **avatars_list = game->avatars;
 	printf("%d\n", game->numAvatar);
 	printf(MAG"---Player Info---\n"reset);	
@@ -305,6 +313,7 @@ void interface_playerInfo(Game *gametmp, Player* self) {
 			if( eqi->horsePlus != NULL) printf("		Horse: %s\n",eqi->horsePlus->name);
 			if( eqi->bomb != NULL) printf("		%s\n", eqi->bomb->name);
 			if( eqi->jail != NULL) printf("		%s\n", eqi->jail->name);
+			printf("	Distance: %d\n", Avatar_calcDist(game, selfAvatar, avatars_list[i]));
 		}
 	}
 	Game_freeCopy(game);
