@@ -315,8 +315,8 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 		return target->equipment->jail == NULL;
 
 	case CARD_DYNAMITE:
-		if ( target->equipment->bomb != NULL ) WARNING_PRINT("You has dynamite already.\n");
-		return target->equipment->bomb == NULL;
+		if ( user->equipment->bomb != NULL ) WARNING_PRINT("You has dynamite already.\n");
+		return user->equipment->bomb == NULL;
 	
 	default:
 		ERROR_PRINT("Unknown cara.\n");
