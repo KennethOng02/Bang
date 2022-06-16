@@ -156,25 +156,25 @@ void Avatar_onTurn(Avatar *this, Game *game)  {
 	Avatar_onJudge(this, game, &jailed);
 	if ( jailed ) return;
 
-	/* sleep(1); */
+	sleep(1);
 	interface_erase();
 	interface_draw(this->player->username, game);
 
 	Avatar_onDraw(this, game);
 
-	/* sleep(1); */
+	sleep(1);
 	interface_erase();
 	interface_draw(this->player->username, game);
 
 	Avatar_onPlay(this, game);
 	
-	/* sleep(1); */
+	sleep(1);
 	interface_erase();
 	interface_draw(this->player->username, game);
 
 	Avatar_onDump(this, game);
 
-	/* sleep(1); */
+	sleep(1);
 	interface_erase();
 	interface_draw(this->player->username, game);
 }

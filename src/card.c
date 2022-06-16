@@ -44,94 +44,103 @@ void Card_free(Card *this) {
 
 
 int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card) {
-	printf("%s use BANG! to %s,",user->player->username,target->player->username);
+	wprintw(messgWin, "%s use BANG! to %s,",user->player->username,target->player->username);
+	wrefresh(messgWin);
 	if( Avatar_onReact(target, game, CARD_MISS, card ) == -1 ) {
-		printf("%s do not have MISS,",target->player->username);
+		wprintw(messgWin, "%s do not have MISS,",target->player->username);
 		Avatar_hurt(target, game, user);
 	}else {
 		if( user->character->id == Slab_the_Killer ) {
-			printf("Because %s's ability,you need another MISSED!\n",user->player->username);
+			wprintw(messgWin, "Because %s's ability,you need another MISSED!\n",user->player->username);
 			if( Avatar_onReact(target, game, CARD_MISS, card ) == -1 ) {
-				printf("%s do not have another MISS,",target->player->username);
+				wprintw(messgWin, "%s do not have another MISS,",target->player->username);
 				Avatar_hurt(target, game, user);
 			}else {
-				printf("but he missed!\n");
+				wprintw(messgWin, "but he missed!\n");
 			}
 		}else {
-			printf("but he missed!\n");
+			wprintw(messgWin, "but he missed!\n");
 		}
 	}
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return -1;
 }
 int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) {
-	printf("%s use %s,",user->player->username,card->name);
+	wprintw(messgWin, "%s use %s,",user->player->username,card->name);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
 		if( Avatar_onReact( next, game, CARD_MISS, card ) == -1 ) 
 		{
-			printf("%s do not react with MISSED!,",next->player->username);
+			wprintw(messgWin, "%s do not react with MISSED!,",next->player->username);
 			Avatar_hurt(next, game, user);	
 		}
 		else
 		{
-			printf("%s react with MISSED!,nothing happened.\n",next->player->username);
+			wprintw(messgWin, "%s react with MISSED!,nothing happened.\n",next->player->username);
 		}
 		next = Game_nextAvailableAvatar(next);
 	}
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) {
-	printf("%s use %s,",user->player->username,card->name);
+	wprintw(messgWin, "%s use %s,",user->player->username,card->name);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
 		if( Avatar_onReact( next, game, CARD_BANG, card ) == -1 ) 
 		{
-			printf("%s do not react with BANG!,",next->player->username);
+			wprintw(messgWin, "%s do not react with BANG!,",next->player->username);
 			Avatar_hurt(next, game, user);	
 		}
 		else
 		{
-			printf("%s react with BANG!,nothing happened.\n",next->player->username);
+			wprintw(messgWin, "%s react with BANG!,nothing happened.\n",next->player->username);
 		}
 		next = Game_nextAvailableAvatar(next);
 	}
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
-	printf("%s use %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s use %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	int *choose = Avatar_choose(user,game,target->cards,target->cards_size,1);
 	Avatar_get(user,game,Avatar_taken(target, game, choose[0]));
 	return 0;
 }
 int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
-	printf("%s use %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s use %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	int *choose = Avatar_choose(user,game,target->cards,target->cards_size,1);
 	Card* trash = Avatar_taken(target,game,choose[0]);
 	Deck_put(game->discardPile,trash);
 	return 0;
 }
 int play_CARD_STAGECOACH(Avatar * user, Avatar * target, Game * game, Card * card) {
-	printf("%s use %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s use %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	Avatar_draw(user,game);
 	Avatar_draw(user,game);
 	return 0;
 }
 int play_CARD_FARGO(Avatar * user, Avatar * target, Game * game, Card * card) {
-	printf("%s use %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s use %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	Avatar_draw(user,game);
 	Avatar_draw(user,game);
 	Avatar_draw(user,game);
 	return 0;
 }
 int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
-	printf("%s use %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s use %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	Avatar* next = user;
 	Card** options = calloc(4,sizeof(Card));
 	int* choose = calloc(4,1);
@@ -151,39 +160,47 @@ int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return 0;
 }
 int play_CARD_BEER(Avatar * user, Avatar * target, Game * game, Card * card) {
-	printf("%s use %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s use %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	Avatar_heal(user, game);
 	return 0;
 }
 int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card) {
-	printf("%s use %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s use %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	Avatar* next = user;
 	do {
 		if( next->hp != next->hp_max) {
 			Avatar_heal(next,game);
 		}
 		else {
-			printf("%s hp is max\n",next->player->username);
+			wprintw(messgWin, "%s hp is max\n",next->player->username);
+			wrefresh(messgWin);
 		}
 		next = Game_nextAvailableAvatar(next);
 	}while(next->id != user->id);
 	return 0;
 }
 int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card) {
-	printf("%s use %s to %s\n",user->player->username,card->name,target->player->username);
+	wprintw(messgWin, "%s use %s to %s\n",user->player->username,card->name,target->player->username);
+	wrefresh(messgWin);
 	while(1) {
 		if( Avatar_onReact(target, game, CARD_BANG, card) == -1) {
-			printf("%s lose the duel,",target->player->username);
+			wprintw(messgWin, "%s lose the duel,",target->player->username);
+			wrefresh(messgWin);
 			Avatar_hurt(target, game, user);
 			return 0;
 		}else {
-			printf("%s has a Bang!\n",target->player->username);
+			wprintw(messgWin, "%s has a Bang!\n",target->player->username);
+			wrefresh(messgWin);
 			if( Avatar_onReact(user, game, CARD_BANG, card) == -1) {
-				printf("%s lose the duel,",user->player->username);
+				wprintw(messgWin, "%s lose the duel,",user->player->username);
+				wrefresh(messgWin);
 				Avatar_hurt(user, game, target);
 				return 0;
 			}else {
-				printf("%s has a Bang!\n",user->player->username);
+				wprintw(messgWin, "%s has a Bang!\n",user->player->username);
+				wrefresh(messgWin);
 				continue;
 			}
 		}
@@ -192,51 +209,61 @@ int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_BARREL(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	printf("%s equipped the %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s equipped the %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_SCOPE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	printf("%s equipped the %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s equipped the %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_MUSTANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	printf("%s equipped the %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s equipped the %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_VOLCANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	printf("%s equipped the %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s equipped the %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_SCHOFIELD(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	printf("%s equipped the %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s equipped the %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_REMINGTON(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	printf("%s equipped the %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s equipped the %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_CARABINE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	printf("%s equipped the %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s equipped the %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_WINCHEDTER(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	printf("%s equipped the %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s equipped the %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_JAIL(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( target, game, card );
-	printf("%s use %s to %s\n",user->player->username,card->name,target->player->username);
+	wprintw(messgWin, "%s use %s to %s\n",user->player->username,card->name,target->player->username);
+	wrefresh(messgWin);
 	return 0;
 }
 int play_CARD_DYNAMITE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	printf("%s use a %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s use a %s\n",user->player->username,card->name);
+	wrefresh(messgWin);
 	return 0;
 }
