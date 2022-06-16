@@ -218,8 +218,16 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 		Avatar* target = Game_nextAvailableAvatar(this);
 		while(1) {
 			if( Player_useAbility(this->player,game) == true) {
-				targetp = Player_selectTarget(this->player,game);
-				do {
+				while(1) {
+					targetp = Player_selectTarget(this->player,game);
+					if(targetp->id == this->id) {
+						WARNING_PRINT("You can't choose yourself!\n");
+						continue;
+					}else {
+						break;
+					}
+				}
+			do {
 					if(targetp->id == target->id) {
 						break;
 					}
@@ -336,24 +344,19 @@ void Avatar_onDump(Avatar *this, Game *game) {
 }
 
 int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
-	// TODO: Character ability - Calamity Janet
 	// fin TODO: Character ability - Jourdonnais
 	// fin TODO: Equipment - Barrel 
 	// TODO: Character ability - Sid Ketchum
-	if((this->equipment->armour != NULL || this->character->id == Jourdonnais) && to_react->id == CARD_BANG) {
-		if( Avatar_judge(this,game,CARD_BARREL) == 0) {
-			DEBUG_PRINT("is heart ! MISSED!\n");
-			return 0;
-		}else {
-			DEBUG_PRINT("OH no is not a heart\n");
-		}
+	if(this->equipment->armour != NULL || this->character->id == Jourdonnais) {
+		if( Avatar_judge(this,game,CARD_BARREL) == 0)return 0;
 	}
 	while(1) {
 		int react = Player_selectReact(this->player, game, this->cards, this->cards_size);
 		if ( react == -1) {
 			return -1;
 		}else {
-			if( this->cards[react]->id == card_id ) {
+			Card *reactCard = this->cards[react];
+			if( reactCard->id == card_id ) {
 				Deck_put(game->discardPile, Avatar_taken(this, game, react));
 				return 0;
 			} else if ( this->character->id == Calamity_Janet && 
