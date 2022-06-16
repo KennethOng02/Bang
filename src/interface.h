@@ -42,8 +42,6 @@ bool interface_useAbility(Player *this, Game *game);
 
 void interface_printCards(Card **cards, int cards_size);
 
-void interface_menu(Game *game, Player *self);
-
 char *print_role(Role role);
 
 void interface_playerInfo(Game *game, Player *self);

@@ -194,13 +194,13 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		/* } */
 		getstr(buffer);
 
-		if ( strcmp(buffer, "i") == 0 ) {
+		/* if ( strcmp(buffer, "i") == 0 ) { */
 			// TODO: Switch to game menu
-			DEBUG_PRINT("This feature is fully implemented yet.\n");
-			clear();
-			interface_menu(game, this);
-			continue;
-		}
+			/* DEBUG_PRINT("This feature is fully implemented yet.\n"); */
+			/* clear(); */
+			/* interface_menu(game, this); */
+			/* continue; */
+		/* } */
 
 		if ( strcmp(buffer, "q") == 0 ) {
 			if(interface_yesOrNo()) {
@@ -275,9 +275,8 @@ int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 	/* snprintf(buffer, bufSize, "Please choose %d cards from following list.", n); */
-	int y, x;
-	getyx(inputWin, y, x);
-	mvwprintw(inputWin, y, x, "Please choose %d cards from following list.", n);
+	interface_erase();
+	mvwprintw(inputWin, 2, 1, "Please choose %d cards from following list.", n);
 	wrefresh(inputWin);
 	return interface_choose(this, game, cards, cards_size, n, buffer, false);
 }
@@ -313,13 +312,17 @@ Player *interface_selectTarget(Player *this, Game *game) {
 	interface_erase();
 	interface_draw(this->username, game);
 	wmove(inputWin, 1, 1);
-	wprintw(inputWin, "Please choose which player as target.\n");
+	wprintw(inputWin, "Please choose which player as target.");
+	wmove(inputWin, 2, 1);
 	int counter = 1;
+	int y, x;
 	for(int i = 0; i < game->numAvatar; i++) {
 		if ( game->avatars[i]->isDead ) {
 			continue;
 		}
-		wprintw(inputWin, "%d) Player %d (%s) %s\n", counter, game->avatars[i]->id, game->avatars[i]->player->username, game->avatars[i]->role == SHERIFF ? "(SHERIFF)" : "");
+		wprintw(inputWin, "%d) Player %d (%s) %s", counter, game->avatars[i]->id, game->avatars[i]->player->username, game->avatars[i]->role == SHERIFF ? "(SHERIFF)" : "");
+		getyx(inputWin, y, x);
+		wmove(inputWin, y + 1, 1);
 		counter++;
 	}
 	wrefresh(inputWin);
@@ -358,12 +361,6 @@ bool interface_useAbility(Player *this, Game *game) {
 	wprintw(inputWin, "Do you want to use your characteristic ability?\n");
 	wrefresh(inputWin);
 	return interface_yesOrNo();
-}
-
-void interface_menu(Game *game, Player *self) {
-	interface_playerInfo(game, self);
-	/* interface_discardedPileInfo(game->avatars); */
-	return;
 }
 
 char *print_role(Role role) {
@@ -453,8 +450,9 @@ void interface_drawInput(Avatar *avatar) {
 
 	inputWin = newwin(10, xMax / 3 * 2, yMax - 10, 0);
 	box(inputWin, 0, 0);
+	int xInput = getmaxx(inputWin);
 	mvwprintw(inputWin, 0, 2, "%s-(%s)-(%s)-HP(%d)", avatar->player->username, print_role(avatar->role), avatar->character->name, avatar->hp);
-	mvwprintw(inputWin, 0, xMax - 25, "[0]pass--[q]quit");
+	mvwprintw(inputWin, 0, xInput - 30, "[0]pass--[q]quit");
 
 	wmove(inputWin, 1, 1);
 	refresh();
@@ -502,6 +500,7 @@ void interface_printPlayerInfoVertical(WINDOW *win, Avatar *avatar, int x) {
 	mvwprintw(win, y, x, "%s", avatar->player->username);
 	mvwprintw(win, y + 1, x, "(%s) (%s)", avatar->role == SHERIFF ? "SHERIFF" : "UNKNOWN", avatar->character->name);
 	mvwprintw(win, y + 2, x, "HP(%d)", avatar->hp);
+	wmove(win, y + 3, x);
 
 	return;
 }
@@ -544,10 +543,6 @@ void interface_draw(char *username, Game *game) {
 }
 
 void interface_erase() {
-	/* werase(boardWin); */
-	/* werase(inputWin); */
-	/* werase(messgWin); */
-	/* erase(); */
 	wmove(inputWin, 1, 1);
 	wclrtobot(inputWin);
 
