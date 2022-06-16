@@ -225,8 +225,8 @@ Player *interface_selectTarget(Player *this, Game *game) {
 			WARNING_PRINT("Please enter an integer.\n");
 			continue;
 		}
-		if(choice < 1 && choice >= game->numAvailableAvatar) {
-			WARNING_PRINT("Please input within range 1 to %d\n", game->numAvatar);
+		if(choice < 1 || choice > game->numAvailableAvatar) {
+			WARNING_PRINT("Please input within range 1 to %d\n", game->numAvailableAvatar);
 			continue;
 		}
 		break;
