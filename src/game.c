@@ -9,6 +9,8 @@
 #include "game.h"
 #include "player.h"
 #include "interface.h"
+#include "cardid.h"
+#include "characterid.h"
 
 static Game * game;
 
@@ -202,4 +204,121 @@ Game *Game_queryInfo( Player *player ) {
 		}
 	}
 	return copy;
+}
+
+bool validPlay(Avatar *user, Avatar *target, Card *card) {
+
+	if ( target && target->isDead ) {
+		WARNING_PRINT("Cannot play %s on dead player.\n", card->name);
+		return false;
+	}
+	if ( card->type != CARD_DIST_NON ) {
+		if ( target == NULL ) {
+			WARNING_PRINT("No target when playing %s.\n", card->name);
+			return false;
+		} else if ( target->id == user->id ) {
+			WARNING_PRINT("Cannot play %s on self.\n", card->name);
+			return false;
+		} else if ( card->type == CARD_DIST_ONE && Avatar_calcDist(game, user, target) > 1 ) {
+			WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, user->player->username);
+			return false;
+		} else if ( card->type == CARD_DIST_VISION && Avatar_calcDist(game, user, target) > Avatar_calcVision(user) ) {
+			WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, user->player->username);
+			return false;
+		}
+	}
+
+	switch(card->id) {
+		
+	case CARD_BANG:
+		break;
+		
+	case CARD_MISS:
+		if ( user->character->id == Calamity_Janet ) {
+			return true;
+		} else {
+			WARNING_PRINT("Cannot play MISS in your turn.\n");
+			return false;
+		}
+		
+	case CARD_GATLING:
+	case CARD_INDIANS:
+		return true;
+
+	case CARD_PANIC:
+	case CARD_BALOU:
+		if ( target->cards_size == 0 ) {
+			if ( target->equipment->gun == NULL ) {
+				if ( target->equipment->armour == NULL ) {
+					if ( target->equipment->horsePlus == NULL ) {
+						if ( target->equipment->horseMinus == NULL ) {
+							if ( target->equipment->jail == NULL ) {
+								if ( target->equipment->bomb == NULL ) {
+									WARNING_PRINT("He is so poor, don't do that.\n");
+									return false;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return true;
+
+	case CARD_STAGECOACH:
+	case CARD_FARGO:
+	case CARD_STORE:
+		return true;
+
+	case CARD_BEER:
+		if( game->numAvailableAvatar <= 2) {
+			WARNING_PRINT("You can't use beer when only two player left!\n");
+			return false;
+		}
+		if ( user->hp == user->hp_max ) {
+			WARNING_PRINT("Your hp is max.\n");
+			return false;
+		}
+		return true;
+
+	case CARD_SALOON: {
+		bool valid = false;
+		for ( int i=0; i<game->numAvatar; i++ ) {
+			if ( !game->avatars[i]->isDead && game->avatars[i]->hp != game->avatars[i]->hp_max ) {
+				valid = true;
+			}
+		}
+		if ( !valid ) WARNING_PRINT("Everyone has max hp.\n");
+		return valid;
+	}
+	
+	case CARD_DUEL:
+		return true;
+
+	case CARD_BARREL:
+	case CARD_SCOPE:
+	case CARD_MUSTANG:
+	case CARD_VOLCANIC:
+	case CARD_SCHOFIELD:
+	case CARD_REMINGTON:
+	case CARD_CARABINE:
+	case CARD_WINCHEDTER:
+		return true;
+
+	case CARD_JAIL:
+		if ( target->role == SHERIFF ) {
+			WARNING_PRINT("You can not use jail to sheriff!\n");
+			return false;
+		}
+		if ( target->equipment->jail != NULL ) WARNING_PRINT("He has jail already.\n");
+		return target->equipment->jail == NULL;
+
+	case CARD_DYNAMITE:
+		if ( target->equipment->bomb != NULL ) WARNING_PRINT("You has dynamite already.\n");
+		return target->equipment->bomb == NULL;
+	
+	default:
+		ERROR_PRINT("Unknown cara.\n");
+	}
+	return false;
 }
