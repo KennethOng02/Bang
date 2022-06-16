@@ -11,6 +11,8 @@ WINDOW *boardWin;
 WINDOW *inputWin;
 WINDOW *messgWin;
 
+void moveCurDown(WINDOW *win);
+
 void interface_printCenter(WINDOW *win, int start_row, char *str);
 
 char *interface_askName();

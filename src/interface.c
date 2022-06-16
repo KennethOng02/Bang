@@ -46,6 +46,13 @@
 /* 	} */
 /* 	return name; */
 /* } */
+void moveCurDown(WINDOW *win) {
+	int y, x;
+	getyx(win, y, x);
+	wmove(win, y + 1, 1);
+	return;
+}
+
 char *interface_askName() {
 	int maxY, maxX;
 	getmaxyx(stdscr, maxY, maxX);
@@ -123,10 +130,10 @@ void interface_printCards(Card **cards, int cards_size) {
 		if ( cards[i] ) {
 			wprintw(inputWin, "%s ", cards[i]->name);
 		} else {
-			wprintw(inputWin, "UNKNOWN\n");
+			wprintw(inputWin, "UNKNOWN");
 		}
 	}
-	wmove(inputWin, 2, 1);
+	moveCurDown(inputWin);
 	wrefresh(inputWin);
 	return;
 }
@@ -180,7 +187,8 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		
 		memset(wanted, false, cards_size * sizeof(bool));
 
-		wprintw(messgWin, "%s\n", msg);
+		wprintw(messgWin, "%s", msg);
+		moveCurDown(messgWin);
 		/* if ( notChoose ) wprintw(messgWin, "Enter '0' to pass.\n"); */
 		/* wprintw(messgWin, "Enter 'i' to check other game info.\n"); */
 		/* wprintw(messgWin, "Enter 'q' to quit\n"); */
@@ -277,6 +285,7 @@ int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size
 	char *buffer = malloc(bufSize);
 	/* snprintf(buffer, bufSize, "Please choose %d cards from following list.", n); */
 	interface_erase();
+	interface_draw(this->username, game);
 	mvwprintw(inputWin, 2, 1, "Please choose %d cards from following list.", n);
 	wrefresh(inputWin);
 	return interface_choose(this, game, cards, cards_size, n, buffer, false);
