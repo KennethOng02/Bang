@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-// #include <ncurses.h>
+#include <ncurses.h>
 
 #include "game.h"
 #include "player.h"

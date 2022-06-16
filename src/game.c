@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <ncurses.h>
 #include "debug.h"
 #include "mylib.h"
 #include "avatar.h"
@@ -15,6 +16,13 @@
 static Game * game;
 
 void Game_init(int numAvatar) {
+
+	initscr();
+	cbreak();
+	keypad(stdscr, TRUE);
+	mouseinterval(0);
+	scrollok(stdscr, TRUE);
+	
 	interface_welcome();
 
 	game = malloc(sizeof(Game));
@@ -106,6 +114,7 @@ void Game_run() {
 
 	DEBUG_PRINT("Stating game loop\n");
 	while ( 1 ) {
+		interface_draw(curAvatar->player->username, game);
 		Avatar_onTurn(curAvatar, game);
 		DEBUG_PRINT("Avatar %d's turn finish.\n", curAvatar->id);
 		curAvatar = Game_nextAvailableAvatar(curAvatar);
@@ -113,8 +122,8 @@ void Game_run() {
 }
 
 void Game_exit() {
-	puts(GRN"---Exit BANG---"reset);
 	Game_free();
+	endwin();
 	exit(0);
 	return;
 }
@@ -172,15 +181,15 @@ void Game_checkWin() {
 	}
 	if ( sheriff->isDead ) {
 		if ( teamOutlaw ) {
-			printf("Outlaws win!\n");
+			printw("Outlaws win!\n");
 			Game_exit();
 		} else if ( teamRenegade && !teamSheriff ) {
-			printf("Renegade wins!\n");
+			printw("Renegade wins!\n");
 			Game_exit();
 		}
 	}
 	if ( !teamOutlaw && !teamRenegade ) {
-		printf("Sheriff wins!\n");
+		printw("Sheriff wins!\n");
 		Game_exit();
 	}
 }

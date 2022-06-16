@@ -15,17 +15,17 @@ run:
 	./bin/main
 
 cardid: mylib.o 
-	gcc src/cardid_generator.c bin/mylib.o -o bin/cardid_generator
+	gcc src/cardid_generator.c bin/mylib.o -lncurses -o bin/cardid_generator
 	./bin/cardid_generator
 
 characterid: mylib.o
-	gcc src/characterid_generator.c bin/mylib.o -o bin/characterid_generator
+	gcc src/characterid_generator.c bin/mylib.o -lncurses -o bin/characterid_generator
 	./bin/characterid_generator
 
 debug: $(debug_dependency)
 	make cardid
 	make characterid
-	gcc -D__DEBUG__ src/main.c $(debug_dependency_path) -o bin/main
+	gcc -D__DEBUG__ src/main.c $(debug_dependency_path) -lncurses -o bin/main
 
 %.o: src/%.c
 	gcc -c $< -o ./bin/$@

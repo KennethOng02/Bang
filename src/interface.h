@@ -1,10 +1,17 @@
 #pragma once
 
 #include <stdbool.h>
+#include <ncurses.h>
 
 #include "player.h"
 #include "game.h"
 #include "card.h"
+
+WINDOW *boardWin;
+WINDOW *inputWin;
+WINDOW *messgWin;
+
+void interface_printCenter(WINDOW *win, int start_row, char *str);
 
 char *interface_askName();
 
@@ -40,3 +47,8 @@ void interface_menu(Game *game, Player *self);
 char *print_role(Role role);
 
 void interface_playerInfo(Game *game, Player *self);
+void interface_drawMessg();
+void interface_drawInput(Avatar *avatar);
+void interface_drawBoard(char *username);
+void interface_draw(char *username, Game *game);
+void interface_erase();

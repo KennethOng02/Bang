@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ncurses.h>
+#include <unistd.h>
 
 #include "avatar.h"
 #include "debug.h"
@@ -148,15 +150,33 @@ void Avatar_onTurn(Avatar *this, Game *game)  {
 
 	DEBUG_PRINT("Avatar %d's turn.\n", this->id);
 
+	interface_draw(this->player->username, game);
+
 	bool jailed = false;
 	Avatar_onJudge(this, game, &jailed);
 	if ( jailed ) return;
 
+	/* sleep(1); */
+	interface_erase();
+	interface_draw(this->player->username, game);
+
 	Avatar_onDraw(this, game);
+
+	/* sleep(1); */
+	interface_erase();
+	interface_draw(this->player->username, game);
 
 	Avatar_onPlay(this, game);
 	
+	/* sleep(1); */
+	interface_erase();
+	interface_draw(this->player->username, game);
+
 	Avatar_onDump(this, game);
+
+	/* sleep(1); */
+	interface_erase();
+	interface_draw(this->player->username, game);
 }
 	
 
@@ -490,14 +510,14 @@ void Avatar_dead(Avatar *this, Game *game) {
 	this->isDead = true;
 	game->numAvailableAvatar--;
 	Game_checkWin(game);
-	printf("%s is dead\n",this->player->username);
+	wprintw(messgWin, "%s is dead\n",this->player->username);
 }
 
 void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 	// TODO: Character ability - Bart Cassidy 
 	// TODO: Character ability - El Gringoy
 	this->hp -- ;
-	printf("%s's hp -1\n",this->player->username);
+	wprintw(messgWin, "%s's hp -1\n",this->player->username);
 	if( this->character->id == Bart_Cassidy) {
 		DEBUG_PRINT("%s hurt, using his aility.\n",this->player->username);
 		Avatar_draw(this,game);
@@ -508,12 +528,12 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 		Avatar_get(this,game,Avatar_taken(attacker,game,choose[0]));
 	}
 	if(this->hp == 0) {
-		printf("Oh no %s's hp equal 0,",this->player->username);
+		wprintw(messgWin, "Oh no %s's hp equal 0,",this->player->username);
 		if( Avatar_onReact(this, game, CARD_BEER, NULL) == -1 || game->numAvailableAvatar <= 2) {
 			Avatar_dead(this, game);
 		}else {
 			this->hp ++ ;
-			printf("but he use beer to heal himself\n");
+			wprintw(messgWin, "but he use beer to heal himself\n");
 		}
 	}
 
@@ -523,7 +543,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 
 void Avatar_heal(Avatar *this, Game *game){
 	this->hp ++;
-	printf("%s's hp +1\n",this->player->username);
+	wprintw(messgWin, "%s's hp +1\n",this->player->username);
 	DEBUG_PRINT("Avatar %d heal.\n", this->id);
 	return;
 }
@@ -606,7 +626,7 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 	this->cards_size -- ;
 	if( this->character->id == Suzy_Lafayette && this->cards_size == 0) {
 		Avatar_draw(this,game);
-		printf("%s have no card! Using his ability.\n",this->player->username);
+		wprintw(messgWin, "%s have no card! Using his ability.\n",this->player->username);
 	}
 	DEBUG_PRINT("Avatar %d's card: %s had been taken.\n", this->id , bye->name );
 	return bye;

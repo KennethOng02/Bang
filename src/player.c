@@ -14,16 +14,17 @@ Player *Player_init(int id) {
 	Player *new = malloc(sizeof(Player));
 
 	new->id = id;
-	printf("Player %d is computer?\n", new->id);
+	/* printf("Player %d is computer?\n", new->id); */
 
-	new->isComputer = interface_yesOrNo();
+	/* new->isComputer = interface_yesOrNo(); */
+	new->isComputer = id == 1 ? 0: 1;
 
 	char *username;
 	if(!new->isComputer) {
-		printf("---Player %d---\n", new->id);
+		/* printf("---Player %d---\n", new->id); */
 		username = interface_askName();
 	}else {
-		printf("Player %d automatically generated...\n", new->id);
+		/* printf("Player %d automatically generated...\n", new->id); */
 		username = computer_askName();
 	}
 	new->username = malloc(strlen(username)+1);
