@@ -5,6 +5,7 @@
 #include "debug.h"
 #include "avatar.h"
 #include "cardid.h"
+#include "characterid.h"
 
 Card *Card_init(const int id, const char *name, const int type, const int suit, int (*fun)(Avatar *, Avatar *, Game *, Card *)) {
 	// TODO: card -> play
@@ -48,7 +49,17 @@ int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 		printf("%s do not have MISS,",target->player->username);
 		Avatar_hurt(target, game, user);
 	}else {
-		printf("but he missed!\n");
+		if( user->character->id == Slab_the_Killer ) {
+			printf("Because %s's ability,you need another MISSED!\n",user->player->username);
+			if( Avatar_onReact(target, game, CARD_MISS, card ) == -1 ) {
+				printf("%s do not have another MISS,",target->player->username);
+				Avatar_hurt(target, game, user);
+			}else {
+				printf("but he missed!\n");
+			}
+		}else {
+			printf("but he missed!\n");
+		}
 	}
 	return 0;
 }

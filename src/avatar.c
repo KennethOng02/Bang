@@ -201,48 +201,96 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 	// TODO: Character ability - Pedro Ramirez
 	if(this->character->id == Black_Jack) {
 		Avatar_draw(this, game);
-		Card* card = Deck_draw(game->deck);
-		int suit = card->id ;
-		while(1) {
+		Card* card = calloc(1,sizeof(Card));
+		
+			card = Deck_draw(game->deck);
 			Avatar_get(this,game,card);
 			DEBUG_PRINT("%s using his ability, the card he draw is %s,and the suit is %d,",this->player->username,card->name,card->suit);
-			if ( suit >= 13 && suit <= 38 ) {
+			if ( card->suit >= 13 && card->suit <= 38 ) {
 				DEBUG_PRINT("he can draw onemore card!\n");
+				Avatar_draw(this,game);
 			}else {
-				DEBUG_PRINT("so sad stop at here\n");
-				break ;
+				DEBUG_PRINT("so sad, nope!\n");
 			}
-			card = Deck_draw(game->deck);
-			suit = card->id ;
-		}
 	}
-	if( this->character->id == Jesse_Jones) {
-		if( Player_useAbility(this->player,game) == true) {
-			
+	else if( this->character->id == Jesse_Jones) {
+		Player* targetp = calloc(1,sizeof(Player));
+		Avatar* target = Game_nextAvailableAvatar(this);
+		while(1) {
+			if( Player_useAbility(this->player,game) == true) {
+				targetp = Player_selectTarget(this->player,game);
+				do {
+					if(targetp->id == target->id) {
+						break;
+					}
+					target = Game_nextAvailableAvatar(target);
+				}while( target->id != this->id);
+				if(target->cards_size == 0 && target->equipment->armour == NULL && target->equipment->bomb == NULL && target->equipment->gun == NULL && target->equipment->horseMinus == NULL && target->equipment->horsePlus == NULL && target->equipment->jail == NULL) {
+					WARNING_PRINT("The target you choose have no cards left!\n");
+					continue;
+				}else {
+					int *choose = Avatar_choose(this,game,target->cards,target->cards_size,1);
+					Avatar_get(this,game,Avatar_taken(target, game, choose[0]));
+					break;
+				}
+			}else {
+				Avatar_draw(this,game);
+				break;
+			}
 		}
+		Avatar_draw(this,game);
 	}
-	if( this->character->id == Pedro_Ramirez && game->discardPile->top >= 0) {
+	else if( this->character->id == Pedro_Ramirez && game->discardPile->top >= 0) {
 		if( Player_useAbility(this->player,game) == true) {
 			Avatar_get(this,game,Deck_draw(game->discardPile));
 		}else {
 			Avatar_draw(this,game);
 		}
+		Avatar_draw(this,game);
 	}
-	
+	else if( this->character->id == Kit_Carlson) {
+		Card **options = calloc(3,sizeof(Card));
+		int* choosen = calloc(2,sizeof(int));
+		for(int i = 0; i<3 ; i++) {
+			options[i] = Deck_draw(game->deck);
+		}
+		choosen = Avatar_choose(this,game,options,3,2);
+		for(int i = 0; i<3 ; i++) {
+			if ( i != choosen[0] && i != choosen[1]) {
+				Deck_put(game->deck,options[i]);
+			}else {
+				Avatar_get(this,game,options[i]);
+			}
+		}
+	}
+	else {
+		Avatar_draw(this,game);
+		Avatar_draw(this,game);
+	}
 }
+	
 
 void Avatar_onPlay(Avatar *this, Game *game) {
-	// TODO: implimentation
 	int retIdx;
-	Player *tarPlayer = NULL;
 	bool banged = false;
-	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size, &tarPlayer) ) != -1 ) {
+	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size) ) != -1 ) {
+
 		DEBUG_PRINT("Player %s want to use card \"%s\".\n", this->player->username, this->cards[retIdx]->name);
+
+		Card *card = this->cards[retIdx];
+		if ( this->character->id == Calamity_Janet && card->id == CARD_MISS ) {
+			card -> type = CARD_DIST_VISION;
+			card -> play = &play_CARD_BANG;
+		}
+
+		Player *tarPlayer = NULL;
+		if ( card->type != CARD_DIST_NON ) {
+			tarPlayer = Player_selectTarget(this->player, game);
+		}
 
 		bool valid = true;
 		Avatar *tar = tarPlayer ? game->avatars[tarPlayer->id-1] : NULL;
 
-		Card *card = this->cards[retIdx];
 
 		for( int i = retIdx ; i < this->cards_size - 1 ; i++ ){
 			this->cards[i] = this->cards[i + 1];
@@ -276,6 +324,8 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			valid = false;
 			}
 		}
+
+		DEBUG_PRINT("Finish checking validation: %d\n", valid);
 		
 		if ( valid ) {
 			if ( card->play(this, tar, game, card) == -1 ) {
@@ -292,6 +342,10 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 				Deck_put(game->discardPile, card);
 			}
 		} else {
+			if ( this->character->id == Calamity_Janet && card->id == CARD_MISS ) {
+				card -> type = CARD_DIST_NON;
+				card -> play = &play_CARD_MISS;
+			}
 			for( int i = this->cards_size-1 ; i >= retIdx ; i-- ){
 				this->cards[i+1] = this->cards[i];
 			}
@@ -318,8 +372,13 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 	// fin TODO: Character ability - Jourdonnais
 	// fin TODO: Equipment - Barrel 
 	// TODO: Character ability - Sid Ketchum
-	if(this->equipment->armour != NULL || this->character->id == Jourdonnais) {
-		if( Avatar_judge(this,game,CARD_BARREL) == 0)return 0;
+	if((this->equipment->armour != NULL || this->character->id == Jourdonnais) && to_react->id == CARD_BANG) {
+		if( Avatar_judge(this,game,CARD_BARREL) == 0) {
+			DEBUG_PRINT("is heart ! MISSED!\n");
+			return 0;
+		}else {
+			DEBUG_PRINT("OH no is not a heart\n");
+		}
 	}
 	while(1) {
 		int react = Player_selectReact(this->player, game, this->cards, this->cards_size);
@@ -369,13 +428,15 @@ void Avatar_dead(Avatar *this, Game *game) {
 		}
 		next = Game_nextAvailableAvatar(next);
 	}while(next->character->id != this->character->id) ;
-	for( int i = 0; i < this->cards_size ; i++ ) {
-		if( check == 0 ) {
-			Avatar_get(next,game,Avatar_taken(this, game, i));
-		}else {
+	
+	if( check == 0 ) {
+			for( int i = this->cards_size -1; i > 0 ; i-- ) {
+				Avatar_get(next,game,Avatar_taken(this, game, i));
+			}
+	}else {
+		for( int i = 0; i < this->cards_size ; i++ ) {
 			Deck_put( game->discardPile, this->cards[i] );
 		}
-		
 	}
 	//discard equipment
 	if( this->equipment->armour != NULL) {
