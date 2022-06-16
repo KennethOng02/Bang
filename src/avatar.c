@@ -365,18 +365,34 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 }
 
 int Avatar_judge(Avatar *this, Game *game, int card_id) {
-	Card *card = Deck_draw(game->deck);
-	int suit = card->suit;
-	Deck_put(game->discardPile, card);
+	Card *card = calloc(1,sizeof(Card));
+	if(this->character->id == Lucky_Duke) {
+		Card **options = calloc(2,sizeof(Card));
+		for(int i = 0; i<2; i++) {
+			options[i] = Deck_draw(game->deck);
+		}
+		int*choosen = Avatar_choose(this,game,options,2,1);
+		for(int i = 0; i<2 ; i++) {
+			if ( i != choosen[0]) {
+				Deck_put(game->discardPile,options[i]);
+			}else {
+				card = options[i];
+				Deck_put(game->discardPile,options[i]);
+			}
+		}
+	}else {
+		card = Deck_draw(game->deck);
+		Deck_put(game->discardPile, card);
+	}
 	if( card_id == CARD_DYNAMITE) {
-		if ( suit >= 1 && suit <= 8 ) {
+		if ( card->suit >= 1 && card->suit <= 8 ) {
 			return 0;
 		}else {
 			return -1;
 		}
 	}
 	if( card_id == CARD_JAIL || card_id == CARD_BARREL ) { 
-		if ( suit >= 13 && suit <= 25 ) {
+		if ( card->suit >= 13 && card->suit <= 25 ) {
 			return 0;
 		}else {
 			return -1;
@@ -409,55 +425,55 @@ void Avatar_dead(Avatar *this, Game *game) {
 	//discard equipment
 	if( this->equipment->armour != NULL) {
 		if( check == 0) {
-			Avatar_get(next,game,this->equipment->armour);
+			Avatar_get(next,game,Avatar_unequip(this,game,&(this->equipment->armour)));
 		}
 		else {
-			Deck_put( game->discardPile, this->equipment->armour );
+			Deck_put( game->discardPile,Avatar_unequip(this,game,&(this->equipment->armour)));
 		}
 		
 	}
 	if( this->equipment->horseMinus != NULL) {
 		if( check == 0) {
-			Avatar_get(next,game,this->equipment->horseMinus);
+			Avatar_get(next,game,Avatar_unequip(this,game,&(this->equipment->horseMinus)));
 		}
 		else {
-			Deck_put( game->discardPile, this->equipment->horseMinus );
+			Deck_put( game->discardPile,Avatar_unequip(this,game,&(this->equipment->horseMinus)));
 		}
 		
 	}
 	if( this->equipment->horsePlus != NULL) {
 		if( check == 0) {
-			Avatar_get(next,game,this->equipment->horsePlus);
+			Avatar_get(next,game,Avatar_unequip(this,game,&(this->equipment->horsePlus)));
 		}
 		else {
-			Deck_put( game->discardPile, this->equipment->horsePlus );
+			Deck_put( game->discardPile,Avatar_unequip(this,game,&(this->equipment->horsePlus)));
 		}
 		
 	}
 	if( this->equipment->gun != NULL) {
 		if( check == 0) {
-			Avatar_get(next,game,this->equipment->gun);
+			Avatar_get(next,game,Avatar_unequip(this,game,&(this->equipment->gun)));
 		}
 		else {
-			Deck_put( game->discardPile, this->equipment->gun );
+			Deck_put( game->discardPile,Avatar_unequip(this,game,&(this->equipment->gun)));
 		}
 		
 	}
 	if( this->equipment->bomb != NULL) {
 		if( check == 0) {
-			Avatar_get(next,game,this->equipment->bomb);
+			Avatar_get(next,game,Avatar_unequip(this,game,&(this->equipment->bomb)));
 		}
 		else {
-			Deck_put( game->discardPile, this->equipment->bomb );
+			Deck_put( game->discardPile,Avatar_unequip(this,game,&(this->equipment->bomb)) );
 		}
 		
 	}
 	if( this->equipment->jail != NULL) {
 		if( check == 0) {
-			Avatar_get(next,game,this->equipment->jail);
+			Avatar_get(next,game,Avatar_unequip(this,game,&(this->equipment->jail)));
 		}
 		else {
-			Deck_put( game->discardPile, this->equipment->jail );
+			Deck_put( game->discardPile, Avatar_unequip(this,game,&(this->equipment->jail)) );
 		}
 		
 	}
