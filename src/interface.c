@@ -14,38 +14,6 @@
 // 救命，幫我改介面跟英文=w=
 // 我沒有美術天分，英文又很破...
 
-/* char *interface_askName() { */
-/* 	char *name = calloc(32, sizeof(char)); */
-/* 	while(1) { */
-/* 		printf("Please input your name: "); */
-
-/* 		if(fgets(name, 32, stdin) == NULL) { */
-/* 			clearerr(stdin); */
-/* 			printf("\n"); */
-/* 			continue; */
-/* 		} */
-/* 		if ( name[strlen(name)-1] != '\n' ) { */
-/* 			WARNING_PRINT("Username too long, at most 31 characters.\n"); */
-/* 			char ch = 0; */
-/* 			while ( ch != '\n' ) { */
-/* 				scanf("%c", &ch); */
-/* 			} */
-/* 			continue; */
-/* 		} */
-
-/* 		while(isspace((unsigned char)*name)) name++; */
-		
-/* 		char *end = name + strlen(name) - 1; */
-/* 		while(end > name && isspace((unsigned char)*end)) end--; */
-/* 		end[1] = '\0'; */
-
-/* 		if(*name != 0) { */
-/* 			break; */
-/* 		} */
-/* 		WARNING_PRINT("Empty Username.\n"); */
-/* 	} */
-/* 	return name; */
-/* } */
 void moveCurDown(WINDOW *win) {
 	int y, x;
 	getyx(win, y, x);

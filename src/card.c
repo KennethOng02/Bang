@@ -74,6 +74,8 @@ int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) {
 	wprintw(messgWin, "%s use %s,",user->player->username,card->name);
+	interface_erase();
+	interface_draw(user->player->username, game);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
