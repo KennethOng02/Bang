@@ -356,7 +356,12 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 			if( this->cards[react]->id == card_id ) {
 				Deck_put(game->discardPile, Avatar_taken(this, game, react));
 				return 0;
-			}else {
+			} else if ( this->character->id == Calamity_Janet && 
+				 	( ( reactCard->id == CARD_BANG && card_id == CARD_MISS ) ||
+					( reactCard->id == CARD_MISS && card_id == CARD_BANG ) ) ) {
+				Deck_put(game->discardPile, Avatar_taken(this, game, react));
+				return 0;
+			} else {
 				WARNING_PRINT("You can't react with this card !\n");
 				continue;
 			}
@@ -551,17 +556,15 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 			WARNING_PRINT("Because %s can only have one gun,the previous card had been discard!\n",this->player->username);
 		}
 		this->equipment->gun = card;
-	}else if ( card->id > CARD_JUDGE_START && card->id < CARD_JUDGE_END ) {
-		if( card->id == CARD_JAIL ) {
-			this->equipment->jail = card;
-		}else if ( card->id == CARD_DYNAMITE ) {
-			if( this->equipment->bomb != NULL) {
-				Card *trash = Avatar_unequip(this,game,&(this->equipment->bomb));
-				Deck_put(game->discardPile,trash);
-				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
-			}
-		this->equipment->bomb = card;
+	}else if( card->id == CARD_JAIL ) {
+		this->equipment->jail = card;
+	}else if ( card->id == CARD_DYNAMITE ) {
+		if( this->equipment->bomb != NULL) {
+			Card *trash = Avatar_unequip(this,game,&(this->equipment->bomb));
+			Deck_put(game->discardPile,trash);
+			WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
 		}
+		this->equipment->bomb = card;
 	}
 	DEBUG_PRINT("Avatar %d quipped the card: %s.\n", this->id , card->name);
 	return;
@@ -611,7 +614,7 @@ int Avatar_calcDist(Game *game, Avatar *this, Avatar *that) {
 	int idx_2 = Game_findIndex(that);
 
 	int dist = abs(idx_2 - idx_1);
-	if(dist < game->numAvailableAvatar / 2) {
+	if(dist > (double)game->numAvailableAvatar / 2) {
 		dist = -1 * dist + game->numAvailableAvatar; 
 	}
 
