@@ -104,10 +104,6 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 }
 int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
-	if(target->cards_size == 0 && target->equipment->armour == NULL && target->equipment->bomb == NULL && target->equipment->gun == NULL && target->equipment->horseMinus == NULL && target->equipment->horsePlus == NULL && target->equipment->jail == NULL) {
-		WARNING_PRINT("The target you choose have no cards left!\n");
-		return -1;
-	}
 	printf("%s use %s\n",user->player->username,card->name);
 	int *choose = Avatar_choose(user,game,target->cards,target->cards_size,1);
 	Avatar_get(user,game,Avatar_taken(target, game, choose[0]));
@@ -115,10 +111,6 @@ int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
-	if(target->cards_size == 0 && target->equipment->armour == NULL && target->equipment->bomb == NULL && target->equipment->gun == NULL && target->equipment->horseMinus == NULL && target->equipment->horsePlus == NULL && target->equipment->jail == NULL) {
-		WARNING_PRINT("The target you choose have no cards left!\n");
-		return -1;
-	}
 	printf("%s use %s\n",user->player->username,card->name);
 	int *choose = Avatar_choose(user,game,target->cards,target->cards_size,1);
 	Card* trash = Avatar_taken(target,game,choose[0]);
@@ -159,42 +151,22 @@ int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return 0;
 }
 int play_CARD_BEER(Avatar * user, Avatar * target, Game * game, Card * card) {
-	if( game->numAvailableAvatar <= 2) {
-		WARNING_PRINT("You can't use beer when only two player left!\n");
-		return -1;
-	}else if( user->hp >= user->hp_max) {
-		WARNING_PRINT("Your hp is max!\n");
-		return -1;
-	}
 	printf("%s use %s\n",user->player->username,card->name);
 	Avatar_heal(user, game);
 	return 0;
 }
 int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s use %s\n",user->player->username,card->name);
-	int check = -1;
 	Avatar* next = user;
 	do {
 		if( next->hp != next->hp_max) {
-			check = 0;
-			break;
+			Avatar_heal(next,game);
+		}
+		else {
+			printf("%s hp is max\n",next->player->username);
 		}
 		next = Game_nextAvailableAvatar(next);
-		}while(next->id != user->id);
-		if( check == -1) {
-			WARNING_PRINT("Everyone hp is max!\n");
-			return -1;
-		} 
-		next = user;
-		do {
-			if( next->hp != next->hp_max) {
-				Avatar_heal(next,game);
-			}
-			else {
-				printf("%s hp is max\n",next->player->username);
-			}
-			next = Game_nextAvailableAvatar(next);
-		}while(next->id != user->id);
+	}while(next->id != user->id);
 	return 0;
 }
 int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card) {
@@ -259,17 +231,9 @@ int play_CARD_WINCHEDTER(Avatar * user, Avatar * target, Game * game, Card * car
 	return 0;
 }
 int play_CARD_JAIL(Avatar * user, Avatar * target, Game * game, Card * card) {
-	if ( target->role == SHERIFF ) {
-		WARNING_PRINT("You can not use jail to sheriff!\n");
-		return -1;
-	}else if ( target->equipment->jail != NULL) {
-		WARNING_PRINT("The target you choose had already in jail!\n");
-		return -1;
-	}else {
-		Avatar_equip( target, game, card );
-		printf("%s use %s to %s\n",user->player->username,card->name,target->player->username);
-		return 0;
-	} 
+	Avatar_equip( target, game, card );
+	printf("%s use %s to %s\n",user->player->username,card->name,target->player->username);
+	return 0;
 }
 int play_CARD_DYNAMITE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );

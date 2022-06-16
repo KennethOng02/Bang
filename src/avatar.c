@@ -280,7 +280,6 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 		Card *card = this->cards[retIdx];
 		if ( this->character->id == Calamity_Janet && card->id == CARD_MISS ) {
 			card -> type = CARD_DIST_VISION;
-			card -> play = &play_CARD_BANG;
 		}
 
 		Player *tarPlayer = NULL;
@@ -288,69 +287,38 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			tarPlayer = Player_selectTarget(this->player, game);
 		}
 
-		bool valid = true;
 		Avatar *tar = tarPlayer ? game->avatars[tarPlayer->id-1] : NULL;
 
+		bool valid = validPlay(this, tar, card);
 
-		for( int i = retIdx ; i < this->cards_size - 1 ; i++ ){
-			this->cards[i] = this->cards[i + 1];
-		}
-		this->cards_size-- ;
-
-		if ( tar && tar->isDead ) {
-			WARNING_PRINT("Cannot play %s on dead player.\n", card->name);
-			valid = false;
-		}
-		if ( card->type != CARD_DIST_NON ) {
-			if ( tar == NULL ) {
-				WARNING_PRINT("No target when playing %s.\n", card->name);
-				valid = false;
-			} else if ( tar->id == this->id ) {
-				WARNING_PRINT("Cannot play %s on self.\n", card->name);
-				valid = false;
-			} else if ( card->type == CARD_DIST_ONE && Avatar_calcDist(game, this, tar) > 1 ) {
-				WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, tar->player->username);
-				valid = false;
-			} else if ( card->type == CARD_DIST_VISION && Avatar_calcDist(game, this, tar) > Avatar_calcVision(this) ) {
-				WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, tar->player->username);
-				valid = false;
-			}
-		}
-		if ( banged && card->play == &play_CARD_BANG ) {
+		if ( valid && banged && card->play == &play_CARD_BANG ) {
 			// TODO: Character ability - Willy the Kid
 			// TODO: VOLCANIC
 			if ( ( this->equipment->gun == NULL || this->equipment->gun->id != CARD_VOLCANIC ) && this->character->id != Willy_the_Kid ) {
-			WARNING_PRINT("You cannot use BANG! twice.\n");
-			valid = false;
-			}
-		}
-
-		DEBUG_PRINT("Finish checking validation: %d\n", valid);
-		
-		if ( valid ) {
-			if ( card->play(this, tar, game, card) == -1 ) {
-				WARNING_PRINT("Cannot play %s here\n", card->name);
+				WARNING_PRINT("You cannot use BANG! twice.\n");
 				valid = false;
 			}
 		}
 
+		DEBUG_PRINT("Finish checking validation: %s\n", valid?"Valid":"Invalid");
+
 		if ( valid ) {
-			if ( card->play == &play_CARD_BANG ) {
-				banged = true;
-			}
+
+			card = Avatar_taken(this, game, retIdx);
 			if ( CARD_HAND_START < card->id && card->id < CARD_HAND_END ) {
 				Deck_put(game->discardPile, card);
 			}
-		} else {
+
+			if ( card->id == CARD_BANG ) {
+				banged = true;
+			}
 			if ( this->character->id == Calamity_Janet && card->id == CARD_MISS ) {
-				card -> type = CARD_DIST_NON;
-				card -> play = &play_CARD_MISS;
+				card->type = CARD_DIST_NON;
+				play_CARD_BANG(this, tar, game, card);
+				banged = true;
+			} else {
+				card->play(this, tar, game, card);
 			}
-			for( int i = this->cards_size-1 ; i >= retIdx ; i-- ){
-				this->cards[i+1] = this->cards[i];
-			}
-			this->cards[retIdx] = card;
-			this->cards_size++;
 		}
 	}
 	DEBUG_PRINT("Player %s's turn end.\n", this->player->username);
@@ -360,7 +328,7 @@ void Avatar_onDump(Avatar *this, Game *game) {
 	if ( this->cards_size > this->hp ) {
 		int n = this->cards_size - this->hp;
 		int *indexes = Player_chooseDrop(this->player, game, this->cards, this->cards_size, n);
-		for ( int i=0; i<n; i++ ) {
+		for ( int i=n-1; i>=0; i-- ) {
 			Deck_put( game->discardPile, Avatar_taken(this, game, indexes[i]) );
 		}
 		free(indexes);
@@ -627,11 +595,24 @@ int Avatar_calcDist(Game *game, Avatar *this, Avatar *that) {
 	int idx_2 = Game_findIndex(that);
 
 	int dist = abs(idx_2 - idx_1);
-	if(dist <= game->numAvailableAvatar / 2) {
-		return dist;
-	}else {
-		return -1 * dist + game->numAvailableAvatar; 
+	if(dist < game->numAvailableAvatar / 2) {
+		dist = -1 * dist + game->numAvailableAvatar; 
 	}
+
+	if ( this->character->id == Rose_Doolan ) {
+		dist--;
+	}
+	if ( this->equipment->horseMinus ) {
+		dist--;
+	}
+	if ( that->character->id == Paul_Regret ) {
+		dist++;
+	}
+	if ( that->equipment->horsePlus ) {
+		dist++;
+	}
+
+	return dist;
 }
 
 int Avatar_calcVision(Avatar *this) {
