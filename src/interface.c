@@ -61,10 +61,11 @@ char *interface_askName() {
 		refresh();
 		wrefresh(inputNameWin);
 
-		if(wgetnstr(inputNameWin, name, 32) == ERR) {
-			clearerr(stdin);
-			continue;
-		}
+		/* if(wgetnstr(inputNameWin, name, 32) == ERR) { */
+		/* 	clearerr(stdin); */
+		/* 	continue; */
+		/* } */
+		wgetstr(inputNameWin, name);
 
 		while(isspace((unsigned char)*name)) name++;
 		
@@ -192,7 +193,7 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		/* 	clearerr(stdin); */
 		/* 	continue; */
 		/* } */
-		getstr(buffer);
+		wgetstr(inputWin, buffer);
 
 		/* if ( strcmp(buffer, "i") == 0 ) { */
 			// TODO: Switch to game menu
@@ -358,7 +359,7 @@ int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size
 }
 
 bool interface_useAbility(Player *this, Game *game) {
-	wprintw(inputWin, "Do you want to use your characteristic ability?\n");
+	wprintw(inputWin, "Do you want to use your characteristic ability?");
 	wrefresh(inputWin);
 	return interface_yesOrNo();
 }
