@@ -71,7 +71,7 @@ void Equipment_free(Equipment *this) {
 	if ( this->horseMinus ) Card_free(this->horseMinus);
 	if ( this->jail ) Card_free(this->jail);
 	if ( this->bomb ) Card_free(this->bomb);
-	DEBUG_PRINT("Done Equipment_free\n");
+	//DEBUG_PRINT("Done Equipment_free\n");
 }
 
 
@@ -141,7 +141,7 @@ void Avatar_freeCopy(Avatar *this) {
 	}
 	free(this->cards);
 	free(this);
-	DEBUG_PRINT("Done Avatar_freeCopy!\n");
+	//DEBUG_PRINT("Done Avatar_freeCopy!\n");
 }
 
 void Avatar_onTurn(Avatar *this, Game *game)  {
@@ -406,7 +406,7 @@ int Avatar_judge(Avatar *this, Game *game, int card_id) {
 			return -1;
 		}
 	}
-
+	return 0;
 }
 void Avatar_dead(Avatar *this, Game *game) {
 	// TODO: Character ability - Vulture Sam

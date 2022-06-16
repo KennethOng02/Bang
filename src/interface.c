@@ -221,9 +221,12 @@ Player *interface_selectTarget(Player *this, Game *game) {
 	int choice;
 	while(1) {
 		printf("Choice: ");
-		scanf("%d", &choice);
+		if ( scanf("%d", &choice) != 1 ) {
+			WARNING_PRINT("Please enter an integer.\n");
+			continue;
+		}
 		if(choice < 1 && choice >= game->numAvatar) {
-			printf("Please input within range 1 to %d\n", game->numAvatar);
+			WARNING_PRINT("Please input within range 1 to %d\n", game->numAvatar);
 			continue;
 		}
 		break;
