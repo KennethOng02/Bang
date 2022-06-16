@@ -92,3 +92,5 @@ void Avatar_get(Avatar *this, Game *game, Card *want);
 Card *Avatar_taken(Avatar *this, Game *game,int index);
 int Avatar_calcDist(Game *game, Avatar *this, Avatar *that);
 int Avatar_calcVision(Avatar *this);
+
+Card **Avatar_giveToChoose(Avatar *this, int *retSize);

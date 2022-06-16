@@ -152,9 +152,15 @@ void Avatar_onTurn(Avatar *this, Game *game)  {
 	Avatar_onJudge(this, game, &jailed);
 	if ( jailed ) return;
 
+	if(this->isDead == true) return;
+	
 	Avatar_onDraw(this, game);
 
+	if(this->isDead == true) return;
+
 	Avatar_onPlay(this, game);
+
+	if(this->isDead == true) return;
 	
 	Avatar_onDump(this, game);
 }
@@ -203,15 +209,15 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 		Avatar_draw(this, game);
 		Card* card = calloc(1,sizeof(Card));
 		
-			card = Deck_draw(game->deck);
-			Avatar_get(this,game,card);
-			DEBUG_PRINT("%s using his ability, the card he draw is %s,and the suit is %d,",this->player->username,card->name,card->suit);
-			if ( card->suit >= 13 && card->suit <= 38 ) {
-				DEBUG_PRINT("he can draw onemore card!\n");
-				Avatar_draw(this,game);
-			}else {
-				DEBUG_PRINT("so sad, nope!\n");
-			}
+		card = Deck_draw(game->deck);
+		Avatar_get(this,game,card);
+		DEBUG_PRINT("%s using his ability, the card he draw is %s,and the suit is %d,",this->player->username,card->name,card->suit);
+		if ( card->suit >= 13 && card->suit <= 38 ) {
+			DEBUG_PRINT("he can draw onemore card!\n");
+			Avatar_draw(this,game);
+		}else {
+			DEBUG_PRINT("so sad, nope!\n");
+		}
 	}
 	else if( this->character->id == Jesse_Jones) {
 		Player* targetp = calloc(1,sizeof(Player));
@@ -232,8 +238,8 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 						break;
 					}
 					target = Game_nextAvailableAvatar(target);
-				}while( target->id != this->id);
-				if(target->cards_size == 0 && target->equipment->armour == NULL && target->equipment->bomb == NULL && target->equipment->gun == NULL && target->equipment->horseMinus == NULL && target->equipment->horsePlus == NULL && target->equipment->jail == NULL) {
+				} while ( target->id != this->id);
+				if(target->cards_size == 0 ) {
 					WARNING_PRINT("The target you choose have no cards left!\n");
 					continue;
 				}else {
@@ -347,22 +353,27 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 	// fin TODO: Character ability - Jourdonnais
 	// fin TODO: Equipment - Barrel 
 	// TODO: Character ability - Sid Ketchum
-	if(this->equipment->armour != NULL || this->character->id == Jourdonnais) {
+	DEBUG_PRINT( "Ask Avatar %d to respond for %s Remain: %d\n", this->id, to_react ? to_react->name : "(NULL)" ,this->cards_size);
+	if( (this->equipment->armour != NULL || this->character->id == Jourdonnais) && to_react && to_react->id == CARD_BANG) {
 		if( Avatar_judge(this,game,CARD_BARREL) == 0)return 0;
 	}
 	while(1) {
 		int react = Player_selectReact(this->player, game, this->cards, this->cards_size);
 		if ( react == -1) {
+			DEBUG_PRINT("Finish react 1\n");
 			return -1;
-		}else {
+		} else {
 			Card *reactCard = this->cards[react];
-			if( reactCard->id == card_id ) {
+			if ( reactCard == NULL ) ERROR_PRINT("ereere.\n");
+			if ( reactCard->id == card_id ) {
 				Deck_put(game->discardPile, Avatar_taken(this, game, react));
+				DEBUG_PRINT("Finish react 2\n");
 				return 0;
 			} else if ( this->character->id == Calamity_Janet && 
 				 	( ( reactCard->id == CARD_BANG && card_id == CARD_MISS ) ||
 					( reactCard->id == CARD_MISS && card_id == CARD_BANG ) ) ) {
 				Deck_put(game->discardPile, Avatar_taken(this, game, react));
+				DEBUG_PRINT("Finish react 3\n");
 				return 0;
 			} else {
 				WARNING_PRINT("You can't react with this card !\n");
@@ -411,7 +422,8 @@ int Avatar_judge(Avatar *this, Game *game, int card_id) {
 void Avatar_dead(Avatar *this, Game *game) {
 	// TODO: Character ability - Vulture Sam
 	//discard cards
-	Avatar* next = this;
+	DEBUG_PRINT("Avatar %d dead.\n", this->id);
+	Avatar* next = Game_nextAvailableAvatar(this);;
 	int check = -1;
 	do {
 		if(next->character->id == Vulture_Sam) {
@@ -422,13 +434,15 @@ void Avatar_dead(Avatar *this, Game *game) {
 	}while(next->character->id != this->character->id) ;
 	
 	if( check == 0 ) {
-			for( int i = this->cards_size -1; i > 0 ; i-- ) {
-				Avatar_get(next,game,Avatar_taken(this, game, i));
-			}
-	}else {
-		for( int i = 0; i < this->cards_size ; i++ ) {
-			Deck_put( game->discardPile, this->cards[i] );
+		for( int i = this->cards_size -1; i >= 0 ; i-- ) {
+			Avatar_get(next,game,Avatar_taken(this, game, i));
 		}
+	}else {
+		for( int i = this->cards_size -1; i >= 0 ; i-- ) {
+			Deck_put( game->discardPile, this->cards[i] );
+			Avatar_taken(this, game, i);
+		}
+		this->cards_size = 0;
 	}
 	//discard equipment
 	if( this->equipment->armour != NULL) {
@@ -496,26 +510,29 @@ void Avatar_dead(Avatar *this, Game *game) {
 void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 	// TODO: Character ability - Bart Cassidy 
 	// TODO: Character ability - El Gringoy
+	if(this->isDead == true) return;
 	this->hp -- ;
-	printf("%s's hp -1\n",this->player->username);
-	if( this->character->id == Bart_Cassidy) {
-		DEBUG_PRINT("%s hurt, using his aility.\n",this->player->username);
-		Avatar_draw(this,game);
-	}
-	if( this->character->id == El_Gringo) {
-		DEBUG_PRINT("%s hurt, using his aility.\n",this->player->username);
-		int *choose = Avatar_choose(this,game,attacker->cards,attacker->cards_size,1);
-		Avatar_get(this,game,Avatar_taken(attacker,game,choose[0]));
-	}
+	printf("%s's hp -1 Remain: %d\n",this->player->username,this->hp);
 	if(this->hp == 0) {
 		printf("Oh no %s's hp equal 0,",this->player->username);
 		if( Avatar_onReact(this, game, CARD_BEER, NULL) == -1 || game->numAvailableAvatar <= 2) {
 			Avatar_dead(this, game);
+			return;
 		}else {
 			this->hp ++ ;
 			printf("but he use beer to heal himself\n");
 		}
 	}
+	if( this->character->id == Bart_Cassidy) {
+		DEBUG_PRINT("%s hurt, using his ability.\n",this->player->username);
+		Avatar_draw(this,game);
+	}
+	if( attacker && this->character->id == El_Gringo && attacker->cards_size != 0) {
+		DEBUG_PRINT("%s hurt, using his ability.\n",this->player->username);
+		int *choose = Avatar_choose(this,game,attacker->cards,attacker->cards_size,1);
+		Avatar_get(this,game,Avatar_taken(attacker,game,choose[0]));
+	}
+
 
 	DEBUG_PRINT("Avatar %d hurt.\n", this->id);
 	return;
@@ -604,7 +621,7 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 		this->cards[i] = this->cards[i+1];
 	}
 	this->cards_size -- ;
-	if( this->character->id == Suzy_Lafayette && this->cards_size == 0) {
+	if( this->character->id == Suzy_Lafayette && this->cards_size == 0 && this->isDead == false) {
 		Avatar_draw(this,game);
 		printf("%s have no card! Using his ability.\n",this->player->username);
 	}
@@ -657,4 +674,20 @@ int Avatar_calcVision(Avatar *this) {
 	
 	DEBUG_PRINT("Calc vision for avatar %d Done.\n", this->id);
 	return dist;
+}
+
+Card **Avatar_giveToChoose(Avatar *this, int *retSize) {
+	int counter = 0 ;
+	for ( Card ** iter = (Card **)this->equipment; iter < (Card **)(this->equipment+1); iter++) {
+		if ( *iter ) counter++;
+	}
+	*retSize = this->cards_size+counter;
+
+	Card **list = malloc( (*retSize) * sizeof(Card *) );
+	counter = 0;
+	memset(list, 0, this->cards_size * sizeof(Card *));
+	for ( Card ** iter = (Card **)this->equipment; iter < (Card **)(this->equipment+1); iter++) {
+		if ( *iter ) list[this->cards_size+counter] = *iter;
+	}
+	return list;
 }

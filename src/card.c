@@ -105,15 +105,40 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
 	printf("%s use %s\n",user->player->username,card->name);
-	int *choose = Avatar_choose(user,game,target->cards,target->cards_size,1);
-	Avatar_get(user,game,Avatar_taken(target, game, choose[0]));
+	int list_size;
+	Card **list = Avatar_giveToChoose(target, &list_size);
+	int *choose = Avatar_choose(user,game,list,list_size,1);
+	if ( choose[0] < target->cards_size ) {
+		Avatar_get(user,game,Avatar_taken(target, game, choose[0]));
+	} else {
+		int idx = target->cards_size;
+		for ( Card ** iter = (Card **)target->equipment; iter < (Card **)(target->equipment+1); iter++) {
+			if ( *iter && choose[0] == idx++ ) {
+				Avatar_get(user,game,Avatar_unequip(target, game, iter));
+				break;
+			}
+		}
+	}
 	return 0;
 }
 int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
 	printf("%s use %s\n",user->player->username,card->name);
-	int *choose = Avatar_choose(user,game,target->cards,target->cards_size,1);
-	Card* trash = Avatar_taken(target,game,choose[0]);
+	int list_size;
+	Card **list = Avatar_giveToChoose(target, &list_size);
+	int *choose = Avatar_choose(user,game,list,list_size,1);
+	Card *trash;
+	if ( choose[0] < target->cards_size ) {
+		trash = Avatar_taken(target, game, choose[0]);
+	} else {
+		int idx = target->cards_size;
+		for ( Card ** iter = (Card **)target->equipment; iter < (Card **)(target->equipment+1); iter++) {
+			if ( *iter && choose[0] == idx++ ) {
+				trash = Avatar_unequip(target, game, iter);
+				break;
+			}
+		}
+	}
 	Deck_put(game->discardPile,trash);
 	return 0;
 }
