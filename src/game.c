@@ -291,7 +291,7 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 		return true;
 
 	case CARD_BARREL:
-	case CARD_SCOPE:
+	case CARD_APPALOOSA:
 	case CARD_MUSTANG:
 	case CARD_VOLCANIC:
 	case CARD_SCHOFIELD:

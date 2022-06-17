@@ -574,7 +574,7 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
 			}
 			this->equipment->armour = card;
-		}else if ( card->id == CARD_SCOPE ) {
+		}else if ( card->id == CARD_APPALOOSA ) {
 			if( this->equipment->horseMinus != NULL) {
 				Card *trash = Avatar_unequip(this,game,&(this->equipment->horseMinus));
 				Deck_put(game->discardPile,trash);

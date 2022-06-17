@@ -223,7 +223,7 @@ int play_CARD_BARREL(Avatar * user, Avatar * target, Game * game, Card * card) {
 	printf("%s equipped the %s\n",user->player->username,card->name);
 	return 0;
 }
-int play_CARD_SCOPE(Avatar * user, Avatar * target, Game * game, Card * card) {
+int play_CARD_APPALOOSA(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
 	printf("%s equipped the %s\n",user->player->username,card->name);
 	return 0;

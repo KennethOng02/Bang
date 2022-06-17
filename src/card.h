@@ -37,7 +37,7 @@ int play_CARD_BEER(Avatar * user, Avatar * target, Game * game, Card * card);
 int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card);
 int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card);
 int play_CARD_BARREL(Avatar * user, Avatar * target, Game * game, Card * card);
-int play_CARD_SCOPE(Avatar * user, Avatar * target, Game * game, Card * card);
+int play_CARD_APPALOOSA(Avatar * user, Avatar * target, Game * game, Card * card);
 int play_CARD_MUSTANG(Avatar * user, Avatar * target, Game * game, Card * card);
 int play_CARD_VOLCANIC(Avatar * user, Avatar * target, Game * game, Card * card);
 int play_CARD_SCHOFIELD(Avatar * user, Avatar * target, Game * game, Card * card);
