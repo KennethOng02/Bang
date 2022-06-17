@@ -39,14 +39,16 @@
 	wattroff(messgWin, COLOR_PAIR(1)); \
 	moveCurDown(messgWin); \
 	wrefresh(messgWin); \
-	sleep(1); \
+	/*sleep(1);*/ \
+	usleep(500); \
 }
 
 #define MESSAGE_PRINT(...) { \
 	wprintw(messgWin, __VA_ARGS__); \
 	moveCurDown(messgWin); \
 	wrefresh(messgWin); \
-	sleep(1); \
+	/*sleep(1);*/ \
+	usleep(500); \
 }
 
 #define INPUT_PRINT(...) { \
