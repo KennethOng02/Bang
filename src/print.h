@@ -5,13 +5,13 @@
 #include "interface.h"
 #include "ANSI-color-codes.h"
 
-/* #define ERROR_PRINT(...) { \ */
-/* 		fprintf(stderr, RED); \ */
-/* 		fprintf(stderr, "[ERROR] File:%s Line:%d \n", __FILE__, __LINE__); \ */
-/* 		fprintf(stderr, __VA_ARGS__); \ */
-/* 		fprintf(stderr, COLOR_RESET); \ */
-/* 		exit(-1); \ */
-/* 		} */
+#define ERROR_PRINT(...) { \
+		fprintf(stderr, RED); \
+		fprintf(stderr, "[ERROR] File:%s Line:%d \n", __FILE__, __LINE__); \
+		fprintf(stderr, __VA_ARGS__); \
+		fprintf(stderr, COLOR_RESET); \
+		exit(-1); \
+		}
 
 /* #define WARNING_PRINT(...) { \ */
 /* 		fprintf(stderr, YEL); \ */
@@ -31,15 +31,10 @@
 /* #define DEBUG_PRINT(...) */ 
 /* #endif */
 
-#define ERROR_PRINT(...) { \
-	printw("[ERROR] File:%s Line:%d \n", __FILE__, __LINE__); \
-	exit(-1); \
-}
-
 #define WARNING_PRINT(...) { \
 	init_pair(1, COLOR_BLACK, COLOR_YELLOW); \
 	wattron(messgWin, COLOR_PAIR(1)); \
-	wprintw(messgWin, "[WARNING] "); \
+	wprintw(messgWin, "[WARNING]"); \
 	wprintw(messgWin, __VA_ARGS__); \
 	wattroff(messgWin, COLOR_PAIR(1)); \
 	moveCurDown(messgWin); \
@@ -62,8 +57,15 @@
 
 #ifdef __DEBUG__
 #define DEBUG_PRINT(...) { \
-		wprintw(messgWin, "[DEBUG] "); \
-		}
+	init_pair(3, COLOR_BLACK, COLOR_MAGENTA); \
+	wattron(messgWin, COLOR_PAIR(3)); \
+	wprintw(messgWin, "[DEBUG]"); \
+	wprintw(messgWin, __VA_ARGS__); \
+	wattroff(messgWin, COLOR_PAIR(3)); \
+	moveCurDown(messgWin); \
+	wrefresh(messgWin); \
+	sleep(1); \
+}
 #else
 #define DEBUG_PRINT(...) 
 #endif

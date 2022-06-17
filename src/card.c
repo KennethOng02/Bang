@@ -10,9 +10,9 @@
 Card *Card_init(const int id, const char *name, const int type, const int suit, int (*fun)(Avatar *, Avatar *, Game *, Card *)) {
 	// TODO: card -> play
 
-	if ( id <= CARD_START || id >= CARD_END ) ERROR_PRINT("Invalid card id %d\n", id);
-	if(name == NULL) ERROR_PRINT("NULL pointer Mother Fucker !!\n");
-	if(suit < 0 && suit >= 52) ERROR_PRINT("suit must within [0, 51]\n");
+	if ( id <= CARD_START || id >= CARD_END ) ERROR_PRINT("Invalid card id %d", id);
+	if(name == NULL) ERROR_PRINT("NULL pointer Mother Fucker !!");
+	if(suit < 0 && suit >= 52) ERROR_PRINT("suit must within [0, 51]");
 
 	Card *new = malloc(sizeof(Card));
 
@@ -107,10 +107,10 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 }
 int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
-	MESSAGE_PRINT("%s use %sn",user->player->username,card->name);
+	MESSAGE_PRINT("%s use %s",user->player->username,card->name);
 	int list_size;
 	Card **list = Avatar_giveToChoose(target, &list_size);
-	DEBUG_PRINT("%s ,list generated Done\n",card->name);
+	DEBUG_PRINT("%s ,list generated Done",card->name);
 	int *choose = Avatar_choose(user,game,list,list_size,1);
 	if ( choose[0] < target->cards_size ) {
 		Avatar_get(user,game,Avatar_taken(target, game, choose[0]));
@@ -130,9 +130,9 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	MESSAGE_PRINT("%s use %s",user->player->username,card->name);
 	int list_size;
 	Card **list = Avatar_giveToChoose(target, &list_size);
-	DEBUG_PRINT("%s ,list generated Done\n",card->name);
+	DEBUG_PRINT("%s ,list generated Done",card->name);
 	int *choose = Avatar_choose(user,game,list,list_size,1);
-	DEBUG_PRINT("%s ,list choose Done\n",card->name);
+	DEBUG_PRINT("%s ,list choose Done",card->name);
 	Card* trash = calloc(1,sizeof(trash));
 	if ( choose[0] < target->cards_size ) {
 		trash = Avatar_taken(target, game, choose[0]);

@@ -33,7 +33,7 @@ int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size
 int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size);
 // select 1 card from cards[0..cards_size) to use
 // return its index
-Player *interface_selectTarget(Player *this, Game *game);
+int interface_selectTarget(Player *this, Game *game);
 
 int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size);
 // select 1 card from cards[0..cards_size) to use to react

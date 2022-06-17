@@ -13,7 +13,7 @@
 
 Character *Character_init(int id, const char *name, const int hp, const char *intro) {
 	if(name == NULL || intro == NULL)
-		ERROR_PRINT("NULL pointer Mother Fucker !!\n");
+		ERROR_PRINT("NULL pointer Mother Fucker !!");
 
 	if(hp < 0 && hp > 4)
 		ERROR_PRINT("hp must be between 0 and 4");
@@ -82,7 +82,7 @@ Avatar *Avatar_init(int id, Character *character, Role role) {
 	Avatar *new = malloc(sizeof(Avatar));
 
 	new->id = id;
-	new->player = Player_init(id); // NOTE: avatar->id == avatar->player->id
+	new->player = Player_init(id, new); // NOTE: avatar->id == avatar->player->id
 	new->isDead = false;
 
 	new->character = Character_init(character->id, character->name, character->hp, character->intro);
@@ -234,42 +234,31 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 		}
 	}
 	else if( this->character->id == Jesse_Jones) {
-		Player* targetp = calloc(1,sizeof(Player));
-		Avatar* target = Game_nextAvailableAvatar(this);
-		while(1) {
-			if( Player_useAbility(this->player,game) == true) {
-				while(1) {
-					targetp = Player_selectTarget(this->player,game);
-					if(targetp->id == this->id) {
-						WARNING_PRINT("You can't choose yourself!");
-						continue;
-					}else {
-						break;
-					}
-				}
-			do {
-					if(targetp->id == target->id) {
-						break;
-					}
-					target = Game_nextAvailableAvatar(target);
-				} while ( target->id != this->id);
-				if(target->cards_size == 0 ) {
-					WARNING_PRINT("The target you choose have no cards left!");
-					continue;
-				}else {
-					Card **list = malloc( target->cards_size * sizeof(Card *) );
-					memset(list, 0, target->cards_size * sizeof(Card *));
-					int *choose = Avatar_choose(this,game,list,target->cards_size,1);
-					
-					Avatar_get(this,game,Avatar_taken(target, game, choose[0]));
-					break;
-				}
-			}else {
-				Avatar_draw(this,game);
-				break;
+		bool *validTargets = malloc(game->numAvatar * sizeof(bool));
+		bool validTargets_any = false;
+		for ( int i=0; i<game->numAvatar; i++ ) {
+			validTargets[i] = game->avatars[i]->id != this->id && !game->avatars[i]->isDead && game->avatars[i]->cards_size > 0;
+			if ( validTargets[i] ) validTargets_any = true;
+		}
+		if( validTargets_any && Player_useAbility(this->player,game) == true ) {
+			int retIdx = -1;
+			while(1) {
+				retIdx = Player_selectTarget(this->player,game, validTargets);
+				if ( retIdx < 0 || retIdx >= game->numAvatar ) ERROR_PRINT("Invalid index.");
+				if ( validTargets[retIdx] ) break;
 			}
+			Avatar *target = game->avatars[retIdx];
+			// Play
+			Card **list = malloc( target->cards_size * sizeof(Card *) );
+			memset(list, 0, target->cards_size * sizeof(Card *));
+			int *choose = Avatar_choose(this,game,list,target->cards_size,1);
+			Avatar_get(this,game,Avatar_taken(target, game, choose[0]));
+			free(list);
+		} else {
+			Avatar_draw(this,game);
 		}
 		Avatar_draw(this,game);
+		free(validTargets);
 	}
 	else if( this->character->id == Pedro_Ramirez && game->discardPile->top >= 0) {
 		if( Player_useAbility(this->player,game) == true) {
@@ -302,55 +291,104 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 	
 
 void Avatar_onPlay(Avatar *this, Game *game) {
-	int retIdx;
 	bool banged = false;
-	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size) ) != -1 ) {
+	while ( 1 ) {
 
-		DEBUG_PRINT("Player %s want to use card \"%s\".", this->player->username, this->cards[retIdx]->name);
+		int orgCards_size = this->cards_size;
 
+		// validPlays[i][j]: whether cards[i] can be played on avatars[j]
+		bool **validPlays = malloc(this->cards_size * sizeof(bool *));
+		for ( int i=0; i<this->cards_size; i++ ) {
+			validPlays[i] = malloc(game->numAvatar * sizeof(bool));
+		}
+		bool repeater = ( this->equipment->gun && this->equipment->gun->id == CARD_VOLCANIC ) || this->character->id == Willy_the_Kid;
+		for ( int i=0; i<this->cards_size; i++ ) {
+			Card *card = this->cards[i];
+			DEBUG_PRINT("checking for card %s", card->name);
+			bool isBang = card->id == CARD_BANG || (this->character->id == Calamity_Janet && card->id == CARD_MISS);
+			for ( int j=0; j<game->numAvatar; j++ ) {
+				validPlays[i][j] = validPlay(this, game->avatars[j], this->cards[i]);
+				if ( isBang && banged && !repeater ) {
+					validPlays[i][j] = false;
+				}
+			}
+		}
+
+		// validPlays_any[i]: whether cards[i] can be played
+		bool *validPlays_any = malloc(this->cards_size * sizeof(bool));
+		// valid_any: whether there is a card can be played
+		bool valid_any = false;
+		for ( int i=0; i<this->cards_size; i++ ) {
+			validPlays_any[i] = false;
+			for ( int j=0; j<game->numAvatar; j++ ) {
+				if ( validPlays[i][j] ) {
+					validPlays_any[i] = true;
+					break;
+				}
+			}
+			if ( validPlays_any[i] ) valid_any = true;
+		}
+		DEBUG_PRINT("Finish cheking whether card can be play.");
+
+
+		// Ask for what he want to play
+		int retIdx;
+		if ( valid_any ) {
+			while ( 1 ) {
+				retIdx = Player_selectUse(this->player, game, this->cards, validPlays_any, this->cards_size);
+				if ( retIdx >= this->cards_size || retIdx < -1 ) ERROR_PRINT("Invalid index.");
+				if ( retIdx == -1 || validPlays_any[retIdx] ) break;
+			}
+		} else {
+			retIdx = -1;
+		}
+		if ( retIdx == -1 ) {
+			DEBUG_PRINT("%s finish his turn.", this->player->username);
+			for ( int i=0; i<orgCards_size; i++ ) {
+				free(validPlays[i]);
+			}
+			free(validPlays_any);
+			free(validPlays);
+			return;
+		}
+		DEBUG_PRINT("Finish asking what card he want to play.");
+
+		// Ask for target
 		Card *card = this->cards[retIdx];
-		if ( this->character->id == Calamity_Janet && card->id == CARD_MISS ) {
-			card -> type = CARD_DIST_VISION;
-		}
-
-		Player *tarPlayer = NULL;
-		if ( card->type != CARD_DIST_NON ) {
-			tarPlayer = Player_selectTarget(this->player, game);
-		}
-
-		Avatar *tar = tarPlayer ? game->avatars[tarPlayer->id-1] : NULL;
-
-		bool valid = validPlay(this, tar, card);
-
-		if ( valid && banged && card->play == &play_CARD_BANG ) {
-			// TODO: Character ability - Willy the Kid
-			// TODO: VOLCANIC
-			if ( ( this->equipment->gun == NULL || this->equipment->gun->id != CARD_VOLCANIC ) && this->character->id != Willy_the_Kid ) {
-				WARNING_PRINT("You cannot use BANG! twice.");
-				valid = false;
+		bool calamity_bang = this->character->id == Calamity_Janet && card->id == CARD_MISS;
+		int retPlayerIdx = -1;
+		if ( card->type != CARD_DIST_NON || calamity_bang ) {
+			while ( 1 ) {
+				retPlayerIdx = Player_selectTarget(this->player, game, validPlays[retIdx]);
+				if ( retPlayerIdx >= game->numAvatar || retPlayerIdx < 0 ) ERROR_PRINT("Invalid index."); 
+				if ( validPlays[retIdx][retPlayerIdx] ) break;
 			}
 		}
 
-		DEBUG_PRINT("Finish checking validation: %s", valid?"Valid":"Invalid");
-
-		if ( valid ) {
-
-			card = Avatar_taken(this, game, retIdx);
-			if ( CARD_HAND_START < card->id && card->id < CARD_HAND_END ) {
-				Deck_put(game->discardPile, card);
-			}
-
-			if ( card->id == CARD_BANG ) {
-				banged = true;
-			}
-			if ( this->character->id == Calamity_Janet && card->id == CARD_MISS ) {
-				card->type = CARD_DIST_NON;
-				play_CARD_BANG(this, tar, game, card);
-				banged = true;
-			} else {
-				card->play(this, tar, game, card);
-			}
+		// Play card
+		Avatar *tarAvatar = retPlayerIdx == -1 ? NULL : game->avatars[retPlayerIdx];
+		card = Avatar_taken(this, game, retIdx);
+		if ( tarAvatar != NULL ) {
+			DEBUG_PRINT("%s use card \"%s\" on %s.", this->player->username, card->name, tarAvatar->player->username);
+		} else {
+			DEBUG_PRINT("%s use card \"%s\".", this->player->username, card->name);
 		}
+		if ( CARD_HAND_START < card->id && card->id < CARD_HAND_END ) {
+			Deck_put(game->discardPile, card);
+		}
+		if ( card->id == CARD_BANG || calamity_bang ) {
+			play_CARD_BANG(this, tarAvatar, game, card);
+			banged = true;
+		} else {
+			card->play(this, tarAvatar, game, card);
+		}
+		
+		// free
+		for ( int i=0; i<orgCards_size; i++ ) {
+			free(validPlays[i]);
+		}
+		free(validPlays_any);
+		free(validPlays);
 	}
 	DEBUG_PRINT("Player %s's turn end.", this->player->username);
 }
@@ -370,7 +408,7 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 	// fin TODO: Character ability - Jourdonnais
 	// fin TODO: Equipment - Barrel 
 	// TODO: Character ability - Sid Ketchum
-	DEBUG_PRINT( "Ask Avatar %d to respond for %s Remain: %d\n", this->id, to_react ? to_react->name : "(NULL)" ,this->cards_size);
+	DEBUG_PRINT( "Ask Avatar %d to respond for %s Remain: %d", this->id, to_react ? to_react->name : "(NULL)" ,this->cards_size);
 	if( this->equipment->armour != NULL  && to_react && to_react->id == CARD_BANG) {
 		MESSAGE_PRINT("Using Barrel's ability,");
 		if( Avatar_judge(this,game,CARD_BARREL) == 0) {
@@ -389,30 +427,52 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 			MESSAGE_PRINT("uh oh! is not heart!");
 		}
 	}
-	while(1) {
-		int react = Player_selectReact(this->player, game, this->cards, this->cards_size);
-		if ( react == -1) {
-			DEBUG_PRINT("Finish react 1");
-			return -1;
-		} else {
-			Card *reactCard = this->cards[react];
-			if ( reactCard == NULL ) ERROR_PRINT("ereere.");
-			if ( reactCard->id == card_id ) {
-				Deck_put(game->discardPile, Avatar_taken(this, game, react));
-				DEBUG_PRINT("Finish react 2");
-				return 0;
-			} else if ( this->character->id == Calamity_Janet && 
-				 	( ( reactCard->id == CARD_BANG && card_id == CARD_MISS ) ||
-					( reactCard->id == CARD_MISS && card_id == CARD_BANG ) ) ) {
-				Deck_put(game->discardPile, Avatar_taken(this, game, react));
-				DEBUG_PRINT("Finish react 3");
-				return 0;
-			} else {
-				WARNING_PRINT("You can't react with this card !");
-				continue;
-			}
+
+	// check which card can react
+	int orgCards_size = this->cards_size;
+	bool *validReact = malloc(orgCards_size * sizeof(bool));
+	for ( int i=0; i<orgCards_size; i++ ) {
+		validReact[i] = false;
+		if ( this->cards[i]->id == card_id ) {
+			validReact[i] = true;
+		} else if ( this->character->id == Calamity_Janet && 
+				( ( this->cards[i]->id == CARD_BANG && card_id == CARD_MISS ) ||
+				( this->cards[i]->id == CARD_MISS && card_id == CARD_BANG ) ) ) {
+			validReact[i] = true;
 		}
 	}
+
+	// any card can react?
+	bool any = false;
+	for ( int i=0; i<orgCards_size; i++ ) {
+		if ( validReact[i] ) {
+			any = true;
+			break;
+		}
+	}
+
+	// Ask which card he want react
+	int react;
+	if ( any ) {
+		while ( 1 ) {
+			react = Player_selectReact(this->player, game, this->cards, validReact, this->cards_size);
+			if ( react < -1 || react >= this->cards_size ) ERROR_PRINT("Invalid react.");
+			if ( react == -1 || validReact[react] ) break;
+			WARNING_PRINT("You can't react with this card !");
+		}
+	} else {
+		react = -1;
+	}
+
+	// react
+	if ( react == -1 ) {
+		return -1;
+	} else {
+		Card *reactCard = this->cards[react];
+		Deck_put(game->discardPile, Avatar_taken(this, game, react));
+	}
+	free(validReact);
+	return 0;
 }
 
 int Avatar_judge(Avatar *this, Game *game, int card_id) {
@@ -560,7 +620,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 		Avatar_draw(this,game);
 	}
 	if( attacker && this->character->id == El_Gringo && attacker->cards_size > 0) {
-		DEBUG_PRINT("%s hurt, using his ability.\n",this->player->username);
+		DEBUG_PRINT("%s hurt, using his ability.",this->player->username);
 		Card **list = malloc( attacker->cards_size * sizeof(Card *) );
 		memset(list, 0, attacker->cards_size * sizeof(Card *));
 		int *choose = Avatar_choose(this,game,list,attacker->cards_size,1);
