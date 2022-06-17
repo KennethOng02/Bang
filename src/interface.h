@@ -41,6 +41,7 @@ int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size
 bool interface_useAbility(Player *this, Game *game);
 // whether of not use character ability
 
+char getSuit(int num);
 
 void interface_printCards(WINDOW *win, Card **cards, int cards_size);
 
@@ -52,7 +53,9 @@ void interface_drawInput(Avatar *avatar);
 void interface_printCardVertical(WINDOW *win, int num, int start_row);
 void interface_printCardHorizontal(WINDOW *win, int num, int start_col);
 void interface_printPlayerInfoHorizontal(WINDOW *win, Avatar *avatar, int y);
+void interface_printPlayerEquipHorizontal(WINDOW *win, Avatar *avatar, int y);
 void interface_printPlayerInfoVertical(WINDOW *win, Avatar *avatar, int x);
 void interface_drawBoard(char *username, Game *game);
 void interface_draw(char *username, Game *game);
 void interface_erase();
+void interface_refresh(char *username, Game *game);

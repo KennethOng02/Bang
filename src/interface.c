@@ -4,6 +4,7 @@
 #include <ctype.h> 
 #include <ncurses.h>
 #include "interface.h"
+#include "avatar.h"
 #include "player.h"
 #include "game.h"
 #include "card.h"
@@ -12,8 +13,12 @@
 #include "ANSI-color-codes.h"
 
 void moveCurDown(WINDOW *win) {
-	int y, x;
+	int yMax, xMax, y, x;
 	getyx(win, y, x);
+	getmaxyx(win, yMax, xMax);
+	if(y == yMax - 1) {
+		interface_erase();
+	}
 	wmove(win, y + 1, 1);
 	return;
 }
@@ -63,10 +68,6 @@ char *interface_askName() {
 		refresh();
 		wrefresh(inputNameWin);
 
-		/* if(wgetnstr(inputNameWin, name, 32) == ERR) { */
-		/* 	clearerr(stdin); */
-		/* 	continue; */
-		/* } */
 		wgetstr(inputNameWin, name);
 
 		while(isspace((unsigned char)*name)) name++;
@@ -88,12 +89,32 @@ char *interface_askName() {
 	return name;
 }
 
+char getSuit(int num) {
+	switch (num % 4) {
+		case 0:
+			return 'S';
+			break;
+		case 1:
+			return 'H';
+			break;
+		case 2:
+			return 'D';
+			break;
+		case 3:
+			return 'C';
+			break;
+		default:
+			return '?';
+			break;
+	}
+	return '?';
+}
+
 void interface_printCards(WINDOW *win, Card **cards, int cards_size) {
-	wmove(win, 1, 1);
 	for ( int i=0; i<cards_size; i++ ) {
 		wprintw(win, "(%d)", i+1);
 		if ( cards[i] ) {
-			wprintw(win, "%s ", cards[i]->name);
+			wprintw(win, "%s[%c] ", cards[i]->name, getSuit(cards[i]->suit));
 		} else {
 			wprintw(win, "UNKNOWN");
 		}
@@ -145,12 +166,6 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		wrefresh(messgWin);
 		interface_printCards(inputWin, cards, cards_size);
 
-		/* scanw("%*[ \t\n]"); */
-		
-		/* if ( wgetnstr(stdscr, buffer, bufSize) == ERR ) { */
-		/* 	clearerr(stdin); */
-		/* 	continue; */
-		/* } */
 		wgetstr(inputWin, buffer);
 
 		if ( strcmp(buffer, "q") == 0 ) {
@@ -228,10 +243,10 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
-	/* snprintf(buffer, bufSize, "Please choose %d cards from following list.", n); */
 	interface_erase();
 	interface_draw(this->username, game);
-	mvwprintw(inputWin, 2, 1, "Please choose %d cards from following list.", n);
+	wprintw(inputWin, "Please choose %d cards from following list.", n);
+	moveCurDown(inputWin);
 	wrefresh(inputWin);
 	return interface_choose(this, game, cards, cards_size, n, buffer, false);
 }
@@ -241,6 +256,7 @@ int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size
 	char *buffer = malloc(bufSize);
 	/* snprintf(buffer, bufSize, "Please choose %d card(s) to drop.", n); */
 	wprintw(inputWin, "Please choose %d card(s) to drop.", n);
+	moveCurDown(inputWin);
 	wrefresh(inputWin);
 	return interface_choose(this, game, cards, cards_size, n, buffer, false);
 }
@@ -248,10 +264,9 @@ int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size
 int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
-	/* snprintf(buffer, bufSize, "Please choose a card to use."); */
-	interface_erase();
-	interface_draw(this->username, game);
+	interface_refresh(this->username, game);
 	wprintw(inputWin, "Please choose a card to use");
+	moveCurDown(inputWin);
 	wrefresh(inputWin);
 	int *ret = interface_choose(this, game, cards, cards_size, 1, buffer, true);
 	if ( ret == NULL ) {
@@ -266,9 +281,8 @@ Player *interface_selectTarget(Player *this, Game *game) {
 	/* snprintf(buffer, bufSize, "Please choose which player as target."); */
 	interface_erase();
 	interface_draw(this->username, game);
-	wmove(inputWin, 1, 1);
 	wprintw(inputWin, "Please choose which player as target.");
-	wmove(inputWin, 2, 1);
+	moveCurDown(inputWin);
 	int counter = 1;
 	int y, x;
 	for(int i = 0; i < game->numAvatar; i++) {
@@ -276,8 +290,7 @@ Player *interface_selectTarget(Player *this, Game *game) {
 			continue;
 		}
 		wprintw(inputWin, "%d) Player %d (%s) %s", counter, game->avatars[i]->id, game->avatars[i]->player->username, game->avatars[i]->role == SHERIFF ? "(SHERIFF)" : "");
-		getyx(inputWin, y, x);
-		wmove(inputWin, y + 1, 1);
+		moveCurDown(inputWin);
 		counter++;
 	}
 	wrefresh(inputWin);
@@ -304,6 +317,7 @@ int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size
 	char *buffer = malloc(bufSize);
 	/* snprintf(buffer, bufSize, "Please choose a card to respond."); */
 	wprintw(inputWin, "Please choose a card to respond.");
+	moveCurDown(inputWin);
 	wrefresh(inputWin);
 	int *ret = interface_choose(this, game, cards, cards_size, 1, buffer, true);
 	if ( ret != NULL ) {
@@ -440,8 +454,39 @@ void interface_printCardHorizontal(WINDOW *win, int num, int start_col) {
 }
 
 void interface_printPlayerInfoHorizontal(WINDOW *win, Avatar *avatar, int y) {
-	char info[1024];
+	char info[1024] = {0};
 	snprintf(info, 1024, "%s (%s) (%s) HP(%d)", avatar->player->username, avatar->role == SHERIFF ? "SHERIFF" : "UNKNOWN", avatar->character->name, avatar->hp);
+	interface_printCenter(win, y, info);
+	moveCurDown(win);
+	return;
+}
+void interface_printPlayerEquipHorizontal(WINDOW *win, Avatar *avatar, int y) {
+	char info[1024] = {0};
+	char buffer[32] = {0};
+	if(avatar->equipment->gun != NULL) {
+		snprintf(buffer, 32, "Gun[%s][%d] ", avatar->equipment->gun->name, Avatar_calcVision(avatar));
+		strcat(info, buffer);
+	}
+	if(avatar->equipment->armour != NULL) {
+		snprintf(buffer, 32, "Arm[%s] ", avatar->equipment->armour->name);
+		strcat(info, buffer);
+	}
+	if(avatar->equipment->horseMinus != NULL) {
+		snprintf(buffer, 32, "H-[%s] ", avatar->equipment->horseMinus->name);
+		strcat(info, buffer);
+	}
+	if(avatar->equipment->horsePlus != NULL) {
+		snprintf(buffer, 32, "H+[%s] ", avatar->equipment->horsePlus->name);
+		strcat(info, buffer);
+	}
+	if(avatar->equipment->bomb != NULL) {
+		snprintf(buffer, 32, "[DYNAMITE] ");
+		strcat(info, buffer);
+	}
+	if(avatar->equipment->jail != NULL) {
+		snprintf(buffer, 32, "[JAIL]");
+		strcat(info, buffer);
+	}
 	interface_printCenter(win, y, info);
 	return;
 }
@@ -470,13 +515,15 @@ void interface_drawBoard(char *username, Game *game) {
 
 	interface_printCardVertical(boardWin, 2, yBoard / 2);
 
-	interface_printCardVertical(boardWin, game->avatars[0]->cards_size, LINES - 15);
+	interface_printCardVertical(boardWin, game->avatars[0]->cards_size, LINES - 16);
+	interface_printPlayerEquipHorizontal(boardWin, game->avatars[0], LINES - 12);
 
 	interface_printCardHorizontal(boardWin, game->avatars[1]->cards_size, 2);
 	interface_printPlayerInfoVertical(boardWin, game->avatars[1], 2);
 
-	interface_printCardVertical(boardWin, game->avatars[2]->cards_size, 2);
+	interface_printCardVertical(boardWin, game->avatars[2]->cards_size, 3);
 	interface_printPlayerInfoHorizontal(boardWin, game->avatars[2], 1);
+	interface_printPlayerEquipHorizontal(boardWin, game->avatars[2], 2);
 
 	interface_printCardHorizontal(boardWin, game->avatars[3]->cards_size, COLS - 9);
 	interface_printPlayerInfoVertical(boardWin, game->avatars[3], COLS - strlen((game->avatars[3]->role == SHERIFF) ? "SHERIFF" : "UNKNOWN") - strlen(game->avatars[3]->character->name) - 6);
@@ -497,11 +544,26 @@ void interface_draw(char *username, Game *game) {
 }
 
 void interface_erase() {
-	wmove(inputWin, 1, 1);
-	wclrtobot(inputWin);
+	int yMax, xMax, y, x;
+	getmaxyx(inputWin, yMax, xMax);
+	getyx(inputWin, y, x);
+	if(y == yMax) {
+		wmove(inputWin, 1, 1);
+		wclrtobot(inputWin);
+	}
 
-	wmove(messgWin, 1, 1);
-	wclrtobot(messgWin);
+	getmaxyx(messgWin, yMax, xMax);
+	getyx(messgWin, y, x);
+	if(y == yMax) {
+		wmove(messgWin, 1, 1);
+		wclrtobot(messgWin);
+	}
 
+	return;
+}
+
+void interface_refresh(char *username, Game *game) {
+	interface_erase();
+	interface_draw(username, game);
 	return;
 }

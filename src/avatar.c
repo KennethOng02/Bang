@@ -90,7 +90,7 @@ Avatar *Avatar_init(int id, Character *character, Role role) {
 	new->hp_max = new->character->hp;
 	new->role = role;
 	if(new->role == SHERIFF) {
-		DEBUG_PRINT("SHERIFF is avatar %d.\n", id);
+		DEBUG_PRINT("SHERIFF is avatar %d.", id);
 		new->hp_max++;
 	}
 	new->hp = new->hp_max;
@@ -99,7 +99,7 @@ Avatar *Avatar_init(int id, Character *character, Role role) {
 
 	new->equipment = Equipment_init();
 
-	DEBUG_PRINT("Finish initiation of player %s with avatar %d\n", new->player->username, new->id);
+	DEBUG_PRINT("Finish initiation of player %s with avatar %d", new->player->username, new->id);
 
 	return new;
 }
@@ -131,7 +131,7 @@ void Avatar_free(Avatar *this) {
 	}
 	free(this->cards);
 	free(this);
-	DEBUG_PRINT("Done Avatar_free!\n");
+	DEBUG_PRINT("Done Avatar_free!");
 }
 
 void Avatar_freeCopy(Avatar *this) {
@@ -148,37 +148,35 @@ void Avatar_freeCopy(Avatar *this) {
 
 void Avatar_onTurn(Avatar *this, Game *game)  {
 
-	DEBUG_PRINT("Avatar %d's turn.\n", this->id);
+	DEBUG_PRINT("Avatar %d's turn.", this->id);
 
-	interface_draw(this->player->username, game);
+	interface_refresh(this->player->username, game);
 
 	bool jailed = false;
 	Avatar_onJudge(this, game, &jailed);
 	if ( jailed ) return;
 
 	sleep(1);
-	interface_erase();
-	interface_draw(this->player->username, game);
+	interface_refresh(this->player->username, game);
 	
 	if(this->isDead == true) return;
-	
 	Avatar_onDraw(this, game);
-
 	if(this->isDead == true) return;
+
+	sleep(1);
+	interface_refresh(this->player->username, game);
 
 	Avatar_onPlay(this, game);
 
 	if(this->isDead == true) return;
 	
 	sleep(1);
-	interface_erase();
-	interface_draw(this->player->username, game);
+	interface_refresh(this->player->username, game);
 
 	Avatar_onDump(this, game);
 
 	sleep(1);
-	interface_erase();
-	interface_draw(this->player->username, game);
+	interface_refresh(this->player->username, game);
 }
 	
 
@@ -188,7 +186,7 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 
 	if ( this->equipment->bomb != NULL ) {
 	
-		DEBUG_PRINT("Avatar %d judge for bomb.\n", this->id);
+		DEBUG_PRINT("Avatar %d judge for bomb.", this->id);
 		Card *bomb = Avatar_unequip(this, game, &(this->equipment->bomb));
 		if ( Avatar_judge(this, game, CARD_DYNAMITE) == 0) {
 			// suit is between [Spade 2, Spade 9]
@@ -204,7 +202,7 @@ void Avatar_onJudge(Avatar *this, Game *game, bool *jailed) {
 	}
 	if ( this->equipment->jail != NULL ) {
 
-		DEBUG_PRINT("Avatar %d judge for Jail.\n", this->id);
+		DEBUG_PRINT("Avatar %d judge for Jail.", this->id);
 
 		if (Avatar_judge(this,game,CARD_JAIL) == -1) {
 			// suit is not heart
@@ -229,10 +227,10 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 		Avatar_get(this,game,card);
 		DEBUG_PRINT("%s using his ability, the card he draw is %s,and the suit is %d,",this->player->username,card->name,card->suit);
 		if ( card->suit >= 13 && card->suit <= 38 ) {
-			DEBUG_PRINT("he can draw onemore card!\n");
+			DEBUG_PRINT("he can draw onemore card!");
 			Avatar_draw(this,game);
 		}else {
-			DEBUG_PRINT("so sad, nope!\n");
+			DEBUG_PRINT("so sad, nope!");
 		}
 	}
 	else if( this->character->id == Jesse_Jones) {
@@ -243,7 +241,7 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 				while(1) {
 					targetp = Player_selectTarget(this->player,game);
 					if(targetp->id == this->id) {
-						WARNING_PRINT("You can't choose yourself!\n");
+						WARNING_PRINT("You can't choose yourself!");
 						continue;
 					}else {
 						break;
@@ -256,7 +254,7 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 					target = Game_nextAvailableAvatar(target);
 				} while ( target->id != this->id);
 				if(target->cards_size == 0 ) {
-					WARNING_PRINT("The target you choose have no cards left!\n");
+					WARNING_PRINT("The target you choose have no cards left!");
 					continue;
 				}else {
 					Card **list = malloc( target->cards_size * sizeof(Card *) );
@@ -308,7 +306,7 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 	bool banged = false;
 	while ( ( retIdx = Player_selectUse(this->player, game, this->cards, this->cards_size) ) != -1 ) {
 
-		DEBUG_PRINT("Player %s want to use card \"%s\".\n", this->player->username, this->cards[retIdx]->name);
+		DEBUG_PRINT("Player %s want to use card \"%s\".", this->player->username, this->cards[retIdx]->name);
 
 		Card *card = this->cards[retIdx];
 		if ( this->character->id == Calamity_Janet && card->id == CARD_MISS ) {
@@ -328,12 +326,12 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			// TODO: Character ability - Willy the Kid
 			// TODO: VOLCANIC
 			if ( ( this->equipment->gun == NULL || this->equipment->gun->id != CARD_VOLCANIC ) && this->character->id != Willy_the_Kid ) {
-				WARNING_PRINT("You cannot use BANG! twice.\n");
+				WARNING_PRINT("You cannot use BANG! twice.");
 				valid = false;
 			}
 		}
 
-		DEBUG_PRINT("Finish checking validation: %s\n", valid?"Valid":"Invalid");
+		DEBUG_PRINT("Finish checking validation: %s", valid?"Valid":"Invalid");
 
 		if ( valid ) {
 
@@ -354,7 +352,7 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			}
 		}
 	}
-	DEBUG_PRINT("Player %s's turn end.\n", this->player->username);
+	DEBUG_PRINT("Player %s's turn end.", this->player->username);
 }
 
 void Avatar_onDump(Avatar *this, Game *game) {
@@ -372,30 +370,30 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 	// fin TODO: Character ability - Jourdonnais
 	// fin TODO: Equipment - Barrel 
 	// TODO: Character ability - Sid Ketchum
-	DEBUG_PRINT( "Ask Avatar %d to respond for %s Remain: %d\n", this->id, to_react ? to_react->name : "(NULL)" ,this->cards_size);
+	DEBUG_PRINT( "Ask Avatar %d to respond for %s Remain: %d", this->id, to_react ? to_react->name : "(NULL)" ,this->cards_size);
 	if( (this->equipment->armour != NULL || this->character->id == Jourdonnais) && to_react && to_react->id == CARD_BANG) {
 		if( Avatar_judge(this,game,CARD_BARREL) == 0)return 0;
 	}
 	while(1) {
 		int react = Player_selectReact(this->player, game, this->cards, this->cards_size);
 		if ( react == -1) {
-			DEBUG_PRINT("Finish react 1\n");
+			DEBUG_PRINT("Finish react 1");
 			return -1;
 		} else {
 			Card *reactCard = this->cards[react];
-			if ( reactCard == NULL ) ERROR_PRINT("ereere.\n");
+			if ( reactCard == NULL ) ERROR_PRINT("ereere.");
 			if ( reactCard->id == card_id ) {
 				Deck_put(game->discardPile, Avatar_taken(this, game, react));
-				DEBUG_PRINT("Finish react 2\n");
+				DEBUG_PRINT("Finish react 2");
 				return 0;
 			} else if ( this->character->id == Calamity_Janet && 
 				 	( ( reactCard->id == CARD_BANG && card_id == CARD_MISS ) ||
 					( reactCard->id == CARD_MISS && card_id == CARD_BANG ) ) ) {
 				Deck_put(game->discardPile, Avatar_taken(this, game, react));
-				DEBUG_PRINT("Finish react 3\n");
+				DEBUG_PRINT("Finish react 3");
 				return 0;
 			} else {
-				WARNING_PRINT("You can't react with this card !\n");
+				WARNING_PRINT("You can't react with this card !");
 				continue;
 			}
 		}
@@ -441,7 +439,7 @@ int Avatar_judge(Avatar *this, Game *game, int card_id) {
 void Avatar_dead(Avatar *this, Game *game) {
 	// TODO: Character ability - Vulture Sam
 	//discard cards
-	DEBUG_PRINT("Avatar %d dead.\n", this->id);
+	DEBUG_PRINT("Avatar %d dead.", this->id);
 	Avatar* next = Game_nextAvailableAvatar(this);;
 	int check = -1;
 	do {
@@ -523,7 +521,7 @@ void Avatar_dead(Avatar *this, Game *game) {
 	this->isDead = true;
 	game->numAvailableAvatar--;
 	Game_checkWin(game);
-	wprintw(messgWin, "%s is dead\n",this->player->username);
+	wprintw(messgWin, "%s is dead",this->player->username);
 }
 
 void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
@@ -531,7 +529,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 	// TODO: Character ability - El Gringoy
 	if(this->isDead == true) return;
 	this->hp -- ;
-	wprintw(messgWin, "%s's hp -1 Remain: %d\n",this->player->username,this->hp);
+	wprintw(messgWin, "%s's hp -1 Remain: %d",this->player->username,this->hp);
 	if(this->hp == 0) {
 		wprintw(messgWin, "Oh no %s's hp equal 0,",this->player->username);
 		if( Avatar_onReact(this, game, CARD_BEER, NULL) == -1 || game->numAvailableAvatar <= 2) {
@@ -539,15 +537,15 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 			return;
 		}else {
 			this->hp ++ ;
-			wprintw(messgWin, "but he use beer to heal himself\n");
+			wprintw(messgWin, "but he use beer to heal himself");
 		}
 	}
 	if( this->character->id == Bart_Cassidy) {
-		DEBUG_PRINT("%s hurt, using his ability.\n",this->player->username);
+		DEBUG_PRINT("%s hurt, using his ability.",this->player->username);
 		Avatar_draw(this,game);
 	}
 	if( attacker && this->character->id == El_Gringo && attacker->cards_size != 0) {
-		DEBUG_PRINT("%s hurt, using his ability.\n",this->player->username);
+		DEBUG_PRINT("%s hurt, using his ability.",this->player->username);
 		Card **list = malloc( attacker->cards_size * sizeof(Card *) );
 		memset(list, 0, attacker->cards_size * sizeof(Card *));
 		int *choose = Avatar_choose(this,game,list,attacker->cards_size,1);
@@ -555,14 +553,14 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 	}
 
 
-	DEBUG_PRINT("Avatar %d hurt.\n", this->id);
+	DEBUG_PRINT("Avatar %d hurt.", this->id);
 	return;
 }
 
 void Avatar_heal(Avatar *this, Game *game){
 	this->hp ++;
-	wprintw(messgWin, "%s's hp +1\n",this->player->username);
-	DEBUG_PRINT("Avatar %d heal.\n", this->id);
+	wprintw(messgWin, "%s's hp +1",this->player->username);
+	DEBUG_PRINT("Avatar %d heal.", this->id);
 	return;
 }
 
@@ -572,21 +570,21 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 			if( this->equipment->armour != NULL) {
 				Card *trash = Avatar_unequip(this,game,&(this->equipment->armour));
 				Deck_put(game->discardPile,trash);
-				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
+				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!",this->player->username);
 			}
 			this->equipment->armour = card;
 		}else if ( card->id == CARD_SCOPE ) {
 			if( this->equipment->horseMinus != NULL) {
 				Card *trash = Avatar_unequip(this,game,&(this->equipment->horseMinus));
 				Deck_put(game->discardPile,trash);
-				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
+				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!",this->player->username);
 			}
 			this->equipment->horseMinus = card;
 		}else if ( card->id == CARD_MUSTANG ) {
 			if( this->equipment->horsePlus != NULL) {
 				Card *trash = Avatar_unequip(this,game,&(this->equipment->horsePlus));
 				Deck_put(game->discardPile,trash);
-				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
+				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!",this->player->username);
 			}
 			this->equipment->horsePlus = card;
 		}
@@ -594,7 +592,7 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 		if( this->equipment->gun != NULL) {
 			Card *trash = Avatar_unequip(this,game,&(this->equipment->gun));
 			Deck_put(game->discardPile,trash);
-			WARNING_PRINT("Because %s can only have one gun,the previous card had been discard!\n",this->player->username);
+			WARNING_PRINT("Because %s can only have one gun,the previous card had been discard!",this->player->username);
 		}
 		this->equipment->gun = card;
 	}else if( card->id == CARD_JAIL ) {
@@ -603,29 +601,29 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 		if( this->equipment->bomb != NULL) {
 			Card *trash = Avatar_unequip(this,game,&(this->equipment->bomb));
 			Deck_put(game->discardPile,trash);
-			WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!\n",this->player->username);
+			WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!",this->player->username);
 		}
 		this->equipment->bomb = card;
 	}
-	DEBUG_PRINT("Avatar %d quipped the card: %s.\n", this->id , card->name);
+	DEBUG_PRINT("Avatar %d quipped the card: %s.", this->id , card->name);
 	return;
 }
 
 Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
 	Card *bye = *card;
-	DEBUG_PRINT("Avatar %d unquipped the card: %s.\n", this->id , (*card)->name );
+	DEBUG_PRINT("Avatar %d unquipped the card: %s.", this->id , (*card)->name );
 	*card = NULL;
 	return bye;
 }
 
 void Avatar_draw(Avatar *this, Game *game){
 	Avatar_get(this,game, Deck_draw(game->deck));
-	DEBUG_PRINT("Avatar %d draw one card.Remain: %d cards.\n", this->id ,game->deck->top + 1);
+	DEBUG_PRINT("Avatar %d draw one card.Remain: %d cards.", this->id ,game->deck->top + 1);
 	return;
 }
 
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num) {
-	DEBUG_PRINT("%s start to choose\n",this->player->username);
+	DEBUG_PRINT("%s start to choose",this->player->username);
 	return Player_chooseTake( this->player, game, options, size, num );
 	
 }
@@ -633,7 +631,7 @@ int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num)
 void Avatar_get(Avatar *this, Game *game, Card *want){
 	this->cards_size ++;
 	this->cards[this->cards_size - 1] = want;
-	DEBUG_PRINT("Avatar %d get the card: %s.\n", this->id , want->name);
+	DEBUG_PRINT("Avatar %d get the card: %s.", this->id , want->name);
 	return;
 }
 
@@ -646,9 +644,9 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 	this->cards_size -- ;
 	if( this->character->id == Suzy_Lafayette && this->cards_size == 0 && this->isDead == false) {
 		Avatar_draw(this,game);
-		wprintw(messgWin, "%s have no card! Using his ability.\n",this->player->username);
+		wprintw(messgWin, "%s have no card! Using his ability.",this->player->username);
 	}
-	DEBUG_PRINT("Avatar %d's card: %s had been taken.\n", this->id , bye->name );
+	DEBUG_PRINT("Avatar %d's card: %s had been taken.", this->id , bye->name );
 	return bye;
 }
 
@@ -679,7 +677,7 @@ int Avatar_calcDist(Game *game, Avatar *this, Avatar *that) {
 
 int Avatar_calcVision(Avatar *this) {
 	int dist = 1;
-	DEBUG_PRINT("Calc vision for avatar %d\n", this->id);
+	DEBUG_PRINT("Calc vision for avatar %d", this->id);
 
 	if ( this->equipment->gun ) {
 		Card *gun = this->equipment->gun;
@@ -695,7 +693,7 @@ int Avatar_calcVision(Avatar *this) {
 			dist = 5;
 	}
 	
-	DEBUG_PRINT("Calc vision for avatar %d Done.\n", this->id);
+	DEBUG_PRINT("Calc vision for avatar %d Done.", this->id);
 	return dist;
 }
 

@@ -27,6 +27,7 @@
 #define WARNING_PRINT(...) { \
 		interface_erase(); \
 		wprintw(messgWin, "[WARNING] "); \
+		wprintw(messgWin, __VA_ARGS__); \
 		moveCurDown(messgWin); \
 		wrefresh(messgWin); \
 		}

@@ -42,9 +42,9 @@ void Card_free(Card *this) {
 	free(this);
 }
 
-
 int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 	wprintw(messgWin, "%s use BANG! to %s,",user->player->username,target->player->username);
+	moveCurDown(messgWin);
 	wrefresh(messgWin);
 	if( Avatar_onReact(target, game, CARD_MISS, card ) == -1 ) {
 		wprintw(messgWin, "%s do not have MISS,",target->player->username);
@@ -58,15 +58,13 @@ int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 			}else {
 				wprintw(messgWin, "but he missed!");
 			}
-	moveCurDown(messgWin);
 		}else {
 			wprintw(messgWin, "but he missed!");
 		}
 	}
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	return 0;
 }
 int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
@@ -74,8 +72,8 @@ int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) {
 	wprintw(messgWin, "%s use %s,",user->player->username,card->name);
-	interface_erase();
-	interface_draw(user->player->username, game);
+	moveCurDown(messgWin);
+	interface_refresh(user->player->username, game);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
@@ -97,8 +95,7 @@ int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) 
 int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) {
 	wprintw(messgWin, "%s use %s,",user->player->username,card->name);
 	moveCurDown(messgWin);
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
@@ -114,8 +111,7 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 		moveCurDown(messgWin);
 		next = Game_nextAvailableAvatar(next);
 	}
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wrefresh(messgWin);
 	return 0;
 }
@@ -167,8 +163,7 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return 0;
 }
 int play_CARD_STAGECOACH(Avatar * user, Avatar * target, Game * game, Card * card) {
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s use %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -177,8 +172,7 @@ int play_CARD_STAGECOACH(Avatar * user, Avatar * target, Game * game, Card * car
 	return 0;
 }
 int play_CARD_FARGO(Avatar * user, Avatar * target, Game * game, Card * card) {
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s use %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -188,8 +182,7 @@ int play_CARD_FARGO(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return 0;
 }
 int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s use %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -236,9 +229,9 @@ int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return 0;
 }
 int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card) {
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s use %s to %s",user->player->username,card->name,target->player->username);
+	moveCurDown(messgWin);
 	wrefresh(messgWin);
 	while(1) {
 		if( Avatar_onReact(target, game, CARD_BANG, card) == -1) {
@@ -264,8 +257,7 @@ int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_BARREL(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s equipped the %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -273,8 +265,7 @@ int play_CARD_BARREL(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_SCOPE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s equipped the %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -282,8 +273,7 @@ int play_CARD_SCOPE(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_MUSTANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s equipped the %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -291,8 +281,7 @@ int play_CARD_MUSTANG(Avatar * user, Avatar * target, Game * game, Card * card) 
 }
 int play_CARD_VOLCANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s equipped the %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -300,8 +289,7 @@ int play_CARD_VOLCANIC(Avatar * user, Avatar * target, Game * game, Card * card)
 }
 int play_CARD_SCHOFIELD(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s equipped the %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -309,8 +297,7 @@ int play_CARD_SCHOFIELD(Avatar * user, Avatar * target, Game * game, Card * card
 }
 int play_CARD_REMINGTON(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s equipped the %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -318,8 +305,7 @@ int play_CARD_REMINGTON(Avatar * user, Avatar * target, Game * game, Card * card
 }
 int play_CARD_CARABINE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s equipped the %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -327,8 +313,7 @@ int play_CARD_CARABINE(Avatar * user, Avatar * target, Game * game, Card * card)
 }
 int play_CARD_WINCHEDTER(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s equipped the %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -336,8 +321,7 @@ int play_CARD_WINCHEDTER(Avatar * user, Avatar * target, Game * game, Card * car
 }
 int play_CARD_JAIL(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( target, game, card );
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s use %s to %s",user->player->username,card->name,target->player->username);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
@@ -345,8 +329,7 @@ int play_CARD_JAIL(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_DYNAMITE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_erase();
-	interface_draw(user->player->username, game);
+	interface_refresh(user->player->username, game);
 	wprintw(messgWin, "%s use a %s",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
