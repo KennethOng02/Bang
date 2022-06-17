@@ -460,6 +460,10 @@ void interface_drawBoard(char *username, Game *game) {
 
 	boardWin = newwin(yMax - 10, xMax, 0, 0);
 	getmaxyx(boardWin, yBoard, xBoard);
+	idlok(boardWin, TRUE);
+	scrollok(boardWin, TRUE);
+	clearok(boardWin, TRUE);
+	setscrreg(boardWin, TRUE);
 	box(boardWin, 0, 0);
 
 	interface_drawCardVertical(boardWin, 2, yBoard / 2);

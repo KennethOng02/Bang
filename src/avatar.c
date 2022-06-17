@@ -521,7 +521,7 @@ void Avatar_dead(Avatar *this, Game *game) {
 	this->isDead = true;
 	game->numAvailableAvatar--;
 	Game_checkWin(game);
-	wprintw(messgWin, "%s is dead",this->player->username);
+	MESSAGE_PRINT("%s is dead",this->player->username);
 }
 
 void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
@@ -529,15 +529,15 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 	// TODO: Character ability - El Gringoy
 	if(this->isDead == true) return;
 	this->hp -- ;
-	wprintw(messgWin, "%s's hp -1 Remain: %d",this->player->username,this->hp);
+	MESSAGE_PRINT("%s's hp -1 Remain: %d",this->player->username,this->hp);
 	if(this->hp == 0) {
-		wprintw(messgWin, "Oh no %s's hp equal 0,",this->player->username);
+		MESSAGE_PRINT("Oh no %s's hp equal 0,",this->player->username);
 		if( Avatar_onReact(this, game, CARD_BEER, NULL) == -1 || game->numAvailableAvatar <= 2) {
 			Avatar_dead(this, game);
 			return;
 		}else {
 			this->hp ++ ;
-			wprintw(messgWin, "but he use beer to heal himself");
+			MESSAGE_PRINT("but he use beer to heal himself");
 		}
 	}
 	if( this->character->id == Bart_Cassidy) {
@@ -559,7 +559,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 
 void Avatar_heal(Avatar *this, Game *game){
 	this->hp ++;
-	wprintw(messgWin, "%s's hp +1",this->player->username);
+	MESSAGE_PRINT("%s's hp +1",this->player->username);
 	DEBUG_PRINT("Avatar %d heal.", this->id);
 	return;
 }
@@ -644,7 +644,7 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 	this->cards_size -- ;
 	if( this->character->id == Suzy_Lafayette && this->cards_size == 0 && this->isDead == false) {
 		Avatar_draw(this,game);
-		wprintw(messgWin, "%s have no card! Using his ability.",this->player->username);
+		MESSAGE_PRINT("%s have no card! Using his ability.",this->player->username);
 	}
 	DEBUG_PRINT("Avatar %d's card: %s had been taken.", this->id , bye->name );
 	return bye;

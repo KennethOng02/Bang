@@ -219,21 +219,21 @@ Game *Game_queryInfo( Player *player ) {
 bool validPlay(Avatar *user, Avatar *target, Card *card) {
 
 	if ( target && target->isDead ) {
-		WARNING_PRINT("Cannot play %s on dead player.\n", card->name);
+		WARNING_PRINT("Cannot play %s on dead player.", card->name);
 		return false;
 	}
 	if ( card->type != CARD_DIST_NON ) {
 		if ( target == NULL ) {
-			WARNING_PRINT("No target when playing %s.\n", card->name);
+			WARNING_PRINT("No target when playing %s.", card->name);
 			return false;
 		} else if ( target->id == user->id ) {
-			WARNING_PRINT("Cannot play %s on self.\n", card->name);
+			WARNING_PRINT("Cannot play %s on self.", card->name);
 			return false;
 		} else if ( card->type == CARD_DIST_ONE && Avatar_calcDist(game, user, target) > 1 ) {
-			WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, user->player->username);
+			WARNING_PRINT("Cannot play %s on %s: Too far.", card->name, user->player->username);
 			return false;
 		} else if ( card->type == CARD_DIST_VISION && Avatar_calcDist(game, user, target) > Avatar_calcVision(user) ) {
-			WARNING_PRINT("Cannot play %s on %s: Too far.\n", card->name, user->player->username);
+			WARNING_PRINT("Cannot play %s on %s: Too far.", card->name, user->player->username);
 			return false;
 		}
 	}
@@ -248,7 +248,7 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 		if ( user->character->id == Calamity_Janet ) {
 			return true;
 		} else {
-			WARNING_PRINT("Cannot play MISS in your turn.\n");
+			WARNING_PRINT("Cannot play MISS in your turn.");
 			return false;
 		}
 		
@@ -274,11 +274,11 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 
 	case CARD_BEER:
 		if( game->numAvailableAvatar <= 2) {
-			WARNING_PRINT("You can't use beer when only two player left!\n");
+			WARNING_PRINT("You can't use beer when only two player left!");
 			return false;
 		}
 		if ( user->hp == user->hp_max ) {
-			WARNING_PRINT("Your hp is max.\n");
+			WARNING_PRINT("Your hp is max.");
 			return false;
 		}
 		return true;
@@ -290,7 +290,7 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 				valid = true;
 			}
 		}
-		if ( !valid ) WARNING_PRINT("Everyone has max hp.\n");
+		if ( !valid ) WARNING_PRINT("Everyone has max hp.");
 		return valid;
 	}
 	
@@ -309,14 +309,14 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 
 	case CARD_JAIL:
 		if ( target->role == SHERIFF ) {
-			WARNING_PRINT("You can not use jail to sheriff!\n");
+			WARNING_PRINT("You can not use jail to sheriff!");
 			return false;
 		}
-		if ( target->equipment->jail != NULL ) WARNING_PRINT("He has jail already.\n");
+		if ( target->equipment->jail != NULL ) WARNING_PRINT("He has jail already.");
 		return target->equipment->jail == NULL;
 
 	case CARD_DYNAMITE:
-		if ( user->equipment->bomb != NULL ) WARNING_PRINT("You has dynamite already.\n");
+		if ( user->equipment->bomb != NULL ) WARNING_PRINT("You has dynamite already.");
 		return user->equipment->bomb == NULL;
 	
 	default:

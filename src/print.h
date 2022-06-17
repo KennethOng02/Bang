@@ -1,6 +1,7 @@
 #pragma once
 #include <stdio.h>
 #include <ncurses.h>
+#include <unistd.h>
 #include "interface.h"
 #include "ANSI-color-codes.h"
 
@@ -31,19 +32,27 @@
 /* #endif */
 
 #define ERROR_PRINT(...) { \
-		printw("[ERROR] File:%s Line:%d \n", __FILE__, __LINE__); \
-		exit(-1); \
-		}
+	printw("[ERROR] File:%s Line:%d \n", __FILE__, __LINE__); \
+	exit(-1); \
+}
 
 #define WARNING_PRINT(...) { \
-		init_pair(1, COLOR_BLACK, COLOR_YELLOW); \
-		wattron(messgWin, COLOR_PAIR(1)); \
-		wprintw(messgWin, "[WARNING] "); \
-		wprintw(messgWin, __VA_ARGS__); \
-		wattroff(messgWin, COLOR_PAIR(1)); \
-		moveCurDown(messgWin); \
-		wrefresh(messgWin); \
-		}
+	init_pair(1, COLOR_BLACK, COLOR_YELLOW); \
+	wattron(messgWin, COLOR_PAIR(1)); \
+	wprintw(messgWin, "[WARNING] "); \
+	wprintw(messgWin, __VA_ARGS__); \
+	wattroff(messgWin, COLOR_PAIR(1)); \
+	moveCurDown(messgWin); \
+	wrefresh(messgWin); \
+	sleep(1); \
+}
+
+#define MESSAGE_PRINT(...) { \
+	wprintw(messgWin, __VA_ARGS__); \
+	moveCurDown(messgWin); \
+	wrefresh(messgWin); \
+	sleep(1); \
+}
 
 #ifdef __DEBUG__
 #define DEBUG_PRINT(...) { \
