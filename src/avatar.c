@@ -159,12 +159,6 @@ void Avatar_onTurn(Avatar *this, Game *game)  {
 	sleep(1);
 	interface_erase();
 	interface_draw(this->player->username, game);
-
-	Avatar_onDraw(this, game);
-
-	sleep(1);
-	interface_erase();
-	interface_draw(this->player->username, game);
 	
 	if(this->isDead == true) return;
 	

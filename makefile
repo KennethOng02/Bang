@@ -9,7 +9,8 @@ dependency_path=$(addprefix ${bin_dir}, ${dependency})
 all: $(dependency)
 	make cardid
 	make characterid
-	gcc -fsanitize=address src/main.c $(dependency_path) -lncurses -o bin/main
+	# gcc -fsanitize=address src/main.c $(dependency_path) -lncurses -o bin/main
+	gcc src/main.c $(dependency_path) -lncurses -o bin/main
 
 run:
 	./bin/main
