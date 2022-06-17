@@ -20,7 +20,7 @@ char *interface_askName();
 void interface_welcome();
 
 int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, int n, char *msg, bool notChoose);
-bool interface_yesOrNo();
+bool interface_yesOrNo(WINDOW *win);
 
 int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n);
 // select n cards from cards[0..cards_size) to take
@@ -42,7 +42,7 @@ bool interface_useAbility(Player *this, Game *game);
 // whether of not use character ability
 
 
-void interface_printCards(Card **cards, int cards_size);
+void interface_printCards(WINDOW *win, Card **cards, int cards_size);
 
 char *print_role(Role role);
 

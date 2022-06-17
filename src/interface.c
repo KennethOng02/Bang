@@ -11,13 +11,40 @@
 #include "mylib.h"
 #include "ANSI-color-codes.h"
 
-// 救命，幫我改介面跟英文=w=
-// 我沒有美術天分，英文又很破...
-
 void moveCurDown(WINDOW *win) {
 	int y, x;
 	getyx(win, y, x);
 	wmove(win, y + 1, 1);
+	return;
+}
+
+void interface_printCenter(WINDOW *win, int start_row, char *str) {
+	int center_col = getmaxx(win) / 2;
+	int half_length = strlen(str) / 2;
+	int adjusted_col = center_col - half_length;
+
+	mvwprintw(win, start_row, adjusted_col, str);
+
+	return;
+}
+
+void interface_welcome() {
+	int row, col, vmid, hmid;
+	getmaxyx(stdscr,row,col);
+	vmid = row / 2;
+	hmid = col / 2 - 15;
+	attron(A_STANDOUT | A_BOLD | A_REVERSE);
+	interface_printCenter(stdscr, vmid - 4, " ____________________   __________ ");
+	interface_printCenter(stdscr, vmid - 3, " ___  __ )__    |__  | / /_  ____/ ");
+	interface_printCenter(stdscr, vmid - 2, " __  __  |_  /| |_   |/ /_  / __   ");
+	interface_printCenter(stdscr, vmid - 1, " _  /_/ /_  ___ |  /|  / / /_/ /   ");
+	interface_printCenter(stdscr, vmid,     " /_____/ /_/  |_/_/ |_/  \\____/    ");
+	interface_printCenter(stdscr, vmid + 2, " COPYRIGHT to Din, Brian, Kenneth  ");
+	attroff(A_STANDOUT | A_BOLD | A_REVERSE);
+	refresh();
+	interface_printCenter(stdscr, vmid + 6, " Press any key to start...");
+	getch();
+	clear();
 	return;
 }
 
@@ -61,73 +88,28 @@ char *interface_askName() {
 	return name;
 }
 
-void interface_printCenter(WINDOW *win, int start_row, char *str) {
-	int center_col = getmaxx(win) / 2;
-	int half_length = strlen(str) / 2;
-	int adjusted_col = center_col - half_length;
-
-	mvwprintw(win, start_row, adjusted_col, str);
-
-	return;
-}
-
-void interface_welcome() {
-	int row, col, vmid, hmid;
-	getmaxyx(stdscr,row,col);
-	vmid = row / 2;
-	hmid = col / 2 - 15;
-	attron(A_STANDOUT | A_BOLD | A_REVERSE);
-	interface_printCenter(stdscr, vmid - 4, " ____________________   __________ ");
-	interface_printCenter(stdscr, vmid - 3, " ___  __ )__    |__  | / /_  ____/ ");
-	interface_printCenter(stdscr, vmid - 2, " __  __  |_  /| |_   |/ /_  / __   ");
-	interface_printCenter(stdscr, vmid - 1, " _  /_/ /_  ___ |  /|  / / /_/ /   ");
-	interface_printCenter(stdscr, vmid,     " /_____/ /_/  |_/_/ |_/  \\____/    ");
-	interface_printCenter(stdscr, vmid + 2, " COPYRIGHT to Din, Brian, Kenneth  ");
-	attroff(A_STANDOUT | A_BOLD | A_REVERSE);
-	refresh();
-	interface_printCenter(stdscr, vmid + 6, " Press any key to start...");
-	getch();
-	clear();
-	return;
-}
-
-void interface_printCards(Card **cards, int cards_size) {
-	wmove(inputWin, 1, 1);
+void interface_printCards(WINDOW *win, Card **cards, int cards_size) {
+	wmove(win, 1, 1);
 	for ( int i=0; i<cards_size; i++ ) {
-		wprintw(inputWin, "(%d)", i+1);
+		wprintw(win, "(%d)", i+1);
 		if ( cards[i] ) {
-			wprintw(inputWin, "%s ", cards[i]->name);
+			wprintw(win, "%s ", cards[i]->name);
 		} else {
-			wprintw(inputWin, "UNKNOWN");
+			wprintw(win, "UNKNOWN");
 		}
 	}
 	moveCurDown(inputWin);
-	wrefresh(inputWin);
+	wrefresh(win);
 	return;
 }
 
-/* bool interface_yesOrNo(void) { */
-/* 	int bufSize = 10; */
-/* 	char buffer[bufSize]; */
-/* 	while ( true ) { */
-/* 		printw("(y/n):"); */
-/* 		if ( wgetnstr(stdscr, buffer, bufSize) == ERR ) { */
-/* 			WARNING_PRINT("Please enter 'y' or 'n'.\n"); */
-/* 			clearerr(stdin); */
-/* 			continue; */
-/* 		} */
-/* 		if ( strcmp(buffer, "y") == 0 ) return true; */
-/* 		if ( strcmp(buffer, "n") == 0 ) return false; */
-/* 	} */
-/* 	return false; */
-/* } */
-bool interface_yesOrNo(void) {
+bool interface_yesOrNo(WINDOW *win) {
 	int y, x;
-	getmaxyx(inputWin, y, x);
-	mvwprintw(inputWin, 0, x - 10, "(y/n): ");
-	wrefresh(inputWin);
+	getmaxyx(win, y, x);
+	mvwprintw(win, 0, x - 10, "(y/n): ");
+	wrefresh(win);
 	while(1) {
-		char c = getch();
+		char c = wgetch(win);
 		switch(c) {
 			case 'y':
 				return true;
@@ -136,13 +118,15 @@ bool interface_yesOrNo(void) {
 				return false;
 				break;
 			default:
+				wmove(win, 0, x - 3);
 				clrtoeol();
-				move(y, x+7);
+				wmove(win, 0, x - 3);
 				break;
 		}
 	}
 	return false;
 }
+
 int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, int n, char *msg, bool notChoose) {
 	bool wanted[cards_size];
 	bool done = false;
@@ -157,11 +141,9 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 
 		wprintw(messgWin, "%s", msg);
 		moveCurDown(messgWin);
-		/* if ( notChoose ) wprintw(messgWin, "Enter '0' to pass.\n"); */
-		/* wprintw(messgWin, "Enter 'i' to check other game info.\n"); */
-		/* wprintw(messgWin, "Enter 'q' to quit\n"); */
+
 		wrefresh(messgWin);
-		interface_printCards(cards, cards_size);
+		interface_printCards(inputWin, cards, cards_size);
 
 		/* scanw("%*[ \t\n]"); */
 		
@@ -171,16 +153,8 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		/* } */
 		wgetstr(inputWin, buffer);
 
-		/* if ( strcmp(buffer, "i") == 0 ) { */
-			// TODO: Switch to game menu
-			/* DEBUG_PRINT("This feature is fully implemented yet.\n"); */
-			/* clear(); */
-			/* interface_menu(game, this); */
-			/* continue; */
-		/* } */
-
 		if ( strcmp(buffer, "q") == 0 ) {
-			if(interface_yesOrNo()) {
+			if(interface_yesOrNo(inputWin)) {
 				Game_exit(game);
 			}
 			continue;
@@ -237,7 +211,7 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		interface_erase();
 		interface_draw(this->username, game);
 		refresh();
-		if ( interface_yesOrNo() ) {
+		if ( interface_yesOrNo(inputWin) ) {
 			free(msg);
 			return choices;
 		} else {
@@ -338,7 +312,7 @@ int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size
 bool interface_useAbility(Player *this, Game *game) {
 	wprintw(inputWin, "Do you want to use your characteristic ability?");
 	wrefresh(inputWin);
-	return interface_yesOrNo();
+	return interface_yesOrNo(inputWin);
 }
 
 char *print_role(Role role) {
