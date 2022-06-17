@@ -10,6 +10,7 @@
 #include "mylib.h"
 #include "ANSI-color-codes.h"
 
+
 // 救命，幫我改介面跟英文=w=
 // 我沒有美術天分，英文又很破...
 
@@ -212,15 +213,19 @@ int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size) 
 Player *interface_selectTarget(Player *this, Game *game) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
+	
 	snprintf(buffer, bufSize, "Please choose which player as target.");
-	int counter = 1;
-	for(int i = 0; i < game->numAvatar; i++) {
+	Avatar **availableAvatars = malloc(game->numAvailableAvatar * sizeof(Avatar*));
+	int counter = 0;
+	for ( int i=0; i<game->numAvatar; i++ ) {
 		if ( game->avatars[i]->isDead ) {
 			continue;
 		}
-		printf("%d) Player %d (%s) %s\n", counter, game->avatars[i]->id, game->avatars[i]->player->username, game->avatars[i]->role == SHERIFF ? "(SHERIFF)" : "");
-		counter++;
+		Avatar *avatar = game->avatars[i];
+		availableAvatars[counter] = avatar;
+		printf("%d) Player %d (%s) %s\n", ++counter, avatar->id, avatar->player->username, avatar->role == SHERIFF ? "(SHERIFF)" : "");
 	}
+
 	int choice;
 	while(1) {
 		printf("Choice: ");
@@ -228,13 +233,15 @@ Player *interface_selectTarget(Player *this, Game *game) {
 			WARNING_PRINT("Please enter an integer.\n");
 			continue;
 		}
-		if(choice < 1 || choice > game->numAvailableAvatar) {
+		if ( choice < 1 || choice > game->numAvailableAvatar ) {
 			WARNING_PRINT("Please input within range 1 to %d\n", game->numAvailableAvatar);
 			continue;
 		}
 		break;
 	}
-	return game->avatars[choice-1]->player;
+	Player *target = availableAvatars[choice-1]->player;
+	free(availableAvatars);
+	return target;
 }
 
 int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size) {

@@ -139,6 +139,16 @@ Avatar *Game_nextAvailableAvatar(Avatar *avatar) {
 	return game->avatars[idx];
 }
 
+Avatar *Game_firstAvailableAvatar() {
+	for ( int i=0; i<game->numAvatar; i++ ) {
+		if ( !game->avatars[i]->isDead ) {
+			return game->avatars[i];
+		}
+	}
+	ERROR_PRINT("Everyone dead.\n");
+	return NULL;
+}
+
 void Game_reShuffle() {
 	SWAP(game->discardPile, game->deck, Deck *);
 	SHUFFLE(game->deck->card_pile, game->deck->top+1, Card *);
