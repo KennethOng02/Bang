@@ -11,7 +11,6 @@
 #include "print.h"
 #include "mylib.h"
 
-<<<<<<< HEAD
 void moveCurDown(WINDOW *win) {
 	int y, x;
 	getyx(win, y, x);
@@ -48,11 +47,6 @@ void interface_welcome() {
 	clear();
 	return;
 }
-=======
-
-// 救命，幫我改介面跟英文=w=
-// 我沒有美術天分，英文又很破...
->>>>>>> main
 
 char *interface_askName() {
 	int maxY, maxX;
@@ -281,24 +275,9 @@ int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size) 
 Player *interface_selectTarget(Player *this, Game *game) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
-<<<<<<< HEAD
+	
 	interface_refresh(this->username, game);
 	wprintw(inputWin, "Please choose which player as target.");
-	moveCurDown(inputWin);
-	int counter = 1;
-	int y, x;
-	for(int i = 0; i < game->numAvatar; i++) {
-		if ( game->avatars[i]->isDead ) {
-			continue;
-		}
-		wprintw(inputWin, "%d) Player %d (%s) %s", counter, game->avatars[i]->id, game->avatars[i]->player->username, game->avatars[i]->role == SHERIFF ? "(SHERIFF)" : "");
-		moveCurDown(inputWin);
-		counter++;
-	}
-	wrefresh(inputWin);
-=======
-	
-	snprintf(buffer, bufSize, "Please choose which player as target.");
 	Avatar **availableAvatars = malloc(game->numAvailableAvatar * sizeof(Avatar*));
 	int counter = 0;
 	for ( int i=0; i<game->numAvatar; i++ ) {
@@ -307,10 +286,11 @@ Player *interface_selectTarget(Player *this, Game *game) {
 		}
 		Avatar *avatar = game->avatars[i];
 		availableAvatars[counter] = avatar;
-		printf("%d) Player %d (%s) %s\n", ++counter, avatar->id, avatar->player->username, avatar->role == SHERIFF ? "(SHERIFF)" : "");
+		wprintw(inputWin, "%d) Player %d (%s) %s\n", ++counter, avatar->id, avatar->player->username, avatar->role == SHERIFF ? "(SHERIFF)" : "");
+		moveCurDown(inputWin);
 	}
+	wrefresh(inputWin);
 
->>>>>>> main
 	int choice;
 	while(1) {
 		wprintw(inputWin, "Choice: ");
@@ -319,13 +299,8 @@ Player *interface_selectTarget(Player *this, Game *game) {
 			WARNING_PRINT("Please enter an integer.");
 			continue;
 		}
-<<<<<<< HEAD
 		if(choice < 1 || choice > game->numAvailableAvatar) {
 			WARNING_PRINT("Please input within range 1 to %d", game->numAvailableAvatar);
-=======
-		if ( choice < 1 || choice > game->numAvailableAvatar ) {
-			WARNING_PRINT("Please input within range 1 to %d\n", game->numAvailableAvatar);
->>>>>>> main
 			continue;
 		}
 		wrefresh(inputWin);
