@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "debug.h"
+#include "print.h"
 #include "mylib.h"
 
 int main () {

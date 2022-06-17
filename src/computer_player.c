@@ -7,7 +7,7 @@
 #include "player.h"
 #include "game.h"
 #include "card.h"
-#include "debug.h"
+#include "print.h"
 
 static int computerCounter = 0;
 char *computer_askName() {

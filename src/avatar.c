@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "avatar.h"
-#include "debug.h"
+#include "print.h"
 #include "cardid.h"
 #include "player.h"
 #include "card.h"

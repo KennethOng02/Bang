@@ -7,7 +7,7 @@
 #include "deck.h"
 #include "card.h"
 #include "cardid.h"
-#include "debug.h"
+#include "print.h"
 
 Card *Deck_draw(Deck *this) {
 	Card *new = this->card_pile[this->top];

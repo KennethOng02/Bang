@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "card.h"
-#include "debug.h"
+#include "print.h"
 #include "avatar.h"
 #include "cardid.h"
 #include "characterid.h"
@@ -117,7 +117,7 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 }
 int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
-	wprintw(messgWin, "%s use %s\n",user->player->username,card->name);
+	wprintw(messgWin, "%s use %sn",user->player->username,card->name);
 	moveCurDown(messgWin);
 	wrefresh(messgWin);
 	int list_size;

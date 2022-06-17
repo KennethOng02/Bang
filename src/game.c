@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <ncurses.h>
-#include "debug.h"
+#include "print.h"
 #include "mylib.h"
 #include "avatar.h"
 #include "deck.h"
@@ -18,6 +18,7 @@ static Game * game;
 void Game_init(int numAvatar) {
 
 	initscr();
+	start_color();
 	cbreak();
 	keypad(stdscr, TRUE);
 	mouseinterval(0);

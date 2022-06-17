@@ -8,7 +8,7 @@
 #include "card.h"
 #include "interface.h"
 #include "computer_player.h"
-#include "debug.h"
+#include "print.h"
 
 Player *Player_init(int id) {
 	Player *new = malloc(sizeof(Player));

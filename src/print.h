@@ -19,15 +19,28 @@
 /* 		fprintf(stderr, COLOR_RESET); \ */
 /* 		} */
 
+/* #ifdef __DEBUG__ */
+/* #define DEBUG_PRINT(...) { \ */
+/* 		fprintf(stderr, CYN); \ */
+/* 		fprintf(stderr, "[DEBUG] "); \ */
+/* 		fprintf(stderr, __VA_ARGS__ ); \ */
+/* 		fprintf(stderr, COLOR_RESET); \ */
+/* 		} */
+/* #else */
+/* #define DEBUG_PRINT(...) */ 
+/* #endif */
+
 #define ERROR_PRINT(...) { \
 		printw("[ERROR] File:%s Line:%d \n", __FILE__, __LINE__); \
 		exit(-1); \
 		}
 
 #define WARNING_PRINT(...) { \
-		interface_erase(); \
+		init_pair(1, COLOR_BLACK, COLOR_YELLOW); \
+		wattron(messgWin, COLOR_PAIR(1)); \
 		wprintw(messgWin, "[WARNING] "); \
 		wprintw(messgWin, __VA_ARGS__); \
+		wattroff(messgWin, COLOR_PAIR(1)); \
 		moveCurDown(messgWin); \
 		wrefresh(messgWin); \
 		}
@@ -39,13 +52,3 @@
 #else
 #define DEBUG_PRINT(...) 
 #endif
-/* #ifdef __DEBUG__ */
-/* #define DEBUG_PRINT(...) { \ */
-/* 		fprintf(stderr, CYN); \ */
-/* 		fprintf(stderr, "[DEBUG] "); \ */
-/* 		fprintf(stderr, __VA_ARGS__ ); \ */
-/* 		fprintf(stderr, COLOR_RESET); \ */
-/* 		} */
-/* #else */
-/* #define DEBUG_PRINT(...) */ 
-/* #endif */
