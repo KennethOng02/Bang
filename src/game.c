@@ -149,6 +149,16 @@ Avatar *Game_nextAvailableAvatar(Avatar *avatar) {
 	return game->avatars[idx];
 }
 
+Avatar *Game_firstAvailableAvatar() {
+	for ( int i=0; i<game->numAvatar; i++ ) {
+		if ( !game->avatars[i]->isDead ) {
+			return game->avatars[i];
+		}
+	}
+	ERROR_PRINT("Everyone dead.\n");
+	return NULL;
+}
+
 void Game_reShuffle() {
 	SWAP(game->discardPile, game->deck, Deck *);
 	SHUFFLE(game->deck->card_pile, game->deck->top+1, Card *);
@@ -260,8 +270,11 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 	case CARD_BALOU:
 		if ( target->cards_size == 0 ) {
 			bool hasEquip = false;
-			for ( Card ** iter = (Card **)user->equipment; iter < (Card **)(user->equipment+1); iter++) {
+			for ( Card ** iter = (Card **)target->equipment; iter < (Card **)(target->equipment+1); iter++) {
 				if ( *iter ) hasEquip = true;
+			}
+			if(hasEquip == false) {
+				printf("the target you choose had no card left!\n");
 			}
 			return hasEquip;
 		}
@@ -298,7 +311,7 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 		return true;
 
 	case CARD_BARREL:
-	case CARD_SCOPE:
+	case CARD_APPALOOSA:
 	case CARD_MUSTANG:
 	case CARD_VOLCANIC:
 	case CARD_SCHOFIELD:

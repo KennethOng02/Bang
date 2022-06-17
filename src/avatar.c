@@ -370,9 +370,24 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 	// fin TODO: Character ability - Jourdonnais
 	// fin TODO: Equipment - Barrel 
 	// TODO: Character ability - Sid Ketchum
-	DEBUG_PRINT( "Ask Avatar %d to respond for %s Remain: %d", this->id, to_react ? to_react->name : "(NULL)" ,this->cards_size);
-	if( (this->equipment->armour != NULL || this->character->id == Jourdonnais) && to_react && to_react->id == CARD_BANG) {
-		if( Avatar_judge(this,game,CARD_BARREL) == 0)return 0;
+	DEBUG_PRINT( "Ask Avatar %d to respond for %s Remain: %d\n", this->id, to_react ? to_react->name : "(NULL)" ,this->cards_size);
+	if( this->equipment->armour != NULL  && to_react && to_react->id == CARD_BANG) {
+		MESSAGE_PRINT("Using Barrel's ability,");
+		if( Avatar_judge(this,game,CARD_BARREL) == 0) {
+			MESSAGE_PRINT("is heart!\n");
+			return 0;
+		}else {
+			MESSAGE_PRINT("uh oh! is not heart!\n");
+		}
+	}
+	if( this->character->id == Jourdonnais && to_react && to_react->id == CARD_BANG ) {
+		MESSAGE_PRINT("Using his ability,");
+		if( Avatar_judge(this,game,CARD_BARREL) == 0) {
+			MESSAGE_PRINT("is heart!\n");
+			return 0;
+		}else {
+			MESSAGE_PRINT("uh oh! is not heart!\n");
+		}
 	}
 	while(1) {
 		int react = Player_selectReact(this->player, game, this->cards, this->cards_size);
@@ -544,8 +559,8 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 		DEBUG_PRINT("%s hurt, using his ability.",this->player->username);
 		Avatar_draw(this,game);
 	}
-	if( attacker && this->character->id == El_Gringo && attacker->cards_size != 0) {
-		DEBUG_PRINT("%s hurt, using his ability.",this->player->username);
+	if( attacker && this->character->id == El_Gringo && attacker->cards_size > 0) {
+		DEBUG_PRINT("%s hurt, using his ability.\n",this->player->username);
 		Card **list = malloc( attacker->cards_size * sizeof(Card *) );
 		memset(list, 0, attacker->cards_size * sizeof(Card *));
 		int *choose = Avatar_choose(this,game,list,attacker->cards_size,1);
@@ -573,7 +588,7 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 				WARNING_PRINT("Because %s equipped the same equipment,the previous card had been discard!",this->player->username);
 			}
 			this->equipment->armour = card;
-		}else if ( card->id == CARD_SCOPE ) {
+		}else if ( card->id == CARD_APPALOOSA ) {
 			if( this->equipment->horseMinus != NULL) {
 				Card *trash = Avatar_unequip(this,game,&(this->equipment->horseMinus));
 				Deck_put(game->discardPile,trash);

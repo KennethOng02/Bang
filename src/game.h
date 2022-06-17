@@ -39,6 +39,7 @@ void Game_checkWin();
 int Game_findIndex(Avatar *avatar);
 void Game_reShuffle();
 Avatar *Game_nextAvailableAvatar(Avatar *avatar);
+Avatar *Game_firstAvailableAvatar();
 Game *Game_queryInfo( Player *player );
 
 bool validPlay(Avatar *user, Avatar *target, Card *card);

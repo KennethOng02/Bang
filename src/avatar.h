@@ -64,7 +64,7 @@ struct avatar {
 	int			cards_size;
 	Card 		**cards;
 	Equipment	*equipment;
-};
+}__attribute__((packed));
 
 Avatar *Avatar_init(int id, Character *character, Role role);
 
