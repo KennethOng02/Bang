@@ -203,8 +203,11 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		int counter = 0;
 		wprintw(boardWin, "Your choice(s) is:\n");
 		for ( int i=0; i<cards_size; i++ ) {
-			if ( wanted[i] ) {
+			if ( wanted[i] && cards[i]) {
 				wprintw(boardWin, "	%d. %s\n", counter+1, cards[i]->name);
+				choices[counter++] = i;
+			}else if ( wanted[i] ) {
+				wprintw(boardWin, "	NO.%d card\n",i+1);
 				choices[counter++] = i;
 			}
 		}
@@ -286,8 +289,8 @@ Player *interface_selectTarget(Player *this, Game *game) {
 			WARNING_PRINT("Please enter an integer.\n");
 			continue;
 		}
-		if(choice < 1 && choice >= game->numAvatar) {
-			WARNING_PRINT("Please input within range 1 to %d\n", game->numAvatar);
+		if(choice < 1 || choice > game->numAvailableAvatar) {
+			WARNING_PRINT("Please input within range 1 to %d\n", game->numAvailableAvatar);
 			continue;
 		}
 		wrefresh(inputWin);
@@ -476,7 +479,6 @@ void interface_drawBoard(char *username, Game *game) {
 	interface_printPlayerInfoHorizontal(boardWin, game->avatars[2], 1);
 
 	interface_printCardHorizontal(boardWin, game->avatars[3]->cards_size, COLS - 9);
-	/* interface_printPlayerInfoVertical(boardWin, game->avatars[3], COLS - 10 - strlen((game->avatars[3]->role == SHERIFF) ? "SHERIFF" : "UNKNOWN") - strlen(game->avatars[3]->character->name) - 13); */
 	interface_printPlayerInfoVertical(boardWin, game->avatars[3], COLS - strlen((game->avatars[3]->role == SHERIFF) ? "SHERIFF" : "UNKNOWN") - strlen(game->avatars[3]->character->name) - 6);
 
 	mvwprintw(boardWin, 0, 2, "%s's Turn", username);

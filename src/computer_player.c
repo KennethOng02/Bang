@@ -86,7 +86,10 @@ Player *computer_selectTarget(Player *this, Game *game) {
 
 int computer_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
 	usleep(500);
-	return rand() % (cards_size+1) - 1;
+	DEBUG_PRINT("here la\n");
+	int ret = ( rand() % (cards_size+1) ) - 1;
+	DEBUG_PRINT("here ba\n");
+	return ret;
 }
 
 bool computer_useAbility(Player *this, Game *game) {

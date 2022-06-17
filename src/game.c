@@ -140,7 +140,7 @@ int Game_findIndex(Avatar *avatar)	{
 Avatar *Game_nextAvailableAvatar(Avatar *avatar) {
 	int idx = Game_findIndex(avatar);
 	if ( idx == -1 ) {
-		ERROR_PRINT("Avatar %d not in game game.\n", avatar->id);
+		ERROR_PRINT("Avatar %d not in game.\n", avatar->id);
 	}
 	do {
 		idx = (idx+1) % game->numAvatar;
@@ -258,20 +258,11 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 	case CARD_PANIC:
 	case CARD_BALOU:
 		if ( target->cards_size == 0 ) {
-			if ( target->equipment->gun == NULL ) {
-				if ( target->equipment->armour == NULL ) {
-					if ( target->equipment->horsePlus == NULL ) {
-						if ( target->equipment->horseMinus == NULL ) {
-							if ( target->equipment->jail == NULL ) {
-								if ( target->equipment->bomb == NULL ) {
-									WARNING_PRINT("He is so poor, don't do that.\n");
-									return false;
-								}
-							}
-						}
-					}
-				}
+			bool hasEquip = false;
+			for ( Card ** iter = (Card **)user->equipment; iter < (Card **)(user->equipment+1); iter++) {
+				if ( *iter ) hasEquip = true;
 			}
+			return hasEquip;
 		}
 		return true;
 
