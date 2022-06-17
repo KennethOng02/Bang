@@ -250,8 +250,11 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 	case CARD_BALOU:
 		if ( target->cards_size == 0 ) {
 			bool hasEquip = false;
-			for ( Card ** iter = (Card **)user->equipment; iter < (Card **)(user->equipment+1); iter++) {
+			for ( Card ** iter = (Card **)target->equipment; iter < (Card **)(target->equipment+1); iter++) {
 				if ( *iter ) hasEquip = true;
+			}
+			if(hasEquip == false) {
+				printf("the target you choose had no card left!\n");
 			}
 			return hasEquip;
 		}

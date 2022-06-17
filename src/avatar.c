@@ -357,8 +357,23 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 	// fin TODO: Equipment - Barrel 
 	// TODO: Character ability - Sid Ketchum
 	DEBUG_PRINT( "Ask Avatar %d to respond for %s Remain: %d\n", this->id, to_react ? to_react->name : "(NULL)" ,this->cards_size);
-	if( (this->equipment->armour != NULL || this->character->id == Jourdonnais) && to_react && to_react->id == CARD_BANG) {
-		if( Avatar_judge(this,game,CARD_BARREL) == 0)return 0;
+	if( this->equipment->armour != NULL  && to_react && to_react->id == CARD_BANG) {
+		printf("Using Barrel's ability,");
+		if( Avatar_judge(this,game,CARD_BARREL) == 0) {
+			printf("is heart!\n");
+			return 0;
+		}else {
+			printf("uh oh! is not heart!\n");
+		}
+	}
+	if( this->character->id == Jourdonnais && to_react && to_react->id == CARD_BANG ) {
+		printf("Using his ability,");
+		if( Avatar_judge(this,game,CARD_BARREL) == 0) {
+			printf("is heart!\n");
+			return 0;
+		}else {
+			printf("uh oh! is not heart!\n");
+		}
 	}
 	while(1) {
 		int react = Player_selectReact(this->player, game, this->cards, this->cards_size);
@@ -530,7 +545,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 		DEBUG_PRINT("%s hurt, using his ability.\n",this->player->username);
 		Avatar_draw(this,game);
 	}
-	if( attacker && this->character->id == El_Gringo && attacker->cards_size != 0) {
+	if( attacker && this->character->id == El_Gringo && attacker->cards_size > 0) {
 		DEBUG_PRINT("%s hurt, using his ability.\n",this->player->username);
 		Card **list = malloc( attacker->cards_size * sizeof(Card *) );
 		memset(list, 0, attacker->cards_size * sizeof(Card *));
