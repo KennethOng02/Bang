@@ -274,7 +274,7 @@ bool validPlay(Avatar *user, Avatar *target, Card *card) {
 				if ( *iter ) hasEquip = true;
 			}
 			if(hasEquip == false) {
-				printf("the target you choose had no card left!\n");
+				MESSAGE_PRINT("the target you choose had no card left!");
 			}
 			return hasEquip;
 		}

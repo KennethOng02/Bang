@@ -54,6 +54,12 @@
 	sleep(1); \
 }
 
+#define INPUT_PRINT(...) { \
+	wprintw(inputWin, __VA_ARGS__); \
+	moveCurDown(inputWin); \
+	wrefresh(inputWin); \
+}
+
 #ifdef __DEBUG__
 #define DEBUG_PRINT(...) { \
 		wprintw(messgWin, "[DEBUG] "); \

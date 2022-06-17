@@ -159,8 +159,7 @@ int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, in
 		
 		memset(wanted, false, cards_size * sizeof(bool));
 
-		wprintw(messgWin, "%s", msg);
-		moveCurDown(messgWin);
+		MESSAGE_PRINT("%s", msg);
 
 		wrefresh(messgWin);
 		interface_printCards(inputWin, cards, cards_size);
@@ -242,9 +241,7 @@ int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 	interface_refresh(this->username, game);
-	wprintw(inputWin, "Please choose %d cards from following list.", n);
-	moveCurDown(inputWin);
-	wrefresh(inputWin);
+	INPUT_PRINT("Please choose %d cards from following list.", n);
 	return interface_choose(this, game, cards, cards_size, n, buffer, false);
 }
 
@@ -252,9 +249,7 @@ int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 	/* snprintf(buffer, bufSize, "Please choose %d card(s) to drop.", n); */
-	wprintw(inputWin, "Please choose %d card(s) to drop.", n);
-	moveCurDown(inputWin);
-	wrefresh(inputWin);
+	INPUT_PRINT("Please choose %d card(s) to drop.", n);
 	return interface_choose(this, game, cards, cards_size, n, buffer, false);
 }
 
@@ -262,9 +257,7 @@ int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size) 
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 	interface_refresh(this->username, game);
-	wprintw(inputWin, "Please choose a card to use");
-	moveCurDown(inputWin);
-	wrefresh(inputWin);
+	INPUT_PRINT("Please choose a card to use");
 	int *ret = interface_choose(this, game, cards, cards_size, 1, buffer, true);
 	if ( ret == NULL ) {
 		return -1;
@@ -277,7 +270,7 @@ Player *interface_selectTarget(Player *this, Game *game) {
 	char *buffer = malloc(bufSize);
 	
 	interface_refresh(this->username, game);
-	wprintw(inputWin, "Please choose which player as target.");
+	INPUT_PRINT("Please choose which player as target.");
 	Avatar **availableAvatars = malloc(game->numAvailableAvatar * sizeof(Avatar*));
 	int counter = 0;
 	for ( int i=0; i<game->numAvatar; i++ ) {
@@ -286,10 +279,8 @@ Player *interface_selectTarget(Player *this, Game *game) {
 		}
 		Avatar *avatar = game->avatars[i];
 		availableAvatars[counter] = avatar;
-		wprintw(inputWin, "%d) Player %d (%s) %s\n", ++counter, avatar->id, avatar->player->username, avatar->role == SHERIFF ? "(SHERIFF)" : "");
-		moveCurDown(inputWin);
+		INPUT_PRINT("%d) Player %d (%s) %s", ++counter, avatar->id, avatar->player->username, avatar->role == SHERIFF ? "(SHERIFF)" : "");
 	}
-	wrefresh(inputWin);
 
 	int choice;
 	while(1) {
@@ -315,9 +306,7 @@ int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 	/* snprintf(buffer, bufSize, "Please choose a card to respond."); */
-	wprintw(inputWin, "Please choose a card to respond.");
-	moveCurDown(inputWin);
-	wrefresh(inputWin);
+	INPUT_PRINT("Please choose a card to respond.");
 	int *ret = interface_choose(this, game, cards, cards_size, 1, buffer, true);
 	if ( ret != NULL ) {
 		return ret[0];
@@ -467,7 +456,6 @@ void interface_drawBoard(char *username, Game *game) {
 	idlok(boardWin, TRUE);
 	scrollok(boardWin, TRUE);
 	clearok(boardWin, TRUE);
-	setscrreg(boardWin, TRUE);
 	box(boardWin, 0, 0);
 
 	interface_drawCardVertical(boardWin, 2, yBoard / 2);

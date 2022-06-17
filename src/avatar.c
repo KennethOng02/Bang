@@ -374,19 +374,19 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 	if( this->equipment->armour != NULL  && to_react && to_react->id == CARD_BANG) {
 		MESSAGE_PRINT("Using Barrel's ability,");
 		if( Avatar_judge(this,game,CARD_BARREL) == 0) {
-			MESSAGE_PRINT("is heart!\n");
+			MESSAGE_PRINT("is heart!");
 			return 0;
 		}else {
-			MESSAGE_PRINT("uh oh! is not heart!\n");
+			MESSAGE_PRINT("uh oh! is not heart!");
 		}
 	}
 	if( this->character->id == Jourdonnais && to_react && to_react->id == CARD_BANG ) {
 		MESSAGE_PRINT("Using his ability,");
 		if( Avatar_judge(this,game,CARD_BARREL) == 0) {
-			MESSAGE_PRINT("is heart!\n");
+			MESSAGE_PRINT("is heart!");
 			return 0;
 		}else {
-			MESSAGE_PRINT("uh oh! is not heart!\n");
+			MESSAGE_PRINT("uh oh! is not heart!");
 		}
 	}
 	while(1) {

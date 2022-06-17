@@ -100,7 +100,6 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 		{
 			MESSAGE_PRINT("%s react with BANG!,nothing happened.",next->player->username);
 		}
-		moveCurDown(messgWin);
 		next = Game_nextAvailableAvatar(next);
 	}
 	interface_refresh(user->player->username, game);
