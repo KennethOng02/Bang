@@ -210,7 +210,7 @@ int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size) 
 	return ret[0];
 }
 
-Player *interface_selectTarget(Player *this, Game *game) {
+int interface_selectTarget(Player *this, Game *game) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 	
@@ -229,6 +229,7 @@ Player *interface_selectTarget(Player *this, Game *game) {
 	int choice;
 	while(1) {
 		printf("Choice: ");
+		scanf("%*[ \t\n]");
 		if ( scanf("%d", &choice) != 1 ) {
 			WARNING_PRINT("Please enter an integer.\n");
 			continue;
@@ -241,7 +242,12 @@ Player *interface_selectTarget(Player *this, Game *game) {
 	}
 	Player *target = availableAvatars[choice-1]->player;
 	free(availableAvatars);
-	return target;
+
+	for ( int i=0; i<game->numAvatar; i++ ) {
+		if ( game->avatars[i]->id == target->id ) return i;
+	}
+	ERROR_PRINT("Cannot find.\n");
+	return -1;
 }
 
 int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size) {

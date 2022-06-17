@@ -10,10 +10,11 @@
 #include "computer_player.h"
 #include "debug.h"
 
-Player *Player_init(int id) {
+Player *Player_init(int id, Avatar *avatar) {
 	Player *new = malloc(sizeof(Player));
 
 	new->id = id;
+	new->avatar = avatar;
 	printf("Player %d is computer?\n", new->id);
 
 	new->isComputer = interface_yesOrNo();
@@ -54,27 +55,27 @@ int *Player_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, i
 	}
 }
 
-int Player_selectUse(Player *this, Game *game, Card **cards, int cards_size) {
+int Player_selectUse(Player *this, Game *game, Card **cards, bool *validCards, int cards_size) {
 	if ( !this->isComputer ) {
 		return interface_selectUse(this, game, cards, cards_size);
 	} else {
-		return computer_selectUse(this, game, cards, cards_size);
+		return computer_selectUse(this, game, cards, validCards, cards_size);
 	}
 }
 
-Player *Player_selectTarget(Player *this, Game *game) {
+int Player_selectTarget(Player *this, Game *game, bool *validTargets) {
 	if ( !this->isComputer ) {
 		return interface_selectTarget(this, game);
 	} else {
-		return computer_selectTarget(this, game);
+		return computer_selectTarget(this, game, validTargets);
 	}
 }
 
-int Player_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
+int Player_selectReact(Player *this, Game *game, Card **cards, bool *validReact, int cards_size) {
 	if ( !this->isComputer ) {
 		return interface_selectReact(this, game, cards, cards_size);
 	} else {
-		return computer_selectReact(this, game, cards, cards_size);
+		return computer_selectReact(this, game, cards, validReact, cards_size);
 	}
 }
 

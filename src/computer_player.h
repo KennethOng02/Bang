@@ -18,12 +18,12 @@ int *computer_chooseDrop(Player *this, Game *game, Card **cards, int cards_size,
 // select n cards from cards[0..cards_size) to drop
 // return their indexes
 
-int computer_selectUse(Player *this, Game *game, Card **cards, int cards_size);
+int computer_selectUse(Player *this, Game *game, Card **cards, bool *validCards, int cards_size);
 // select 1 card from cards[0..cards_size) to use
 // return its index
-Player *computer_selectTarget(Player *this, Game *game);
+int computer_selectTarget(Player *this, Game *game, bool *validTargets);
 
-int computer_selectReact(Player *this, Game *game, Card **cards, int cards_size);
+int computer_selectReact(Player *this, Game *game, Card **cards, bool *validReact, int cards_size);
 // select 1 card from cards[0..cards_size) to use to react
 
 bool computer_useAbility(Player *this, Game *game);
