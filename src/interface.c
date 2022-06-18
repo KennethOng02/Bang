@@ -425,6 +425,9 @@ char *interface_getPlayerEquipment(Avatar *avatar) {
 		snprintf(buffer, 32, "[DYNAMITE] ");
 		strcat(info, buffer);
 	}
+	char *end = info + strlen(info) - 1;
+	while(end > info && isspace((unsigned char)*end)) end--;
+	end[1] = '\0';
 	return info;
 }
 
@@ -476,7 +479,7 @@ void interface_drawBoard(char *username, Game *game) {
 
 	interface_drawCardHorizontal(boardWin, game->avatars[3]->cards_size, COLS - 9);
 	info = interface_getPlayerEquipment(game->avatars[3]);
-	int offset = strlen(game->avatars[3]->character->name) + 13;
+	int offset = strlen(game->avatars[3]->character->name) + 14;
 	if(strlen(info) > offset) offset = strlen(info);
 	interface_printPlayerInfoVertical(boardWin, game->avatars[3], COLS - offset);
 
