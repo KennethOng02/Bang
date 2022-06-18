@@ -1,0 +1,83 @@
+[DEBUG] finish generating deck!
+[DEBUG] Finish shuffling roles: { 0, 2, 3, 2 }
+[DEBUG] SHERIFF is avatar 1.
+[DEBUG] Finish initiation of player Din with avatar 1
+[DEBUG] Avatar 1 get the card: DYNAMITE.
+[DEBUG] Avatar 1 draw one card.Remain: 79 cards.
+[DEBUG] Avatar 1 get the card: MISSED!.
+[DEBUG] Avatar 1 draw one card.Remain: 78 cards.
+[DEBUG] Avatar 1 get the card: VOLCANIC.
+[DEBUG] Avatar 1 draw one card.Remain: 77 cards.
+[DEBUG] Avatar 1 get the card: BANG!.
+[DEBUG] Avatar 1 draw one card.Remain: 76 cards.
+[DEBUG] Avatar 1 get the card: WELLS FARGO.
+[DEBUG] Avatar 1 draw one card.Remain: 75 cards.
+[DEBUG] Finish initiation of player Computer 1 with avatar 2
+[DEBUG] Avatar 2 get the card: BANG!.
+[DEBUG] Avatar 2 draw one card.Remain: 74 cards.
+[DEBUG] Avatar 2 get the card: JAIL.
+[DEBUG] Avatar 2 draw one card.Remain: 73 cards.
+[DEBUG] Avatar 2 get the card: BARREL.
+[DEBUG] Avatar 2 draw one card.Remain: 72 cards.
+[DEBUG] Finish initiation of player Computer 2 with avatar 3
+[DEBUG] Avatar 3 get the card: BANG!.
+[DEBUG] Avatar 3 draw one card.Remain: 71 cards.
+[DEBUG] Avatar 3 get the card: MISSED!.
+[DEBUG] Avatar 3 draw one card.Remain: 70 cards.
+[DEBUG] Avatar 3 get the card: MISSED!.
+[DEBUG] Avatar 3 draw one card.Remain: 69 cards.
+[DEBUG] Finish initiation of player Computer 3 with avatar 4
+[DEBUG] Avatar 4 get the card: DUEL.
+[DEBUG] Avatar 4 draw one card.Remain: 68 cards.
+[DEBUG] Avatar 4 get the card: BANG!.
+[DEBUG] Avatar 4 draw one card.Remain: 67 cards.
+[DEBUG] Avatar 4 get the card: GENERAL STORE.
+[DEBUG] Avatar 4 draw one card.Remain: 66 cards.
+[DEBUG] Avatar 4 get the card: MISSED!.
+[DEBUG] Avatar 4 draw one card.Remain: 65 cards.
+[DEBUG] Done Game_init
+[DEBUG] Stating game loop
+[DEBUG] Avatar 1 get the card: BANG!.
+[DEBUG] Avatar 1 draw one card.Remain: 64 cards.
+[DEBUG] Avatar 1 get the card: SALOON.
+[DEBUG] Avatar 1 draw one card.Remain: 63 cards.
+[DEBUG] Finish cheking whether card can be play.
+[DEBUG] Finish asking what card he want to play.
+[DEBUG] Avatar 1's card: DYNAMITE had been taken.
+[DEBUG] Din use card "DYNAMITE".
+[DEBUG] Avatar 1 quipped the card: DYNAMITE.
+[DEBUG] Finish cheking whether card can be play.
+[DEBUG] Finish asking what card he want to play.
+[DEBUG] Avatar 1's card: WELLS FARGO had been taken.
+[DEBUG] Din use card "WELLS FARGO".
+[DEBUG] Avatar 1 get the card: PANIC!.
+[DEBUG] Avatar 1 draw one card.Remain: 62 cards.
+[DEBUG] Avatar 1 get the card: BANG!.
+[DEBUG] Avatar 1 draw one card.Remain: 61 cards.
+[DEBUG] Avatar 1 get the card: BANG!.
+[DEBUG] Avatar 1 draw one card.Remain: 60 cards.
+[DEBUG] Finish cheking whether card can be play.
+[DEBUG] Din finish his turn.
+[DEBUG] Avatar 1's card: MISSED! had been taken.
+[DEBUG] Avatar 1's card: VOLCANIC had been taken.
+[DEBUG] Avatar 1's card: BANG! had been taken.
+[DEBUG] Avatar 2 get the card: GATLING.
+[DEBUG] Avatar 2 draw one card.Remain: 59 cards.
+[DEBUG] Avatar 2 get the card: BANG!.
+[DEBUG] Avatar 2 draw one card.Remain: 58 cards.
+[DEBUG] Finish cheking whether card can be play.
+[DEBUG] computer selecting.
+[DEBUG] Finish asking what card he want to play.
+[DEBUG] computer selecting.
+[DEBUG] Avatar 2's card: BANG! had been taken.
+[DEBUG] Computer 1 use card "BANG!" on Din.
+[DEBUG] Ask Avatar 1 to respond for BANG! Remain: 5
+[DEBUG] Done Player_free![DEBUG] Done Equipment_free
+[DEBUG] Done Avatar_free!
+[DEBUG] Done Player_free![DEBUG] Done Equipment_free
+[DEBUG] Done Avatar_free!
+[DEBUG] Done Player_free![DEBUG] Done Equipment_free
+[DEBUG] Done Avatar_free!
+[DEBUG] Done Player_free![DEBUG] Done Equipment_free
+[DEBUG] Done Avatar_free!
+[DEBUG] Game_free Done !

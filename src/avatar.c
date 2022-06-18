@@ -150,33 +150,29 @@ void Avatar_onTurn(Avatar *this, Game *game)  {
 
 	MESSAGE_PRINT("%s's turn.", this->player->username);
 
-	interface_refresh(this->player->username, game);
+	//interface_refresh(this->player->username, game);
 
 	bool jailed = false;
 	Avatar_onJudge(this, game, &jailed);
 	if ( jailed ) return;
 
-	/* sleep(1); */
-	interface_refresh(this->player->username, game);
+	//interface_refresh(this->player->username, game);
 	
 	if(this->isDead == true) return;
 	Avatar_onDraw(this, game);
 	if(this->isDead == true) return;
 
-	/* sleep(1); */
-	interface_refresh(this->player->username, game);
+	//interface_refresh(this->player->username, game);
 
 	Avatar_onPlay(this, game);
 
 	if(this->isDead == true) return;
 	
-	/* sleep(1); */
-	interface_refresh(this->player->username, game);
+	//interface_refresh(this->player->username, game);
 
 	Avatar_onDump(this, game);
 
-	/* sleep(1); */
-	interface_refresh(this->player->username, game);
+	//interface_refresh(this->player->username, game);
 
 	MESSAGE_PRINT("%s's turn finish.", this->player->username);
 }
@@ -242,24 +238,28 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 			validTargets[i] = game->avatars[i]->id != this->id && !game->avatars[i]->isDead && game->avatars[i]->cards_size > 0;
 			if ( validTargets[i] ) validTargets_any = true;
 		}
-		if( validTargets_any && Player_useAbility(this->player,game) == true ) {
-			int retIdx = -1;
-			while(1) {
-				retIdx = Player_selectTarget(this->player,game, validTargets);
-				if ( retIdx < 0 || retIdx >= game->numAvatar ) ERROR_PRINT("Invalid index.");
-				if ( validTargets[retIdx] ) break;
+		bool drawed = false;
+		if( validTargets_any ) {
+			while ( Player_useAbility(this->player, game) ) {
+				int retIdx = -1;
+				while(1) {
+					retIdx = Player_selectTarget(this->player,game, validTargets);
+					if ( retIdx < -1 || retIdx >= game->numAvatar ) ERROR_PRINT("Invalid index.");
+					if ( retIdx == -1 || validTargets[retIdx] ) break;
+				}
+				if ( retIdx == -1 ) continue;
+				drawed = true;
+				Avatar *target = game->avatars[retIdx];
+				// Play
+				Card **list = malloc( target->cards_size * sizeof(Card *) );
+				memset(list, 0, target->cards_size * sizeof(Card *));
+				int *choose = Avatar_choose(this,game,list,target->cards_size,1);
+				MESSAGE_PRINT("%s using his ability(%s),he draw %s's card",this->player->username,this->character->name,target->player->username);
+				Avatar_get(this,game,Avatar_taken(target, game, choose[0]));
+				free(list);
 			}
-			Avatar *target = game->avatars[retIdx];
-			// Play
-			Card **list = malloc( target->cards_size * sizeof(Card *) );
-			memset(list, 0, target->cards_size * sizeof(Card *));
-			int *choose = Avatar_choose(this,game,list,target->cards_size,1);
-			MESSAGE_PRINT("%s using his ability(%s),he draw %s's card",this->player->username,this->character->name,target->player->username);
-			Avatar_get(this,game,Avatar_taken(target, game, choose[0]));
-			free(list);
-		} else {
-			Avatar_draw(this,game);
 		}
+		if ( !drawed ) Avatar_draw(this,game);
 		Avatar_draw(this,game);
 		free(validTargets);
 	}
@@ -339,14 +339,10 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 
 		// Ask for what he want to play
 		int retIdx;
-		if ( valid_any ) {
-			while ( 1 ) {
-				retIdx = Player_selectUse(this->player, game, this->cards, validPlays_any, this->cards_size);
-				if ( retIdx >= this->cards_size || retIdx < -1 ) ERROR_PRINT("Invalid index.");
-				if ( retIdx == -1 || validPlays_any[retIdx] ) break;
-			}
-		} else {
-			retIdx = -1;
+		while ( 1 ) {
+			retIdx = Player_selectUse(this->player, game, this->cards, validPlays_any, this->cards_size);
+			if ( retIdx >= this->cards_size || retIdx < -1 ) ERROR_PRINT("Invalid index.");
+			if ( retIdx == -1 || validPlays_any[retIdx] ) break;
 		}
 		if ( retIdx == -1 ) {
 			DEBUG_PRINT("%s finish his turn.\n", this->player->username);
@@ -366,9 +362,10 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 		if ( card->type != CARD_DIST_NON || calamity_bang ) {
 			while ( 1 ) {
 				retPlayerIdx = Player_selectTarget(this->player, game, validPlays[retIdx]);
-				if ( retPlayerIdx >= game->numAvatar || retPlayerIdx < 0 ) ERROR_PRINT("Invalid index."); 
-				if ( validPlays[retIdx][retPlayerIdx] ) break;
+				if ( retPlayerIdx >= game->numAvatar || retPlayerIdx < -1 ) ERROR_PRINT("Invalid index."); 
+				if ( retPlayerIdx == -1 || validPlays[retIdx][retPlayerIdx] ) break;
 			}
+			if ( retPlayerIdx == -1 ) continue;
 		}
 
 		// Play card
@@ -459,15 +456,11 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 
 	// Ask which card he want react
 	int react;
-	if ( any ) {
-		while ( 1 ) {
-			react = Player_selectReact(this->player, game, this->cards, validReact, this->cards_size);
-			if ( react < -1 || react >= this->cards_size ) ERROR_PRINT("Invalid react.");
-			if ( react == -1 || validReact[react] ) break;
-			WARNING_PRINT("You can't react with this card !");
-		}
-	} else {
-		react = -1;
+	while ( 1 ) {
+		react = Player_selectReact(this->player, game, this->cards, validReact, this->cards_size);
+		if ( react < -1 || react >= this->cards_size ) ERROR_PRINT("Invalid react.");
+		if ( react == -1 || validReact[react] ) break;
+		WARNING_PRINT("You can't react with this card !");
 	}
 
 	// react
@@ -623,7 +616,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 		MESSAGE_PRINT("Oh no %s's hp equal 0",this->player->username);
 		if( Avatar_onReact(this, game, CARD_BEER, NULL) == -1 || game->numAvailableAvatar <= 2) {
 			if( attacker != NULL && this->role == OUTLAW) {
-				MESSAGE_PRINT("%s kill %s,and he is outlaw,%s get three cards!\n",attacker->player->username,this->player->username,attacker->player->username);
+				MESSAGE_PRINT("%s kill %s,and he is outlaw,%s get three cards!",attacker->player->username,this->player->username,attacker->player->username);
 				Avatar_draw(attacker,game);
 				Avatar_draw(attacker,game);
 				Avatar_draw(attacker,game);
@@ -705,7 +698,7 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 
 Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
 	Card *bye = *card;
-	MESSAGE_PRINT("%s unquipped the card: %s.\n", this->player->username, (*card)->name );
+	MESSAGE_PRINT("%s unquipped the card: %s.", this->player->username, (*card)->name );
 	*card = NULL;
 	return bye;
 }

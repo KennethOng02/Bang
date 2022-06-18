@@ -30,6 +30,7 @@ void msgQue_push(char *str) {
 #define INVALID_COLOR 11
 
 void interface_init() {
+	curs_set(0);
 	init_pair(VALID_COLOR, COLOR_BLACK, COLOR_GREEN);
 	init_pair(INVALID_COLOR, COLOR_BLACK, COLOR_RED);
 }
@@ -79,14 +80,14 @@ char *interface_askName() {
 
 	WINDOW *inputNameWin = newwin(y, x, maxY / 2 - y / 2, maxX / 2 - x / 2);
 	box(inputNameWin, 0, 0);
-	char *name = calloc(33, sizeof(char));
+	char *name = calloc(9, sizeof(char));
 
 	while(1) {
 		mvwprintw(inputNameWin, 1, 2, "Player Name: ");
 		refresh();
 		wrefresh(inputNameWin);
 
-		wgetnstr(inputNameWin, name, 32);
+		wgetnstr(inputNameWin, name, 8);
 
 		while(isspace((unsigned char)*name)) name++;
 		
@@ -186,31 +187,36 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 	if ( start < 0 ) start = 0;
 	int end = MIN(start+perPage, cards_size);
 
+	flushinp();
 	while ( 1 ) {
-		interface_refresh(this->username, game);
-		refresh();
-
+		interface_drawInput(this->avatar, notChoose, true, false);
 		INPUT_PRINT(msg);
 		wmove(inputWin, 1, 1);
 		interface_printCards(inputWin, cards, validCards, selected, start, end);
 
 		int ch = wgetch(inputWin);
 		switch ( ch ) {
-		case 'q':
-			DEBUG_PRINT("HERE3.\n");
+		case 'Q':
 			Game_exit(game);
 			break;
 		case 'j':
+		case KEY_DOWN:
 			selected = (selected+1) % cards_size;
 			break;
 		case 'k':
+		case KEY_UP:
 			selected = (cards_size+selected-1) % cards_size;
 			break;
 		case '0':
 			if ( notChoose ) return -1;
 			break;
 		case '\n':
-			if ( validCards[selected] ) return selected;
+			if ( validCards[selected] ) {
+				//wclear(inputWin);
+				interface_drawInput(this->avatar, false, false, false);
+				wrefresh(inputWin);
+				return selected;
+			}
 			break;
 		}
 
@@ -310,28 +316,35 @@ int interface_selectTarget(Player *this, Game *game, bool *validTargets) {
 	int perPage = 6;
 	int start = 0;
 	int end = MIN(perPage, game->numAvatar);
+	flushinp();
 	while ( 1 ) {
-		interface_refresh(this->username, game);
-		refresh();
+		interface_drawInput(this->avatar, false, true, true);
 		INPUT_PRINT(msg);
 
 		interface_printTargets(this, game, validTargets, selected, start, end);
+		wrefresh(inputWin);
 
 		int ch = wgetch(inputWin);
 		switch ( ch ) {
-		case 'q':
-			DEBUG_PRINT("HERE4.\n");
+		case 'Q':
 			Game_exit(game);
 			break;
 		case 'j':
+		case KEY_DOWN:
 			selected = (selected+1) % game->numAvatar;
 			break;
 		case 'k':
+		case KEY_UP:
 			selected = (game->numAvatar+selected-1) % game->numAvatar;
 			break;
 		case '\n':
+			//wclear(inputWin);
+			interface_drawInput(this->avatar, false, false, false);
+			wrefresh(inputWin);
 			if ( validTargets[selected] ) return selected;
 			break;
+		case 'b':
+			return -1;
 		}
 		if ( selected < start ) {
 			start = selected;
@@ -386,29 +399,71 @@ void interface_drawMessg() {
 
 	messgWin = newwin(10, xMax / 2, yMax - 10, xMax / 2);
 	box(messgWin, 0, 0);
-	//scrollok(messgWin, TRUE);
 	mvwprintw(messgWin, 0, 2, "Messages");
-	int idx = msgQue_start;
-	for ( int row=1; row<=MSGQUE_SIZE; row++ ) {
-		wmove(messgWin, row, 1);
-		if ( msgQue[idx] ) {
-			wprintw(messgWin, "%s", msgQue[idx]);
+
+	int wyMax, wxMax;
+	getmaxyx(messgWin, wyMax, wxMax);
+	int perLine = wxMax-2;
+	int idx = (MSGQUE_SIZE+msgQue_start-1) % MSGQUE_SIZE;
+	char *trav = msgQue[idx];
+	int lineCount = 0;
+	while ( 1 ) {
+		int line = 1;
+		if ( trav ) line = (strlen(trav)-1) / perLine + 1; 
+		if ( lineCount + line <= MSGQUE_SIZE ) {
+			lineCount += line;
+			idx = (MSGQUE_SIZE+idx-1) % MSGQUE_SIZE;
+			trav = msgQue[idx];
+		} else {
+			break;
 		}
-		idx = (idx+1) % MSGQUE_SIZE;	
 	}
+
+	if ( lineCount < MSGQUE_SIZE ) {
+		trav += perLine * ( lineCount + (strlen(trav)-1)/perLine+1 - MSGQUE_SIZE);
+	} else {
+		idx = (idx+1) % MSGQUE_SIZE;	
+		trav = msgQue[idx];
+	}
+	lineCount = 0;
+	do {
+		wmove(messgWin, lineCount+1, 1);
+		if ( trav ) {
+			wprintw(messgWin, "%.*s", perLine, trav);
+			if ( strlen(trav) <= perLine ) {
+				idx = (idx+1) % MSGQUE_SIZE;
+				trav = msgQue[idx];
+			} else {
+				trav += perLine;
+			}
+		} else {
+			idx = (idx+1) % MSGQUE_SIZE;	
+			trav = msgQue[idx];
+		}
+		lineCount++;
+	} while ( idx != msgQue_start );
 	wrefresh(messgWin);
-	//refresh();
 }
 
-void interface_drawInput(Avatar *avatar) {
+void interface_drawInput(Avatar *avatar, bool canPass, bool canQuit, bool canBack) {
 	int yMax, xMax;
 	getmaxyx(stdscr, yMax, xMax);
 
 	inputWin = newwin(10, xMax / 2, yMax - 10, 0);
+	keypad(inputWin, true);
 	box(inputWin, 0, 0);
 	int xInput = getmaxx(inputWin);
 	mvwprintw(inputWin, 0, 2, "%s-(%s)-(%s)-HP(%d)", avatar->player->username, print_role(avatar->role), avatar->character->name, avatar->hp);
-	mvwprintw(inputWin, 0, xInput - 25, "[0]pass--[q]quit");
+	int offset = 26;
+	if ( canPass ) {
+		mvwprintw(inputWin, 0, xInput - offset, "[0]pass");
+	}
+	if ( canQuit ) {
+		mvwprintw(inputWin, 0, xInput - offset + 8, "[Q]quit");
+	}
+	if ( canBack ) {
+		mvwprintw(inputWin, 0, xInput - offset + 16, "[b]back");
+	}
 
 	wmove(inputWin, 1, 1);
 	refresh();
@@ -534,7 +589,7 @@ void interface_drawBoard(char *username, Game *game) {
 
 void interface_draw(char *username, Game *game) {
 	interface_drawBoard(username, game);
-	interface_drawInput(game->avatars[0]);
+	interface_drawInput(game->avatars[0], false, false, false);
 	interface_drawMessg();
 	refresh();
 	return;

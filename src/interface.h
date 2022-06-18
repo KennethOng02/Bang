@@ -54,7 +54,7 @@ void interface_printCards(WINDOW *win, Card **cards, bool *validCards, int selec
 char *print_role(Role role);
 
 void interface_drawMessg();
-void interface_drawInput(Avatar *avatar);
+void interface_drawInput(Avatar *avatar, bool, bool, bool);
 void interface_drawCardVertical(WINDOW *win, int num, int start_row);
 void interface_drawCardHorizontal(WINDOW *win, int num, int start_col);
 void interface_printPlayerInfoHorizontal(WINDOW *win, Avatar *avatar, int y);
