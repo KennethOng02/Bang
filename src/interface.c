@@ -425,6 +425,9 @@ char *interface_getPlayerEquipment(Avatar *avatar) {
 		snprintf(buffer, 32, "[DYNAMITE] ");
 		strcat(info, buffer);
 	}
+	char *end = info + strlen(info) - 1;
+	while(end > info && isspace((unsigned char)*end)) end--;
+	end[1] = '\0';
 	return info;
 }
 
@@ -432,9 +435,8 @@ void interface_printPlayerInfoHorizontal(WINDOW *win, Avatar *avatar, int y) {
 	char *info = calloc(1024, sizeof(char));
 	snprintf(info, 1024, "%s (%s) (%s) HP(%d)", avatar->player->username, avatar->role == SHERIFF ? "SHERIFF" : "UNKNOWN", avatar->character->name, avatar->hp);
 	interface_printCenter(win, y, info);
-	moveCurDown(win);
 	info = interface_getPlayerEquipment(avatar);
-	interface_printCenter(win, y, info);
+	interface_printCenter(win, y + 1, info);
 	return;
 }
 
@@ -476,7 +478,10 @@ void interface_drawBoard(char *username, Game *game) {
 	interface_printPlayerInfoHorizontal(boardWin, game->avatars[2], 1);
 
 	interface_drawCardHorizontal(boardWin, game->avatars[3]->cards_size, COLS - 9);
-	interface_printPlayerInfoVertical(boardWin, game->avatars[3], COLS - strlen((game->avatars[3]->role == SHERIFF) ? "SHERIFF" : "UNKNOWN") - strlen(game->avatars[3]->character->name) - 6);
+	info = interface_getPlayerEquipment(game->avatars[3]);
+	int offset = strlen(game->avatars[3]->character->name) + 14;
+	if(strlen(info) > offset) offset = strlen(info);
+	interface_printPlayerInfoVertical(boardWin, game->avatars[3], COLS - offset);
 
 	mvwprintw(boardWin, 0, 2, "%s's Turn", username);
 	wmove(boardWin, 1, 1);
