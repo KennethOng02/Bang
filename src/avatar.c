@@ -157,29 +157,29 @@ void Avatar_onTurn(Avatar *this, Game *game)  {
 	Avatar_onJudge(this, game, &jailed);
 	if ( jailed ) return;
 
-	sleep(1);
+	/* sleep(1); */
 	interface_refresh(this->player->username, game);
 	
 	if(this->isDead == true) return;
 	Avatar_onDraw(this, game);
 	if(this->isDead == true) return;
 
-	sleep(1);
+	/* sleep(1); */
 	interface_refresh(this->player->username, game);
 
 	Avatar_onPlay(this, game);
 
 	if(this->isDead == true) return;
 	
-	sleep(1);
+	/* sleep(1); */
 	interface_refresh(this->player->username, game);
 
 	Avatar_onDump(this, game);
 
-	sleep(1);
+	/* sleep(1); */
 	interface_refresh(this->player->username, game);
 
-	MESSAGE_PRINT("%s's turn finish.\n", this->player->username);
+	MESSAGE_PRINT("%s's turn finish.", this->player->username);
 }
 	
 
@@ -529,8 +529,8 @@ int Avatar_judge(Avatar *this, Game *game, int card_id) {
 void Avatar_dead(Avatar *this, Game *game) {
 	// TODO: Character ability - Vulture Sam
 	//discard cards
-	MESSAGE_PRINT("%s is dead",this->player->username);
-	Avatar* next = Game_nextAvailableAvatar(this);;
+	MESSAGE_PRINT("%s(%s) is dead",this->player->username, print_role(this->role));
+	Avatar* next = Game_nextAvailableAvatar(this);
 	int check = -1;
 	do {
 		if(next->character->id == Vulture_Sam) {
@@ -707,7 +707,7 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 
 Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
 	Card *bye = *card;
-	MESSAGE_PRINT("%s unquipped the card: %s.", this->player->username, (*card)->name );
+	DEBUG_PRINT("%s unquipped the card: %s.", this->player->username, (*card)->name );
 	*card = NULL;
 	return bye;
 }

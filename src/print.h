@@ -39,7 +39,6 @@
 	wattroff(messgWin, COLOR_PAIR(1)); \
 	moveCurDown(messgWin); \
 	wrefresh(messgWin); \
-	/*sleep(1);*/ \
 	usleep(500); \
 }
 
