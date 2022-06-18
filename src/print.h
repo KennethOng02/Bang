@@ -44,15 +44,11 @@
 }
 
 #define MESSAGE_PRINT(...) { \
-	/*wprintw(messgWin, __VA_ARGS__); \
-	moveCurDown(messgWin); \
-	wrefresh(messgWin); \
-	usleep(500); */ \
 	int bufSize = 128; \
 	char *buffer = malloc(bufSize); \
 	snprintf(buffer, bufSize, __VA_ARGS__); \
 	msgQue_push(buffer); \
-	usleep(3000); \
+	usleep(1000); \
 }
 
 #define INPUT_PRINT(...) { \
