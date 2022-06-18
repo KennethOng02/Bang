@@ -48,7 +48,7 @@
 	char *buffer = malloc(bufSize); \
 	snprintf(buffer, bufSize, __VA_ARGS__); \
 	msgQue_push(buffer); \
-	usleep(1000); \
+	sleep(1); \
 }
 
 #define INPUT_PRINT(...) { \
