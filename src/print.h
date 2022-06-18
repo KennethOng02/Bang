@@ -20,16 +20,16 @@
 /* 		fprintf(stderr, COLOR_RESET); \ */
 /* 		} */
 
-/* #ifdef __DEBUG__ */
-/* #define DEBUG_PRINT(...) { \ */
-/* 		fprintf(stderr, CYN); \ */
-/* 		fprintf(stderr, "[DEBUG] "); \ */
-/* 		fprintf(stderr, __VA_ARGS__ ); \ */
-/* 		fprintf(stderr, COLOR_RESET); \ */
-/* 		} */
-/* #else */
-/* #define DEBUG_PRINT(...) */ 
-/* #endif */
+#ifdef __DEBUG__
+#define DEBUG_PRINT(...) { \
+		/*fprintf(stderr, CYN);*/ \
+		fprintf(stderr, "[DEBUG] "); \
+		fprintf(stderr, __VA_ARGS__ ); \
+		/*fprintf(stderr, COLOR_RESET);*/ \
+		} 
+#else
+#define DEBUG_PRINT(...) 
+#endif
 
 #define WARNING_PRINT(...) { \
 	init_pair(1, COLOR_BLACK, COLOR_YELLOW); \
@@ -48,7 +48,7 @@
 	char *buffer = malloc(bufSize); \
 	snprintf(buffer, bufSize, __VA_ARGS__); \
 	msgQue_push(buffer); \
-	sleep(1); \
+	/*sleep(1); */ \
 }
 
 #define INPUT_PRINT(...) { \
@@ -56,18 +56,3 @@
 	moveCurDown(inputWin); \
 	wrefresh(inputWin); \
 }
-
-#ifdef __DEBUG__
-#define DEBUG_PRINT(...) { \
-	init_pair(3, COLOR_BLACK, COLOR_MAGENTA); \
-	wattron(messgWin, COLOR_PAIR(3)); \
-	wprintw(messgWin, "[DEBUG]"); \
-	wprintw(messgWin, __VA_ARGS__); \
-	wattroff(messgWin, COLOR_PAIR(3)); \
-	moveCurDown(messgWin); \
-	wrefresh(messgWin); \
-	sleep(1); \
-}
-#else
-#define DEBUG_PRINT(...) 
-#endif

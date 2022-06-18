@@ -27,6 +27,7 @@ debug: $(debug_dependency)
 	make cardid
 	make characterid
 	gcc -D__DEBUG__ src/main.c $(debug_dependency_path) -lncurses -o bin/main
+	./bin/main 2> log.txt
 
 %.o: src/%.c
 	gcc -c $< -o ./bin/$@
