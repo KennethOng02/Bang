@@ -90,7 +90,7 @@ char *interface_askName() {
 char *interface_getCardSuit(int num) {
 	char *result = calloc(4, sizeof(sizeof(char)));
 	int cardNum = num % 13 + 1;
-	switch (num % 4) {
+	switch (num / 13) {
 		case 0:
 			snprintf(result, 4, "%d%c", cardNum, 'S');
 			break;

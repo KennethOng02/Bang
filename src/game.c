@@ -117,7 +117,6 @@ void Game_run() {
 	while ( 1 ) {
 		interface_draw(curAvatar->player->username, game);
 		Avatar_onTurn(curAvatar, game);
-		DEBUG_PRINT("Avatar %d's turn finish.\n", curAvatar->id);
 		curAvatar = Game_nextAvailableAvatar(curAvatar);
 	}
 }

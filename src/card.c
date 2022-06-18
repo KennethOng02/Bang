@@ -11,7 +11,7 @@ Card *Card_init(const int id, const char *name, const int type, const int suit, 
 	// TODO: card -> play
 
 	if ( id <= CARD_START || id >= CARD_END ) ERROR_PRINT("Invalid card id %d", id);
-	if(name == NULL) ERROR_PRINT("NULL pointer Mother Fucker !!");
+	if(name == NULL) ERROR_PRINT("NULL pointer!!");
 	if(suit < 0 && suit >= 52) ERROR_PRINT("suit must within [0, 51]");
 
 	Card *new = malloc(sizeof(Card));
@@ -43,21 +43,21 @@ void Card_free(Card *this) {
 }
 
 int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card) {
-	MESSAGE_PRINT("%s use BANG! to %s,",user->player->username,target->player->username);
+	MESSAGE_PRINT("%s use BANG! to %s.",user->player->username,target->player->username);
 	if( Avatar_onReact(target, game, CARD_MISS, card ) == -1 ) {
-		MESSAGE_PRINT("%s do not have MISS,",target->player->username);
+		MESSAGE_PRINT("%s do not react with MISS.",target->player->username);
 		Avatar_hurt(target, game, user);
 	}else {
 		if( user->character->id == Slab_the_Killer ) {
-			MESSAGE_PRINT("Because %s's ability,you need another MISSED!",user->player->username);
-			if( Avatar_onReact(target, game, CARD_MISS, card ) == -1 ) {
-				MESSAGE_PRINT("%s do not have another MISS,",target->player->username);
+			MESSAGE_PRINT("Because %s's ability(%s),you need another MISSED!",user->player->username,user->character->name);
+			if( Avatar_onReact(target, game, CARD_MISS, NULL ) == -1 ) {
+				MESSAGE_PRINT("%s do not react with another MISS.",target->player->username);
 				Avatar_hurt(target, game, user);
 			}else {
-				MESSAGE_PRINT("but he missed!");
+				MESSAGE_PRINT("%s missed!",target->player->username);
 			}
 		}else {
-			MESSAGE_PRINT("but he missed!");
+			MESSAGE_PRINT("%s missed!",target->player->username);
 		}
 	}
 	interface_refresh(user->player->username, game);
@@ -74,7 +74,7 @@ int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) 
 	{
 		if( Avatar_onReact( next, game, CARD_MISS, card ) == -1 ) 
 		{
-			MESSAGE_PRINT("%s do not react with MISSED!,",next->player->username);
+			MESSAGE_PRINT("%s do not react with MISSED!",next->player->username);
 			Avatar_hurt(next, game, user);	
 		}
 		else
@@ -86,14 +86,14 @@ int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) 
 	return 0;
 }
 int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) {
-	MESSAGE_PRINT("%s use %s,",user->player->username,card->name);
+	MESSAGE_PRINT("%s use %s.",user->player->username,card->name);
 	interface_refresh(user->player->username, game);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
 		if( Avatar_onReact( next, game, CARD_BANG, card ) == -1 ) 
 		{
-			MESSAGE_PRINT("%s do not react with BANG!,",next->player->username);
+			MESSAGE_PRINT("%s do not react with BANG!",next->player->username);
 			Avatar_hurt(next, game, user);	
 		}
 		else
@@ -107,7 +107,7 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 }
 int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
-	MESSAGE_PRINT("%s use %s",user->player->username,card->name);
+	MESSAGE_PRINT("%s use %s to %s.",user->player->username,card->name,target->player->username);
 	int list_size;
 	Card **list = Avatar_giveToChoose(target, &list_size);
 	DEBUG_PRINT("%s ,list generated Done",card->name);
@@ -123,17 +123,18 @@ int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 			}
 		}
 	}
+	free(list);
 	return 0;
 }
 int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	//TODO:Choose equipment
-	MESSAGE_PRINT("%s use %s",user->player->username,card->name);
+	MESSAGE_PRINT("%s use %s to %s.",user->player->username,card->name,target->player->username);
 	int list_size;
 	Card **list = Avatar_giveToChoose(target, &list_size);
 	DEBUG_PRINT("%s ,list generated Done",card->name);
 	int *choose = Avatar_choose(user,game,list,list_size,1);
 	DEBUG_PRINT("%s ,list choose Done",card->name);
-	Card* trash = calloc(1,sizeof(trash));
+	Card* trash;
 	if ( choose[0] < target->cards_size ) {
 		trash = Avatar_taken(target, game, choose[0]);
 	} else {
@@ -146,11 +147,12 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 		}
 	}
 	Deck_put(game->discardPile,trash);
+	free(list);
 	return 0;
 }
 int play_CARD_STAGECOACH(Avatar * user, Avatar * target, Game * game, Card * card) {
 	interface_refresh(user->player->username, game);
-	MESSAGE_PRINT("%s use %s",user->player->username,card->name);
+	MESSAGE_PRINT("%s use %s.",user->player->username,card->name);
 	Avatar_draw(user,game);
 	Avatar_draw(user,game);
 	return 0;
@@ -165,10 +167,10 @@ int play_CARD_FARGO(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	interface_refresh(user->player->username, game);
-	MESSAGE_PRINT("%s use %s",user->player->username,card->name);
+	MESSAGE_PRINT("%s use %s.",user->player->username,card->name);
 	Avatar* next = user;
-	Card** options = calloc(4,sizeof(Card));
-	int* choose = calloc(4,1);
+	Card** options = calloc(4,sizeof(Card*));
+	int* choose ;
 	int opt_size = game->numAvailableAvatar;
 	for(int i = 0; i<opt_size;i++) {
 		options[i] = Deck_draw(game->deck);
@@ -176,12 +178,14 @@ int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	do{
 		choose = Avatar_choose(next,game,options,opt_size,1);	
 		Avatar_get(next,game,options[choose[0]]);
+		MESSAGE_PRINT("%s get the card %s",next->player->username,options[choose[0]]->name);
 		for(int i = choose[0];i < opt_size - 1 ; i++) {
 			options[i] = options[i+1];
 		}
 		opt_size --;
 		next = Game_nextAvailableAvatar(next);
 	}while(next->id != user->id);
+	free(options);
 	return 0;
 }
 int play_CARD_BEER(Avatar * user, Avatar * target, Game * game, Card * card) {
@@ -208,14 +212,14 @@ int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card) {
 	MESSAGE_PRINT("%s use %s to %s",user->player->username,card->name,target->player->username);
 	while(1) {
 		if( Avatar_onReact(target, game, CARD_BANG, card) == -1) {
-			MESSAGE_PRINT("%s lose the duel,",target->player->username);
+			MESSAGE_PRINT("%s lose the duel.",target->player->username);
 			Avatar_hurt(target, game, user);
 			return 0;
 		}else {
 			MESSAGE_PRINT("%s has a Bang!",target->player->username);
 			wrefresh(messgWin);
 			if( Avatar_onReact(user, game, CARD_BANG, card) == -1) {
-				MESSAGE_PRINT("%s lose the duel,",user->player->username);
+				MESSAGE_PRINT("%s lose the duel.",user->player->username);
 				Avatar_hurt(user, game, target);
 				return 0;
 			}else {
