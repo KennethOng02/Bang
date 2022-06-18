@@ -54,10 +54,10 @@ int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 				MESSAGE_PRINT("%s do not react with another MISS.",target->player->username);
 				Avatar_hurt(target, game, user);
 			}else {
-				MESSAGE_PRINT("%s missed!",target->player->username);
+				MESSAGE_PRINT("%s missed!",user->player->username);
 			}
 		}else {
-			MESSAGE_PRINT("%s missed!",target->player->username);
+			MESSAGE_PRINT("%s missed!",user->player->username);
 		}
 	}
 	interface_refresh(user->player->username, game);

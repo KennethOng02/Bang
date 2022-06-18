@@ -382,7 +382,7 @@ void interface_drawMessg() {
 	int yMax, xMax;
 	getmaxyx(stdscr, yMax, xMax);
 
-	messgWin = newwin(10, xMax / 3, yMax - 10, xMax / 3 * 2);
+	messgWin = newwin(10, xMax / 2, yMax - 10, xMax / 2);
 	box(messgWin, 0, 0);
 	//scrollok(messgWin, TRUE);
 	mvwprintw(messgWin, 0, 2, "Messages");
@@ -402,11 +402,11 @@ void interface_drawInput(Avatar *avatar) {
 	int yMax, xMax;
 	getmaxyx(stdscr, yMax, xMax);
 
-	inputWin = newwin(10, xMax / 3 * 2, yMax - 10, 0);
+	inputWin = newwin(10, xMax / 2, yMax - 10, 0);
 	box(inputWin, 0, 0);
 	int xInput = getmaxx(inputWin);
 	mvwprintw(inputWin, 0, 2, "%s-(%s)-(%s)-HP(%d)", avatar->player->username, print_role(avatar->role), avatar->character->name, avatar->hp);
-	mvwprintw(inputWin, 0, xInput - 30, "[0]pass--[q]quit");
+	mvwprintw(inputWin, 0, xInput - 25, "[0]pass--[q]quit");
 
 	wmove(inputWin, 1, 1);
 	refresh();
@@ -473,7 +473,7 @@ char *interface_getPlayerEquipment(Avatar *avatar) {
 
 void interface_printPlayerInfoHorizontal(WINDOW *win, Avatar *avatar, int y) {
 	char *info = calloc(1024, sizeof(char));
-	snprintf(info, 1024, "%s (%s) (%s) HP(%d)", avatar->player->username, avatar->role == SHERIFF ? "SHERIFF" : "UNKNOWN", avatar->character->name, avatar->hp);
+	snprintf(info, 1024, "%s (%s) (%s) HP(%d)", avatar->player->username, avatar->role == SHERIFF || avatar->isDead ? print_role(avatar->role) : "UNKNOWN", avatar->character->name, avatar->hp);
 	interface_printCenter(win, y, info);
 	info = interface_getPlayerEquipment(avatar);
 	interface_printCenter(win, y + 1, info);
@@ -486,7 +486,7 @@ void interface_printPlayerInfoVertical(WINDOW *win, Avatar *avatar, int x) {
 	int y = yMax / 2 - avatar->cards_size / 2 * 3 - (avatar->cards_size % 2 == 0 ? 4 : 5);
 	char *info = calloc(1024, sizeof(char));
 	mvwprintw(win, y, x, "%s", avatar->player->username);
-	mvwprintw(win, y + 1, x, "(%s) (%s)", avatar->role == SHERIFF ? "SHERIFF" : "UNKNOWN", avatar->character->name);
+	mvwprintw(win, y + 1, x, "(%s) (%s)", avatar->role == SHERIFF || avatar->isDead ? print_role(avatar->role) : "UNKNOWN", avatar->character->name);
 	mvwprintw(win, y + 2, x, "HP(%d)", avatar->hp);
 	info = interface_getPlayerEquipment(avatar);
 	mvwprintw(win, y + 3, x, info);
@@ -520,7 +520,7 @@ void interface_drawBoard(char *username, Game *game) {
 	interface_drawCardHorizontal(boardWin, game->avatars[3]->cards_size, COLS - 9);
 	info = interface_getPlayerEquipment(game->avatars[3]);
 	int offset = strlen(game->avatars[3]->character->name) + 14;
-	if(strlen(info) > offset) offset = strlen(info);
+	if(strlen(info) > offset) offset = strlen(info) + 1;
 	interface_printPlayerInfoVertical(boardWin, game->avatars[3], COLS - offset);
 
 	mvwprintw(boardWin, 0, 2, "%s's Turn", username);
