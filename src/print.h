@@ -47,6 +47,7 @@
 	char *buffer = malloc(bufSize); \
 	snprintf(buffer, bufSize, __VA_ARGS__); \
 	msgQue_push(buffer); \
+	interface_drawMessg(); \
 	/*sleep(1); */ \
 }
 

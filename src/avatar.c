@@ -725,7 +725,7 @@ int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num)
 void Avatar_get(Avatar *this, Game *game, Card *want){
 	this->cards_size ++;
 	this->cards[this->cards_size - 1] = want;
-	DEBUG_PRINT("Avatar %d get the card: %s\n.", this->id , want->name);
+	DEBUG_PRINT("Avatar %d get the card: %s.\n", this->id , want->name);
 	return;
 }
 

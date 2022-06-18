@@ -193,14 +193,17 @@ void Game_checkWin() {
 	if ( sheriff->isDead ) {
 		if ( teamOutlaw ) {
 			MESSAGE_PRINT("Outlaws win!\n");
+			sleep(10);
 			Game_exit();
 		} else if ( teamRenegade && !teamSheriff ) {
 			MESSAGE_PRINT("Renegade wins!\n");
+			sleep(10);
 			Game_exit();
 		}
 	}
 	if ( !teamOutlaw && !teamRenegade ) {
 		MESSAGE_PRINT("Sheriff wins!\n");
+		sleep(10);
 		Game_exit();
 	}
 }

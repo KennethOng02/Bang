@@ -197,6 +197,7 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 		int ch = wgetch(inputWin);
 		switch ( ch ) {
 		case 'q':
+			DEBUG_PRINT("HERE3.\n");
 			Game_exit(game);
 			break;
 		case 'j':
@@ -319,6 +320,7 @@ int interface_selectTarget(Player *this, Game *game, bool *validTargets) {
 		int ch = wgetch(inputWin);
 		switch ( ch ) {
 		case 'q':
+			DEBUG_PRINT("HERE4.\n");
 			Game_exit(game);
 			break;
 		case 'j':

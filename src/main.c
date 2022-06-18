@@ -4,6 +4,7 @@
 
 #include "game.h"
 #include "player.h"
+#include "print.h"
 
 #define PLAYER_SIZE 4
 
@@ -13,6 +14,7 @@ int main(int argc, char ** argv) {
 
 	Game_run();
 
+	DEBUG_PRINT("HERE1.\n");
 	Game_exit();
 
 	return 0;
