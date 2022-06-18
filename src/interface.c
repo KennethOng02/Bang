@@ -11,6 +11,29 @@
 #include "print.h"
 #include "mylib.h"
 
+#define MSGQUE_SIZE 8
+static char *msgQue[MSGQUE_SIZE] = {NULL};
+static int msgQue_start = 0;
+
+void msgQue_push(char *str) {
+	if ( msgQue[msgQue_start] != NULL ) {
+		free(msgQue[msgQue_start]);
+	}
+	if ( str != NULL ) {
+		msgQue[msgQue_start] = malloc(strlen(str)+1);
+		strcpy(msgQue[msgQue_start], str);
+	}
+	msgQue_start = (msgQue_start + 1) % MSGQUE_SIZE;
+}
+
+#define VALID_COLOR 10
+#define INVALID_COLOR 11
+
+void interface_init() {
+	init_pair(VALID_COLOR, COLOR_BLACK, COLOR_GREEN);
+	init_pair(INVALID_COLOR, COLOR_BLACK, COLOR_RED);
+}
+
 void moveCurDown(WINDOW *win) {
 	int y, x;
 	getyx(win, y, x);
@@ -56,14 +79,14 @@ char *interface_askName() {
 
 	WINDOW *inputNameWin = newwin(y, x, maxY / 2 - y / 2, maxX / 2 - x / 2);
 	box(inputNameWin, 0, 0);
-	char *name = calloc(32, sizeof(char));
+	char *name = calloc(33, sizeof(char));
 
 	while(1) {
 		mvwprintw(inputNameWin, 1, 2, "Player Name: ");
 		refresh();
 		wrefresh(inputNameWin);
 
-		wgetstr(inputNameWin, name);
+		wgetnstr(inputNameWin, name, 32);
 
 		while(isspace((unsigned char)*name)) name++;
 		
@@ -109,13 +132,20 @@ char *interface_getCardSuit(int num) {
 	return result;
 }
 
-void interface_printCards(WINDOW *win, Card **cards, int cards_size) {
-	for(int i = 0; i < cards_size; i++) {
-		wprintw(win, "(%d)", i + 1);
-		if(cards[i]) {
-			wprintw(win, "%s[%s] ", cards[i]->name, interface_getCardSuit(cards[i]->suit));
+void interface_printCards(WINDOW *win, Card **cards, bool *validCards, int selected, int l, int r) {
+	for(int i = l; i < r; i++) {
+		wmove(win, i-l+2, 1);
+		if ( i == selected ) {
+			wattron(win, COLOR_PAIR(validCards[i] ? VALID_COLOR : INVALID_COLOR));
+		}
+		wprintw(win, "(%d)", i+1);
+		if ( cards[i] ) {
+			wprintw(win, "%s[%s]", cards[i]->name, interface_getCardSuit(cards[i]->suit));
 		} else {
-			wprintw(win, "UNKNOWN");
+			wprintw(win, "Unknown");
+		}
+		if ( i == selected ) {
+			wattroff(win, COLOR_PAIR(validCards[i] ? VALID_COLOR : INVALID_COLOR));
 		}
 	}
 	moveCurDown(win);
@@ -147,174 +177,178 @@ bool interface_yesOrNo(WINDOW *win) {
 	return false;
 }
 
-int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, int n, char *msg, bool notChoose) {
-	bool wanted[cards_size];
-	bool done = false;
-	int *choices = malloc(n * sizeof(int));
+int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, int cards_size, char *msg, bool notChoose) {
 
-	int bufSize = 1024;
-	char buffer[bufSize];
+	int selected = 0;
 
-	while ( !done ) {
-		
-		memset(wanted, false, cards_size * sizeof(bool));
+	int perPage = 6;
+	int start = selected - perPage/2;
+	if ( start < 0 ) start = 0;
+	int end = MIN(start+perPage, cards_size);
 
-		MESSAGE_PRINT("%s", msg);
-
-		wrefresh(messgWin);
-		interface_printCards(inputWin, cards, cards_size);
-
-		wgetstr(inputWin, buffer);
-
-		if ( strcmp(buffer, "q") == 0 ) {
-			if(interface_yesOrNo(inputWin)) {
-				Game_exit(game);
-			}
-			continue;
-		}
-
-		if ( notChoose && strcmp(buffer, "0") == 0 ) {
-			free(choices);
-			return NULL;
-		}
-
-		char **idxs;
-		int idxs_size;
-
-		mystrsplit(&idxs, &idxs_size, buffer, NULL);
-
-		done = true;
-		// Check if input is valid
-		if ( idxs_size != n ) {
-			WARNING_PRINT("Please enter %d integer(s).", n);
-			done = false;
-		}
-		for ( int i=0; i<idxs_size; i++ ) {
-			int idx;
-			char *endptr;
-			idx = strtol(idxs[i], &endptr, 10);
-			if ( *endptr != '\0' ) {
-				WARNING_PRINT("Please enter integer(s) only.");
-				done = false;
-			} else if ( idx <= 0 || idx > cards_size ) {
-				WARNING_PRINT("Please enter integer(s) between [1, %d].", cards_size);
-				done = false;
-			} else if ( wanted[idx-1] ) {
-				WARNING_PRINT("Choices duplicated.");
-				done = false;
-			}
-			wanted[idx-1] = true;
-		}
-
-		for ( int i=0; i<idxs_size; i++ ) {
-			free(idxs[i]);
-		}
-		free(idxs);
-
-		if ( !done ) continue;
-
-		int counter = 0;
-		wprintw(boardWin, "Your choice(s) is:");
-		for ( int i=0; i<cards_size; i++ ) {
-			if ( wanted[i] && cards[i]) {
-				wprintw(boardWin, "	%d. %s", counter+1, cards[i]->name);
-				choices[counter++] = i;
-			}else if ( wanted[i] ) {
-				wprintw(boardWin, "	NO.%d card",i+1);
-				choices[counter++] = i;
-			}
-		}
+	while ( 1 ) {
 		interface_refresh(this->username, game);
 		refresh();
-		if ( interface_yesOrNo(inputWin) ) {
-			free(msg);
-			return choices;
-		} else {
-			done = false;
+
+		INPUT_PRINT(msg);
+		wmove(inputWin, 1, 1);
+		interface_printCards(inputWin, cards, validCards, selected, start, end);
+
+		int ch = wgetch(inputWin);
+		switch ( ch ) {
+		case 'q':
+			Game_exit(game);
+			break;
+		case 'j':
+			selected = (selected+1) % cards_size;
+			break;
+		case 'k':
+			selected = (cards_size+selected-1) % cards_size;
+			break;
+		case '0':
+			if ( notChoose ) return -1;
+			break;
+		case '\n':
+			if ( validCards[selected] ) return selected;
+			break;
 		}
+
+		if ( selected < start ) {
+			start = selected;
+			end = MIN(start+perPage, cards_size);
+		}
+		if ( selected >= end ) {
+			end = selected+1;
+			start = MAX(end-perPage, 0);
+		}
+		usleep(100);
 	}
-	ERROR_PRINT("Unknown error.");
-	return NULL;
 }
 
 int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
-	interface_refresh(this->username, game);
-	INPUT_PRINT("Please choose %d cards from following list.", n);
-	return interface_choose(this, game, cards, cards_size, n, buffer, false);
+
+	Card **cards_copy = malloc(cards_size * sizeof(Card *));
+	for ( int i=0; i<cards_size; i++ ) {
+		cards_copy[i] = cards[i];
+	}
+	int curSize = cards_size;
+
+	int * rets = malloc(n * sizeof(int));
+	bool validCards[cards_size];
+
+	for ( int i=0; i<cards_size; i++ ) validCards[i] = true;
+	for ( int i=n; i>=1; i-- ) {
+		snprintf(buffer, bufSize, "Please choose %d cards from following list.", i);
+		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false);
+		rets[i-1] = idx;
+		for ( int j=idx; j < curSize-1; j++ ) {
+			cards_copy[j] = cards_copy[j+1];
+		}
+		curSize--;
+	}
+	free(cards_copy);
+	free(buffer);
+	return rets;
 }
 
 int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, int n) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
-	/* snprintf(buffer, bufSize, "Please choose %d card(s) to drop.", n); */
-	INPUT_PRINT("Please choose %d card(s) to drop.", n);
-	return interface_choose(this, game, cards, cards_size, n, buffer, false);
+
+	Card **cards_copy = malloc(cards_size * sizeof(Card *));
+	for ( int i=0; i<cards_size; i++ ) {
+		cards_copy[i] = cards[i];
+	}
+	int curSize = cards_size;
+
+	int * rets = malloc(n * sizeof(int));
+	bool validCards[cards_size];
+
+	for ( int i=0; i<cards_size; i++ ) validCards[i] = true;
+	for ( int i=n; i>=1; i-- ) {
+		snprintf(buffer, bufSize, "Please choose %d cards from following list to drop.", i);
+		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false);
+		rets[i-1] = idx;
+		for ( int j=idx; j < curSize-1; j++ ) {
+			cards_copy[j] = cards_copy[j+1];
+		}
+		curSize--;
+	}
+	free(cards_copy);
+	free(buffer);
+	return rets;
 }
 
-int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size) {
-	int bufSize = 1024;
-	char *buffer = malloc(bufSize);
-	interface_refresh(this->username, game);
-	INPUT_PRINT("Please choose a card to use");
-	int *ret = interface_choose(this, game, cards, cards_size, 1, buffer, true);
-	if ( ret == NULL ) {
+int interface_selectUse(Player *this, Game *game, Card **cards, bool *validCards, int cards_size) {
+	char *msg = "Please choose a card to use";
+	int ret = interface_choose(this, game, cards, validCards, cards_size, msg, true);
+	if ( ret == -1 ) {
 		return -1;
 	}
-	return ret[0];
+	return ret;
 }
 
-int interface_selectTarget(Player *this, Game *game) {
-	int bufSize = 1024;
-	char *buffer = malloc(bufSize);
-	
-	interface_refresh(this->username, game);
-	INPUT_PRINT("Please choose which player as target.");
-	Avatar **availableAvatars = malloc(game->numAvailableAvatar * sizeof(Avatar*));
-	int counter = 0;
+void interface_printTargets(Player *this, Game *game, bool *validTargets, int selected, int l, int r) {
 	for ( int i=0; i<game->numAvatar; i++ ) {
-		if ( game->avatars[i]->isDead ) {
-			continue;
-		}
 		Avatar *avatar = game->avatars[i];
-		availableAvatars[counter] = avatar;
-		INPUT_PRINT("%d) Player %d (%s) %s", ++counter, avatar->id, avatar->player->username, avatar->role == SHERIFF ? "(SHERIFF)" : "");
+		if ( i == selected ) {
+			wattron(inputWin, COLOR_PAIR(validTargets[i] ? VALID_COLOR : INVALID_COLOR));
+		}
+		INPUT_PRINT("%d) %s %s%s", i+1, avatar->player->username, avatar->role == SHERIFF ? "(SHERIFF)" : "", avatar->isDead?"(DEAD)":"");
+		if ( i == selected ) {
+			wattroff(inputWin, COLOR_PAIR(validTargets[i] ? VALID_COLOR : INVALID_COLOR));
+		}
 	}
+}
 
-	int choice;
-	while(1) {
-		wprintw(inputWin, "Choice: ");
+int interface_selectTarget(Player *this, Game *game, bool *validTargets) {
+	char *msg =  "Please choose which player as target.";
+	int selected = 0;
+	int perPage = 6;
+	int start = 0;
+	int end = MIN(perPage, game->numAvatar);
+	while ( 1 ) {
+		interface_refresh(this->username, game);
 		refresh();
-		if ( wscanw(inputWin, "%d", &choice) != 1 ) {
-			WARNING_PRINT("Please enter an integer.");
-			continue;
-		}
-		if(choice < 1 || choice > game->numAvailableAvatar) {
-			WARNING_PRINT("Please input within range 1 to %d", game->numAvailableAvatar);
-			continue;
-		}
-		wrefresh(inputWin);
-		break;
-	}
-	Player *target = availableAvatars[choice-1]->player;
-	free(availableAvatars);
+		INPUT_PRINT(msg);
 
-	for ( int i=0; i<game->numAvatar; i++ ) {
-		if ( game->avatars[i]->id == target->id ) return i;
+		interface_printTargets(this, game, validTargets, selected, start, end);
+
+		int ch = wgetch(inputWin);
+		switch ( ch ) {
+		case 'q':
+			Game_exit(game);
+			break;
+		case 'j':
+			selected = (selected+1) % game->numAvatar;
+			break;
+		case 'k':
+			selected = (game->numAvatar+selected-1) % game->numAvatar;
+			break;
+		case '\n':
+			if ( validTargets[selected] ) return selected;
+			break;
+		}
+		if ( selected < start ) {
+			start = selected;
+			end = MIN(start+perPage, game->numAvatar);
+		}
+		if ( selected >= end ) {
+			end = selected+1;
+			start = MAX(end-perPage, 0);
+		}
+		usleep(100);
 	}
-	ERROR_PRINT("Cannot find.");
 	return -1;
 }
 
-int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size) {
-	int bufSize = 1024;
-	char *buffer = malloc(bufSize);
-	/* snprintf(buffer, bufSize, "Please choose a card to respond."); */
-	INPUT_PRINT("Please choose a card to respond.");
-	int *ret = interface_choose(this, game, cards, cards_size, 1, buffer, true);
-	if ( ret != NULL ) {
-		return ret[0];
+int interface_selectReact(Player *this, Game *game, Card **cards, bool *validReact, int cards_size) {
+	char *msg = "Please choose a card to respond.";
+	int ret = interface_choose(this, game, cards, validReact, cards_size, msg, true);
+	if ( ret != -1 ) {
+		return ret;
 	}
 	return -1;
 }
@@ -350,12 +384,18 @@ void interface_drawMessg() {
 
 	messgWin = newwin(10, xMax / 3, yMax - 10, xMax / 3 * 2);
 	box(messgWin, 0, 0);
-	scrollok(messgWin, TRUE);
+	//scrollok(messgWin, TRUE);
 	mvwprintw(messgWin, 0, 2, "Messages");
-
-	wmove(messgWin, 1, 1);
+	int idx = msgQue_start;
+	for ( int row=1; row<=MSGQUE_SIZE; row++ ) {
+		wmove(messgWin, row, 1);
+		if ( msgQue[idx] ) {
+			wprintw(messgWin, "%s", msgQue[idx]);
+		}
+		idx = (idx+1) % MSGQUE_SIZE;	
+	}
 	wrefresh(messgWin);
-	return;
+	//refresh();
 }
 
 void interface_drawInput(Avatar *avatar) {

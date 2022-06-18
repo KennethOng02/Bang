@@ -11,6 +11,10 @@ WINDOW *boardWin;
 WINDOW *inputWin;
 WINDOW *messgWin;
 
+void msgQue_push(char *str);
+
+void interface_init();
+
 void moveCurDown(WINDOW *win);
 
 void interface_printCenter(WINDOW *win, int start_row, char *str);
@@ -19,8 +23,9 @@ char *interface_askName();
 
 void interface_welcome();
 
-int *interface_choose(Player *this, Game *game, Card **cards, int cards_size, int n, char *msg, bool notChoose);
 bool interface_yesOrNo(WINDOW *win);
+
+int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, int cards_size, char *msg, bool notChoose);
 
 int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n);
 // select n cards from cards[0..cards_size) to take
@@ -30,12 +35,12 @@ int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size
 // select n cards from cards[0..cards_size) to drop
 // return their indexes
 
-int interface_selectUse(Player *this, Game *game, Card **cards, int cards_size);
+int interface_selectUse(Player *this, Game *game, Card **cards, bool *validCards, int cards_size);
 // select 1 card from cards[0..cards_size) to use
 // return its index
-int interface_selectTarget(Player *this, Game *game);
+int interface_selectTarget(Player *this, Game *game, bool *validTargets);
 
-int interface_selectReact(Player *this, Game *game, Card **cards, int cards_size);
+int interface_selectReact(Player *this, Game *game, Card **cards, bool *validReact, int cards_size);
 // select 1 card from cards[0..cards_size) to use to react
 
 bool interface_useAbility(Player *this, Game *game);
@@ -43,7 +48,8 @@ bool interface_useAbility(Player *this, Game *game);
 
 char *interface_getCardSuit(int num);
 
-void interface_printCards(WINDOW *win, Card **cards, int cards_size);
+void interface_printTargets(Player *this, Game *game, bool *validTargets, int selected, int l, int r);
+void interface_printCards(WINDOW *win, Card **cards, bool *validCards, int selected, int, int);
 
 char *print_role(Role role);
 
