@@ -23,6 +23,7 @@ void Game_init(int numAvatar) {
 	keypad(stdscr, TRUE);
 	mouseinterval(0);
 	scrollok(stdscr, TRUE);
+	interface_init();
 	
 	interface_welcome();
 

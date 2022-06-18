@@ -68,7 +68,7 @@ int Player_selectUse(Player *this, Game *game, Card **cards, bool *validCards, i
 
 int Player_selectTarget(Player *this, Game *game, bool *validTargets) {
 	if ( !this->isComputer ) {
-		return interface_selectTarget(this, game);
+		return interface_selectTarget(this, game, validTargets);
 	} else {
 		return computer_selectTarget(this, game, validTargets);
 	}
@@ -76,7 +76,7 @@ int Player_selectTarget(Player *this, Game *game, bool *validTargets) {
 
 int Player_selectReact(Player *this, Game *game, Card **cards, bool *validReact, int cards_size) {
 	if ( !this->isComputer ) {
-		return interface_selectReact(this, game, cards, cards_size);
+		return interface_selectReact(this, game, cards, validReact, cards_size);
 	} else {
 		return computer_selectReact(this, game, cards, validReact, cards_size);
 	}

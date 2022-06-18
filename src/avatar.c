@@ -10,6 +10,7 @@
 #include "player.h"
 #include "card.h"
 #include "characterid.h"
+#include "interface.h"
 
 Character *Character_init(int id, const char *name, const int hp, const char *intro) {
 	if(name == NULL || intro == NULL)
