@@ -775,7 +775,7 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 	for( int i = index ; i < this->cards_size - 1 ; i++ ){
 		this->cards[i] = this->cards[i+1];
 	}
-	this->cards_size -- ;
+	this->cards_size -- ;	
 	if( this->character->id == Suzy_Lafayette && this->cards_size == 0 && this->isDead == false) {
 		Avatar_draw(this,game);
 		MESSAGE_PRINT("%s have no card! Using his ability(%s).",this->player->username,this->character->name);

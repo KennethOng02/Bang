@@ -201,11 +201,11 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 			break;
 		case 'j':
 		case KEY_DOWN:
-			selected = (selected+1) % cards_size;
+			if ( cards_size > 0) selected = (selected+1) % cards_size;
 			break;
 		case 'k':
 		case KEY_UP:
-			selected = (cards_size+selected-1) % cards_size;
+			if ( cards_size > 0) selected = (cards_size+selected-1) % cards_size;
 			break;
 		case '0':
 			if ( notChoose ) return -1;
@@ -214,7 +214,7 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 			interface_drawInfo(game);
 			break;
 		case '\n':
-			if ( validCards[selected] ) {
+			if ( cards_size > 0 && validCards[selected] ) {
 				//wclear(inputWin);
 				interface_drawInput(this->avatar, false, false, false, false);
 				wrefresh(inputWin);

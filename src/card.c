@@ -66,7 +66,7 @@ int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return -1;
 }
 int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) {
-	MESSAGE_PRINT("%s use %s,",user->player->username,card->name);
+	MESSAGE_PRINT("%s use %s.",user->player->username,card->name);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
