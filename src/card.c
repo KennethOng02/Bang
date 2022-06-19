@@ -49,7 +49,7 @@ int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 		Avatar_hurt(target, game, user);
 	}else {
 		if( user->character->id == Slab_the_Killer ) {
-			MESSAGE_PRINT("Because %s's ability(%s),you need another MISSED!",user->player->username,user->character->name);
+			MESSAGE_PRINT("Because %s's ability(%s),%s need another MISSED!",user->player->username,user->character->name,target->player->username);
 			if( Avatar_onReact(target, game, CARD_MISS, NULL ) == -1 ) {
 				MESSAGE_PRINT("%s do not react with another MISS.",target->player->username);
 				Avatar_hurt(target, game, user);
@@ -142,6 +142,7 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 			}
 		}
 	}
+	MESSAGE_PRINT("%s's card %s had been discard!",target->player->username,trash->name);
 	Deck_put(game->discardPile,trash);
 	free(list);
 	return 0;
