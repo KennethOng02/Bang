@@ -42,9 +42,9 @@ void Player_free(Player *this) {
 }
 
 
-int *Player_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n) {
+int *Player_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n, bool undo) {
 	if ( !this->isComputer ) {
-		return interface_chooseTake(this, game, cards, cards_size, n);
+		return interface_chooseTake(this, game, cards, cards_size, n, undo);
 	} else {
 		return computer_chooseTake(this, game, cards, cards_size, n);
 	}

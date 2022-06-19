@@ -19,7 +19,7 @@ Player *Player_init(int id, Avatar *avatar);
 void Player_free(Player *);
 
 
-int *Player_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n);
+int *Player_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n, bool undo);
 // select n cards from cards[0..cards_size) to take
 // return their indexes
 

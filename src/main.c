@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ncurses.h>
+#include <time.h>
 
 #include "game.h"
 #include "player.h"
@@ -10,11 +11,12 @@
 
 int main(int argc, char ** argv) {
 
+	srand(time(0));
+
 	Game_init(PLAYER_SIZE);
 
 	Game_run();
 
-	DEBUG_PRINT("HERE1.\n");
 	Game_exit();
 
 	return 0;

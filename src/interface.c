@@ -245,7 +245,7 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 	}
 }
 
-int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n) {
+int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n, bool undo) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 
@@ -263,7 +263,7 @@ int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size
 	for ( int i=0; i<cards_size; i++ ) validCards[i] = true;
 	for ( int i=n; i>=1; i-- ) {
 		snprintf(buffer, bufSize, "Please choose %d cards from following list.", i);
-		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false, true, false);
+		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false, undo, false);
 		if ( idx == -1 ) { // i != n
 			i++;
 			curSize++;
