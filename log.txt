@@ -1,112 +1,57 @@
 [DEBUG] finish generating deck!
-[DEBUG] Finish shuffling roles: { 2, 2, 0, 3 }
-[DEBUG] Finish initiation of player asdf with avatar 1
+[DEBUG] Finish shuffling roles: { 2, 3, 2, 0 }
+[DEBUG] Finish initiation of player Kdn with avatar 1
 [DEBUG] Finish initiation of player Computer 1 with avatar 2
-[DEBUG] SHERIFF is avatar 3.
 [DEBUG] Finish initiation of player Computer 2 with avatar 3
+[DEBUG] SHERIFF is avatar 4.
 [DEBUG] Finish initiation of player Computer 3 with avatar 4
-[DEBUG] Avatar 1 get the card: STAGECOACH.
+[DEBUG] Avatar 1 get the card: GATLING.
 [DEBUG] Avatar 1 draw one card.Remain: 79 cards.
-[DEBUG] Avatar 1 get the card: BANG!.
-[DEBUG] Avatar 1 draw one card.Remain: 78 cards.
 [DEBUG] Avatar 1 get the card: MISSED!.
-[DEBUG] Avatar 1 draw one card.Remain: 77 cards.
+[DEBUG] Avatar 1 draw one card.Remain: 78 cards.
 [DEBUG] Avatar 1 get the card: BANG!.
+[DEBUG] Avatar 1 draw one card.Remain: 77 cards.
+[DEBUG] Avatar 1 get the card: BEER.
 [DEBUG] Avatar 1 draw one card.Remain: 76 cards.
 [DEBUG] Avatar 2 get the card: BANG!.
 [DEBUG] Avatar 2 draw one card.Remain: 75 cards.
 [DEBUG] Avatar 2 get the card: MISSED!.
 [DEBUG] Avatar 2 draw one card.Remain: 74 cards.
-[DEBUG] Avatar 2 get the card: INDIANS.
+[DEBUG] Avatar 2 get the card: BANG!.
 [DEBUG] Avatar 2 draw one card.Remain: 73 cards.
+[DEBUG] Avatar 2 get the card: BANG!.
+[DEBUG] Avatar 2 draw one card.Remain: 72 cards.
 [DEBUG] Avatar 3 get the card: GENERAL STORE.
-[DEBUG] Avatar 3 draw one card.Remain: 72 cards.
-[DEBUG] Avatar 3 get the card: BANG!.
 [DEBUG] Avatar 3 draw one card.Remain: 71 cards.
-[DEBUG] Avatar 3 get the card: WINCHEDTER.
-[DEBUG] Avatar 3 draw one card.Remain: 70 cards.
 [DEBUG] Avatar 3 get the card: BANG!.
+[DEBUG] Avatar 3 draw one card.Remain: 70 cards.
+[DEBUG] Avatar 3 get the card: SCHOFIELD.
 [DEBUG] Avatar 3 draw one card.Remain: 69 cards.
-[DEBUG] Avatar 3 get the card: CAT BALOU.
+[DEBUG] Avatar 3 get the card: BARREL.
 [DEBUG] Avatar 3 draw one card.Remain: 68 cards.
-[DEBUG] Avatar 4 get the card: JAIL.
+[DEBUG] Avatar 4 get the card: BANG!.
 [DEBUG] Avatar 4 draw one card.Remain: 67 cards.
-[DEBUG] Avatar 4 get the card: BANG!.
-[DEBUG] Avatar 4 draw one card.Remain: 66 cards.
-[DEBUG] Avatar 4 get the card: BANG!.
-[DEBUG] Avatar 4 draw one card.Remain: 65 cards.
 [DEBUG] Avatar 4 get the card: SCHOFIELD.
+[DEBUG] Avatar 4 draw one card.Remain: 66 cards.
+[DEBUG] Avatar 4 get the card: VOLCANIC.
+[DEBUG] Avatar 4 draw one card.Remain: 65 cards.
+[DEBUG] Avatar 4 get the card: MUSTANG.
 [DEBUG] Avatar 4 draw one card.Remain: 64 cards.
+[DEBUG] Avatar 4 get the card: BANG!.
+[DEBUG] Avatar 4 draw one card.Remain: 63 cards.
 [DEBUG] Done Game_init
 [DEBUG] Stating game loop
-[DEBUG] Computer 2 start to choose
-[DEBUG] Avatar 3 get the card: SCHOFIELD.
-[DEBUG] Avatar 3 get the card: BANG!.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 3's card: GENERAL STORE had been taken.
-[DEBUG] Computer 2 use card "GENERAL STORE".
-[DEBUG] Computer 2 start to choose
-[DEBUG] Avatar 3 get the card: DYNAMITE.
 [DEBUG] Computer 3 start to choose
-[DEBUG] Avatar 4 get the card: BANG!.
-[DEBUG] asdf start to choose
-[DEBUG] Avatar 1 get the card: BANG!.
-[DEBUG] Computer 1 start to choose
-[DEBUG] Avatar 2 get the card: BANG!.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] computer selecting.
-[DEBUG] Avatar 3's card: BANG! had been taken.
-[DEBUG] Computer 2 use card "BANG!" on Computer 3.
-[DEBUG] Ask Avatar 4 to respond for BANG! Remain: 5
-[DEBUG] Avatar 4 hurt.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 3's card: WINCHEDTER had been taken.
-[DEBUG] Computer 2 use card "WINCHEDTER".
-[DEBUG] Avatar 3 equipped the card: WINCHEDTER.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] computer selecting.
-[DEBUG] Avatar 3's card: CAT BALOU had been taken.
-[DEBUG] Computer 2 use card "CAT BALOU" on Computer 3.
-[DEBUG] CAT BALOU ,list generated Done
-[DEBUG] Computer 2 start to choose
-[DEBUG] CAT BALOU ,list choose Done
-[DEBUG] Avatar 4's card: JAIL had been taken.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 3's card: SCHOFIELD had been taken.
-[DEBUG] Computer 2 use card "SCHOFIELD".
-[DEBUG] Computer 2 unquipped the card: WINCHEDTER.[DEBUG] Avatar 3 equipped the card: SCHOFIELD.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 3's card: DYNAMITE had been taken.
-[DEBUG] Computer 2 use card "DYNAMITE".
-[DEBUG] Avatar 3 equipped the card: DYNAMITE.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] No card can be selected.
-[DEBUG] Computer 2 finish his turn.
-[DEBUG] Avatar 4 get the card: MISSED!.
-[DEBUG] Avatar 4 draw one card.Remain: 56 cards.
-[DEBUG] Avatar 4 get the card: BANG!.
-[DEBUG] Avatar 4 draw one card.Remain: 55 cards.
+[DEBUG] Avatar 4 get the card: BEER.
+[DEBUG] Avatar 4 get the card: APPALOOSA.
 [DEBUG] Finish cheking whether card can be play.
 [DEBUG] computer selecting.
 [DEBUG] Finish asking what card he want to play.
 [DEBUG] computer selecting.
 [DEBUG] Avatar 4's card: BANG! had been taken.
-[DEBUG] Computer 3 use card "BANG!" on asdf.
-[DEBUG] Ask Avatar 1 to respond for BANG! Remain: 5
-[DEBUG] Avatar 1's card: MISSED! had been taken.
+[DEBUG] Computer 3 use card "BANG!" on Computer 2.
+[DEBUG] Ask Avatar 3 to respond for BANG! Remain: 4
+[DEBUG] Avatar 3 hurt.
 [DEBUG] Finish cheking whether card can be play.
 [DEBUG] computer selecting.
 [DEBUG] Finish asking what card he want to play.
@@ -115,158 +60,36 @@
 [DEBUG] Avatar 4 equipped the card: SCHOFIELD.
 [DEBUG] Finish cheking whether card can be play.
 [DEBUG] computer selecting.
-[DEBUG] No card can be selected.
-[DEBUG] Computer 3 finish his turn.
-[DEBUG] Avatar 4's card: BANG! had been taken.
-[DEBUG] asdf start to choose
-[DEBUG] Avatar 2's card: MISSED! had been taken.
-[DEBUG] Avatar 1 get the card: MISSED!.
-[DEBUG] Avatar 1 get the card: PANIC!.
-[DEBUG] Avatar 1 draw one card.Remain: 54 cards.
-[DEBUG] Finish cheking whether card can be play.
 [DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 1's card: STAGECOACH had been taken.
-[DEBUG] asdf use card "STAGECOACH".
-[DEBUG] Avatar 1 get the card: BANG!.
-[DEBUG] Avatar 1 draw one card.Remain: 53 cards.
-[DEBUG] Avatar 1 get the card: MISSED!.
-[DEBUG] Avatar 1 draw one card.Remain: 52 cards.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 1's card: BANG! had been taken.
-[DEBUG] asdf use card "BANG!" on Computer 1.
-[DEBUG] Ask Avatar 2 to respond for BANG! Remain: 3
-[DEBUG] Avatar 2 hurt.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 1's card: PANIC! had been taken.
-[DEBUG] asdf use card "PANIC!" on Computer 1.
-[DEBUG] PANIC! ,list generated Done
-[DEBUG] asdf start to choose
-[DEBUG] Avatar 2's card: INDIANS had been taken.
-[DEBUG] Avatar 1 get the card: INDIANS.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 1's card: INDIANS had been taken.
-[DEBUG] asdf use card "INDIANS".
-[DEBUG] Ask Avatar 2 to respond for INDIANS Remain: 2
-[DEBUG] Avatar 2's card: BANG! had been taken.
-[DEBUG] Ask Avatar 3 to respond for INDIANS Remain: 2
-[DEBUG] Avatar 3's card: BANG! had been taken.
-[DEBUG] Ask Avatar 4 to respond for INDIANS Remain: 3
-[DEBUG] Avatar 4's card: BANG! had been taken.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] asdf finish his turn.
-[DEBUG] Avatar 1's card: MISSED! had been taken.
-[DEBUG] Avatar 2 get the card: BANG!.
-[DEBUG] Avatar 2 draw one card.Remain: 51 cards.
-[DEBUG] Avatar 2 get the card: BANG!.
-[DEBUG] Avatar 2 draw one card.Remain: 50 cards.
+[DEBUG] Avatar 4's card: VOLCANIC had been taken.
+[DEBUG] Computer 3 use card "VOLCANIC".
+[DEBUG] Computer 3 unquipped the card: SCHOFIELD.[DEBUG] Avatar 4 equipped the card: VOLCANIC.
 [DEBUG] Finish cheking whether card can be play.
 [DEBUG] computer selecting.
 [DEBUG] Finish asking what card he want to play.
-[DEBUG] computer selecting.
-[DEBUG] Avatar 2's card: BANG! had been taken.
-[DEBUG] Computer 1 use card "BANG!" on Computer 2.
-[DEBUG] Ask Avatar 3 to respond for BANG! Remain: 1
-[DEBUG] Avatar 3 hurt.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] No card can be selected.
-[DEBUG] Computer 1 finish his turn.
-[DEBUG] Computer 2 unquipped the card: DYNAMITE.[DEBUG] Avatar 3 hurt.
-[DEBUG] Avatar 3 hurt.
-[DEBUG] Avatar 3 hurt.
-[DEBUG] Computer 2 start to choose
-[DEBUG] Avatar 3 get the card: JAIL.
-[DEBUG] Avatar 3 get the card: BANG!.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] computer selecting.
-[DEBUG] Avatar 3's card: BANG! had been taken.
-[DEBUG] Computer 2 use card "BANG!" on Computer 3.
-[DEBUG] Ask Avatar 4 to respond for BANG! Remain: 2
-[DEBUG] Avatar 4's card: MISSED! had been taken.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] computer selecting.
-[DEBUG] Avatar 3's card: JAIL had been taken.
-[DEBUG] Computer 2 use card "JAIL" on Computer 3.
-[DEBUG] Avatar 4 equipped the card: JAIL.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] No card can be selected.
-[DEBUG] Computer 2 finish his turn.
-[DEBUG] Computer 3 unquipped the card: JAIL.[DEBUG] Avatar 4 get the card: BEER.
-[DEBUG] Avatar 4 draw one card.Remain: 44 cards.
-[DEBUG] Avatar 4 get the card: REMINGTON.
-[DEBUG] Avatar 4 draw one card.Remain: 43 cards.
+[DEBUG] Avatar 4's card: MUSTANG had been taken.
+[DEBUG] Computer 3 use card "MUSTANG".
+[DEBUG] Avatar 4 equipped the card: MUSTANG.
 [DEBUG] Finish cheking whether card can be play.
 [DEBUG] computer selecting.
 [DEBUG] Finish asking what card he want to play.
 [DEBUG] computer selecting.
 [DEBUG] Avatar 4's card: BANG! had been taken.
-[DEBUG] Computer 3 use card "BANG!" on Computer 1.
-[DEBUG] Ask Avatar 2 to respond for BANG! Remain: 2
-[DEBUG] Avatar 2 hurt.
+[DEBUG] Computer 3 use card "BANG!" on Computer 2.
+[DEBUG] Ask Avatar 3 to respond for BANG! Remain: 4
+[DEBUG] Avatar 3 hurt.
 [DEBUG] Finish cheking whether card can be play.
 [DEBUG] computer selecting.
 [DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 4's card: BEER had been taken.
-[DEBUG] Computer 3 use card "BEER".
-[DEBUG] Avatar 4 heal.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] computer selecting.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 4's card: REMINGTON had been taken.
-[DEBUG] Computer 3 use card "REMINGTON".
-[DEBUG] Computer 3 unquipped the card: SCHOFIELD.[DEBUG] Avatar 4 equipped the card: REMINGTON.
+[DEBUG] Avatar 4's card: APPALOOSA had been taken.
+[DEBUG] Computer 3 use card "APPALOOSA".
+[DEBUG] Avatar 4 equipped the card: APPALOOSA.
 [DEBUG] Finish cheking whether card can be play.
 [DEBUG] computer selecting.
 [DEBUG] No card can be selected.
 [DEBUG] Computer 3 finish his turn.
-[DEBUG] asdf start to choose
-[DEBUG] Avatar 2's card: BANG! had been taken.
-[DEBUG] Avatar 1 get the card: BANG!.
-[DEBUG] Avatar 1 get the card: SALOON.
-[DEBUG] Avatar 1 draw one card.Remain: 42 cards.
+[DEBUG] Avatar 1 get the card: DUEL.
+[DEBUG] Avatar 1 draw one card.Remain: 59 cards.
+[DEBUG] Avatar 1 get the card: MUSTANG.
+[DEBUG] Avatar 1 draw one card.Remain: 58 cards.
 [DEBUG] Finish cheking whether card can be play.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 1's card: BANG! had been taken.
-[DEBUG] asdf use card "BANG!" on Computer 1.
-[DEBUG] Ask Avatar 2 to respond for BANG! Remain: 1
-[DEBUG] Ask Avatar 2 to respond for (NULL) Remain: 1
-[DEBUG] Avatar 1 get the card: VOLCANIC.
-[DEBUG] Avatar 1 draw one card.Remain: 41 cards.
-[DEBUG] Avatar 1 get the card: STAGECOACH.
-[DEBUG] Avatar 1 draw one card.Remain: 40 cards.
-[DEBUG] Avatar 1 get the card: BEER.
-[DEBUG] Avatar 1 draw one card.Remain: 39 cards.
-[DEBUG] Avatar 2's card: BANG! had been taken.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 1's card: VOLCANIC had been taken.
-[DEBUG] asdf use card "VOLCANIC".
-[DEBUG] Avatar 1 equipped the card: VOLCANIC.
-[DEBUG] Finish cheking whether card can be play.
-[DEBUG] Finish asking what card he want to play.
-[DEBUG] Avatar 1's card: BANG! had been taken.
-[DEBUG] asdf use card "BANG!" on Computer 2.
-[DEBUG] Ask Avatar 3 to respond for BANG! Remain: 1
-[DEBUG] Ask Avatar 3 to respond for (NULL) Remain: 1
-[DEBUG] Avatar 3's card: BANG! had been taken.
-[DEBUG] Computer 2 unquipped the card: SCHOFIELD.[DEBUG] Done Player_free!
-[DEBUG] Done Equipment_free
-[DEBUG] Done Avatar_free!
-[DEBUG] Done Player_free!
-[DEBUG] Done Equipment_free
-[DEBUG] Done Avatar_free!
-[DEBUG] Done Player_free!
-[DEBUG] Done Equipment_free
-[DEBUG] Done Avatar_free!
-[DEBUG] Done Player_free!
-[DEBUG] Done Equipment_free
-[DEBUG] Done Avatar_free!
-[DEBUG] Game_free Done !
