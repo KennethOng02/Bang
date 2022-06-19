@@ -80,14 +80,14 @@ char *interface_askName() {
 
 	WINDOW *inputNameWin = newwin(y, x, maxY / 2 - y / 2, maxX / 2 - x / 2);
 	box(inputNameWin, 0, 0);
-	char *name = calloc(9, sizeof(char));
+	char *name = calloc(16, sizeof(char));
 
 	while(1) {
 		mvwprintw(inputNameWin, 1, 2, "Player Name: ");
 		refresh();
 		wrefresh(inputNameWin);
 
-		wgetnstr(inputNameWin, name, 8);
+		wgetnstr(inputNameWin, name, 15);
 
 		while(isspace((unsigned char)*name)) name++;
 		
@@ -816,7 +816,7 @@ void interface_drawInfo(Game *game) {
 		char *trav = game->avatars[i]->character->intro;
 		while(1) {
 			mvwprintw(infoWin, row + 1, 1, "%.*s", xMax - 2, trav);
-			if(strlen(trav) < xMax - 2) break;
+			if(strlen(trav) <= xMax - 2) break;
 			trav += xMax - 2;
 			row++;
 		}
@@ -824,9 +824,10 @@ void interface_drawInfo(Game *game) {
 	}
 
 	row++;
-	wattron(infoWin, COLOR_PAIR(1)); \
+	init_pair(2, COLOR_BLACK, COLOR_YELLOW);
+	wattron(infoWin, COLOR_PAIR(2)); \
 	mvwprintw(infoWin, row + 1, 1, "---CARD---");
-	wattroff(infoWin, COLOR_PAIR(1)); \
+	wattroff(infoWin, COLOR_PAIR(2)); \
 	row++;
 
 	char *buffer = calloc(2048, sizeof(char));
@@ -835,7 +836,7 @@ void interface_drawInfo(Game *game) {
 		char *trav = buffer;
 		while(1) {
 			mvwprintw(infoWin, row + 1, 1, "%.*s", xMax - 2, trav);
-			if(strlen(trav) < xMax - 2) break;
+			if(strlen(trav) <= xMax - 2) break;
 			trav += xMax - 2;
 			row++;
 		}
