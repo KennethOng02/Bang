@@ -146,6 +146,7 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 			}
 		}
 	}
+	MESSAGE_PRINT("%s's card %s had been discard!",target->player->username,trash->name);
 	Deck_put(game->discardPile,trash);
 	free(list);
 	return 0;

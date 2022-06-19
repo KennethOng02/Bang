@@ -471,6 +471,9 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 		Deck_put(game->discardPile, Avatar_taken(this, game, react));
 	}
 	free(validReact);
+	if( (this->character->id == Jourdonnais || this->equipment->armour != NULL) && to_react && to_react->id == CARD_BANG ) {
+		MESSAGE_PRINT("But %s has a MISS!",this->player->username);
+	}
 	return 0;
 }
 
@@ -530,7 +533,7 @@ void Avatar_dead(Avatar *this, Game *game) {
 		}
 		next = Game_nextAvailableAvatar(next);
 	}while(next->character->id != this->character->id) ;
-	
+	this->isDead = true;
 	if( check == 0 ) {
 		MESSAGE_PRINT("Because %s's ability(%s),he get all cards and equipment from %s",next->player->username,next->character->name,this->player->username);
 		for( int i = this->cards_size -1; i >= 0 ; i-- ) {
@@ -600,7 +603,7 @@ void Avatar_dead(Avatar *this, Game *game) {
 	}
 	// TODO: Show role card
 	//move dead people out
-	this->isDead = true;
+	
 	game->numAvailableAvatar--;
 	Game_checkWin(game);
 	
@@ -611,7 +614,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 	// TODO: Character ability - El Gringoy
 	if(this->isDead == true) return;
 	this->hp -- ;
-	MESSAGE_PRINT("%s's hp -1 Remain: %d",this->player->username,this->hp);
+	MESSAGE_PRINT("%s's hp -1.",this->player->username);
 	if(this->hp == 0) {
 		MESSAGE_PRINT("Oh no %s's hp equal 0",this->player->username);
 		if( Avatar_onReact(this, game, CARD_BEER, NULL) == -1 || game->numAvailableAvatar <= 2) {
@@ -692,13 +695,13 @@ void Avatar_equip(Avatar *this, Game *game, Card *card) {
 		}
 		this->equipment->bomb = card;
 	}
-	DEBUG_PRINT("Avatar %d quipped the card: %s.\n", this->id , card->name);
+	DEBUG_PRINT("Avatar %d equipped the card: %s.\n", this->id , card->name);
 	return;
 }
 
 Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
 	Card *bye = *card;
-	MESSAGE_PRINT("%s unquipped the card: %s.", this->player->username, (*card)->name );
+	DEBUG_PRINT("%s unquipped the card: %s.", this->player->username, (*card)->name );
 	*card = NULL;
 	return bye;
 }
@@ -731,7 +734,7 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 	this->cards_size -- ;
 	if( this->character->id == Suzy_Lafayette && this->cards_size == 0 && this->isDead == false) {
 		Avatar_draw(this,game);
-		MESSAGE_PRINT("%s have no card! Using his ability.",this->player->username);
+		MESSAGE_PRINT("%s have no card! Using his ability(%s).",this->player->username,this->character->name);
 	}
 	DEBUG_PRINT("Avatar %d's card: %s had been taken.\n", this->id , bye->name );
 	return bye;
