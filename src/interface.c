@@ -803,8 +803,11 @@ void interface_drawInfo(Game *game) {
 	getmaxyx(stdscr, yMax, xMax);
 	WINDOW *infoWin = newwin(yMax, xMax, 0, 0);
 
-	int row = 0;
 	init_pair(1, COLOR_BLACK, COLOR_GREEN);
+	wattron(infoWin, COLOR_PAIR(1)); \
+	interface_printCenter(infoWin, 0, "---Info---");
+	wattroff(infoWin, COLOR_PAIR(1)); \
+	int row = 0;
 	for(int i = 0; i < game->numAvatar; i++) {
 		wattron(infoWin, COLOR_PAIR(1)); \
 		mvwprintw(infoWin, row + 1, 1, "%s", game->avatars[i]->character->name);
