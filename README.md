@@ -1,8 +1,8 @@
 # BANG!
 
-![Alt text][./img/banner.png]
+![Alt text](./img/banner.png)
 
-![Alt text][./img/game.png]
+![Alt text](./img/game.png)
 
 ## Dependencies
 
