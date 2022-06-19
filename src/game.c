@@ -168,7 +168,7 @@ void Game_reShuffle() {
 
 void Game_checkWin() {
 	bool teamSheriff = false;
-	bool teamDuputy = false;
+	bool teamDeputy = false;
 	bool teamOutlaw = false;
 	bool teamRenegade = false;
 	for ( int i=0; i<game->numAvatar; i++ ) {
