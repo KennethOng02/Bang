@@ -717,25 +717,29 @@ void interface_refresh(char *username, Game *game) {
 void interface_drawInfo(Game *game) {
 	int yMax, xMax;
 	getmaxyx(stdscr, yMax, xMax);
-	WINDOW *infoWin = newwin(yMax - 15, xMax - 10, 3, xMax / 2 - (xMax - 10) / 2);
-	box(infoWin, 0, 0);
+	WINDOW *infoWin = newwin(yMax, xMax, 0, 0);
 
 	int row = 0;
+	init_pair(1, COLOR_BLACK, COLOR_GREEN);
 	for(int i = 0; i < game->numAvatar; i++) {
+		wattron(infoWin, COLOR_PAIR(1)); \
 		mvwprintw(infoWin, row + 1, 1, "%s", game->avatars[i]->character->name);
+		wattroff(infoWin, COLOR_PAIR(1)); \
 		row++;
 		char *trav = game->avatars[i]->character->intro;
 		while(1) {
-			mvwprintw(infoWin, row + 1, 1, "%.*s", xMax - 12, trav);
-			if(strlen(trav) < xMax - 12) break;
-			trav += xMax - 12;
+			mvwprintw(infoWin, row + 1, 1, "%.*s", xMax - 2, trav);
+			if(strlen(trav) < xMax - 2) break;
+			trav += xMax - 2;
 			row++;
 		}
 		row++;
 	}
 
 	row++;
+	wattron(infoWin, COLOR_PAIR(1)); \
 	mvwprintw(infoWin, row + 1, 1, "---CARD---");
+	wattroff(infoWin, COLOR_PAIR(1)); \
 	row++;
 
 	char *buffer = calloc(2048, sizeof(char));
@@ -743,13 +747,15 @@ void interface_drawInfo(Game *game) {
 		snprintf(buffer, 2048, "%s - %s", game->avatars[0]->cards[i]->name, game->avatars[0]->cards[i]->intro);
 		char *trav = buffer;
 		while(1) {
-			mvwprintw(infoWin, row + 1, 1, "%.*s", xMax - 12, trav);
-			if(strlen(trav) < xMax - 12) break;
-			trav += xMax - 12;
+			mvwprintw(infoWin, row + 1, 1, "%.*s", xMax - 2, trav);
+			if(strlen(trav) < xMax - 2) break;
+			trav += xMax - 2;
 			row++;
 		}
 		row++;
 	}
+
+	interface_printCenter(infoWin, yMax - 2, " Press any key to exit info...");
 
 	wrefresh(infoWin);
 	refresh();
