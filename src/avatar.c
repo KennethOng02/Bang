@@ -274,7 +274,7 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 		for(int i = 0; i<3 ; i++) {
 			if ( i != choosen[0] && i != choosen[1]) {
 				Avatar_discard(game,options[i]);
-			}else {
+			} else {
 				Avatar_get(this,game,options[i]);
 			}
 		}

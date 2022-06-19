@@ -247,8 +247,10 @@ int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size
 	char *buffer = malloc(bufSize);
 
 	Card **cards_copy = malloc(cards_size * sizeof(Card *));
+	int *indexes_copy = malloc(cards_size * sizeof(int));
 	for ( int i=0; i<cards_size; i++ ) {
 		cards_copy[i] = cards[i];
+		indexes_copy[i] = i;
 	}
 	int curSize = cards_size;
 
@@ -258,13 +260,33 @@ int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size
 	for ( int i=0; i<cards_size; i++ ) validCards[i] = true;
 	for ( int i=n; i>=1; i-- ) {
 		snprintf(buffer, bufSize, "Please choose %d cards from following list.", i);
-		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false, false, false);
-		rets[i-1] = idx;
+		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false, true, false);
+		if ( idx == -1 ) { // i != n
+			i++;
+			curSize++;
+			Card *tmp = cards_copy[curSize-1];
+			int tmpIdx = indexes_copy[curSize-1];
+			for ( int j=curSize-2; j>=tmpIdx; j-- ) {
+				cards_copy[j+1] = cards_copy[j];
+				indexes_copy[j+1] = indexes_copy[j];
+			}
+			cards_copy[tmpIdx] = cards[rets[i-1]];
+			indexes_copy[tmpIdx] = rets[i-1];
+			i++;
+			continue;
+		}
+		int tmpIdx = idx;
+		rets[i-1] = indexes_copy[idx];
+		Card *tmp = cards[rets[i-1]];
 		for ( int j=idx; j < curSize-1; j++ ) {
 			cards_copy[j] = cards_copy[j+1];
+			indexes_copy[j] = indexes_copy[j+1];
 		}
+		cards_copy[curSize-1] = tmp;
+		indexes_copy[curSize-1] = tmpIdx;
 		curSize--;
 	}
+	free(indexes_copy);
 	free(cards_copy);
 	free(buffer);
 	return rets;
@@ -483,7 +505,7 @@ void interface_drawInput(Avatar *avatar, bool canPass, bool canQuit, bool canBac
 	box(inputWin, 0, 0);
 	int xInput = getmaxx(inputWin);
 	char *buffer = calloc(64, sizeof(char));
-	snprinf(buffer, 64, "%s-(%s)-(%s)-HP(%d/%d)", avatar->player->username, print_role(avatar->role), avatar->character->name, avatar->hp, avatar->hp_max);
+	snprintf(buffer, 64, "%s-(%s)-(%s)-HP(%d/%d)", avatar->player->username, print_role(avatar->role), avatar->character->name, avatar->hp, avatar->hp_max);
 	mvwprintw(inputWin, 0, 1, buffer);
 	int offset = strlen(buffer) + 2;
 	if ( canPass ) {
