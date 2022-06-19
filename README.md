@@ -1,8 +1,6 @@
 # BANG!
 
-![Alt text][./img/banner.png]
-
-![Alt text][./img/game.png]
+![Alt text](./img/game.png)
 
 ## Dependencies
 
@@ -16,7 +14,7 @@
 		```
 * Window
 		```
-		$ Fuck yourself
+		$ F*ck yourself
 		```
 
 ## Build
@@ -30,7 +28,11 @@ $ make
 ```
 $ ./bin/main -p [player_size]
 ```
-if no argument being passed, then the player size is defaults to 4
+or
+```
+$ make run
+```
+which defaults to 4 players
 
 ## Authors
 * Din (https://github.com/din2009siuc)
