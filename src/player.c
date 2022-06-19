@@ -50,17 +50,17 @@ int *Player_chooseTake(Player *this, Game *game, Card **cards, int cards_size, i
 	}
 }
 
-int *Player_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, int n) {
+int *Player_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, int n, bool notChoose) {
 	if ( !this->isComputer ) {
-		return interface_chooseDrop(this, game, cards, cards_size, n);
+		return interface_chooseDrop(this, game, cards, cards_size, n, notChoose);
 	} else {
 		return computer_chooseDrop(this, game, cards, cards_size, n);
 	}
 }
 
-int Player_selectUse(Player *this, Game *game, Card **cards, bool *validCards, int cards_size) {
+int Player_selectUse(Player *this, Game *game, Card **cards, bool *validCards, int cards_size, bool canUseAbility) {
 	if ( !this->isComputer ) {
-		return interface_selectUse(this, game, cards, validCards, cards_size);
+		return interface_selectUse(this, game, cards, validCards, cards_size, canUseAbility);
 	} else {
 		return computer_selectUse(this, game, cards, validCards, cards_size);
 	}
@@ -74,9 +74,9 @@ int Player_selectTarget(Player *this, Game *game, bool *validTargets) {
 	}
 }
 
-int Player_selectReact(Player *this, Game *game, Card **cards, bool *validReact, int cards_size) {
+int Player_selectReact(Player *this, Game *game, Card **cards, bool *validReact, int cards_size, bool canUseAbility) {
 	if ( !this->isComputer ) {
-		return interface_selectReact(this, game, cards, validReact, cards_size);
+		return interface_selectReact(this, game, cards, validReact, cards_size, canUseAbility);
 	} else {
 		return computer_selectReact(this, game, cards, validReact, cards_size);
 	}
