@@ -666,7 +666,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 			}
 			if( attacker != NULL && this->role == DEPUTY && attacker->role == SHERIFF) {
 				MESSAGE_PRINT("OH NO! %s kill %s, How can this Sheriff so cruel ? He is your Deputy ! Discard all your card ! NOW !!!",attacker->player->username,this->player->username);
-				for( int i = this->cards_size -1; i >= 0 ; i-- ) {
+				for( int i = attacker->cards_size -1; i >= 0 ; i-- ) {
 					Avatar_discard( game, attacker->cards[i] );
 					Avatar_taken(attacker, game, i);
 					MESSAGE_PRINT("The card %s had been discard",this->cards[i]->name);
