@@ -11,9 +11,9 @@
 
 # define SHUFFLE(ARR,ARR_SIZE,ARR_TYPE) { \
 	srand(time(0)); \
-	for(int i = 0; i < ARR_SIZE; i++) { \
-		int tarIdx = rand() % ARR_SIZE; \
-		SWAP(ARR[i], ARR[tarIdx], ARR_TYPE); \
+	for(int _I = 0; _I < ARR_SIZE; _I++) { \
+		int _tarIdx = rand() % ARR_SIZE; \
+		SWAP(ARR[_I], ARR[_tarIdx], ARR_TYPE); \
 	} \
 }
 

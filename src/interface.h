@@ -27,7 +27,7 @@ bool interface_yesOrNo(WINDOW *win);
 
 int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, int cards_size, char *msg, bool canPass, bool canBack, bool canUseAbility);
 
-int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n);
+int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n, bool undo);
 // select n cards from cards[0..cards_size) to take
 // return their indexes
 

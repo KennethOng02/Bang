@@ -48,9 +48,8 @@
 	snprintf(buffer, bufSize, __VA_ARGS__); \
 	msgQue_push(buffer); \
 	interface_drawMessg(); \
-	sleep(1);  \
+	sleep(1); \
 }
-
 #define INPUT_PRINT(...) { \
 	wprintw(inputWin, __VA_ARGS__); \
 	moveCurDown(inputWin); \

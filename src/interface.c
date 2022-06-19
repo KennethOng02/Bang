@@ -201,11 +201,11 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 			break;
 		case 'j':
 		case KEY_DOWN:
-			selected = (selected+1) % cards_size;
+			if ( cards_size > 0) selected = (selected+1) % cards_size;
 			break;
 		case 'k':
 		case KEY_UP:
-			selected = (cards_size+selected-1) % cards_size;
+			if ( cards_size > 0) selected = (cards_size+selected-1) % cards_size;
 			break;
 		case '0':
 			if ( notChoose ) return -1;
@@ -214,7 +214,7 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 			interface_drawInfo(game);
 			break;
 		case '\n':
-			if ( validCards[selected] ) {
+			if ( cards_size > 0 && validCards[selected] ) {
 				//wclear(inputWin);
 				interface_drawInput(this->avatar, false, false, false, false);
 				wrefresh(inputWin);
@@ -245,13 +245,15 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 	}
 }
 
-int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n) {
+int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size, int n, bool undo) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 
 	Card **cards_copy = malloc(cards_size * sizeof(Card *));
+	int *indexes_copy = malloc(cards_size * sizeof(int));
 	for ( int i=0; i<cards_size; i++ ) {
 		cards_copy[i] = cards[i];
+		indexes_copy[i] = i;
 	}
 	int curSize = cards_size;
 
@@ -261,13 +263,33 @@ int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size
 	for ( int i=0; i<cards_size; i++ ) validCards[i] = true;
 	for ( int i=n; i>=1; i-- ) {
 		snprintf(buffer, bufSize, "Please choose %d cards from following list.", i);
-		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false, false, false);
-		rets[i-1] = idx;
+		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false, undo, false);
+		if ( idx == -1 ) { // i != n
+			i++;
+			curSize++;
+			Card *tmp = cards_copy[curSize-1];
+			int tmpIdx = indexes_copy[curSize-1];
+			for ( int j=curSize-2; j>=tmpIdx; j-- ) {
+				cards_copy[j+1] = cards_copy[j];
+				indexes_copy[j+1] = indexes_copy[j];
+			}
+			cards_copy[tmpIdx] = cards[rets[i-1]];
+			indexes_copy[tmpIdx] = rets[i-1];
+			i++;
+			continue;
+		}
+		int tmpIdx = idx;
+		rets[i-1] = indexes_copy[idx];
+		Card *tmp = cards[rets[i-1]];
 		for ( int j=idx; j < curSize-1; j++ ) {
 			cards_copy[j] = cards_copy[j+1];
+			indexes_copy[j] = indexes_copy[j+1];
 		}
+		cards_copy[curSize-1] = tmp;
+		indexes_copy[curSize-1] = tmpIdx;
 		curSize--;
 	}
+	free(indexes_copy);
 	free(cards_copy);
 	free(buffer);
 	return rets;

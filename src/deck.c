@@ -112,16 +112,27 @@ Deck *Deck_gen(int deck_size) {
 }
 
 Role *genRoles(int numAvatar) {
-	if(numAvatar == 4) {
-		Role * roles = malloc(4 * sizeof(Role));
+	Role *roles = malloc(numAvatar * sizeof(Role));
+	if ( numAvatar >= 4 ) {
 		roles[0] = SHERIFF;
 		roles[1] = roles[2] = OUTLAW;
 		roles[3] = RENEGADE;
-		SHUFFLE(roles, 4, Role);
-		DEBUG_PRINT("Finish shuffling roles: { %d, %d, %d, %d }\n", roles[0], roles[1], roles[2], roles[3]);
-		return roles;
 	}
-	return NULL;
+	if ( numAvatar >= 5 ) {
+		roles[4] = DEPUTY;
+	}
+	if ( numAvatar >= 6 ) {
+		roles[5] = OUTLAW;
+	}
+	if ( numAvatar >= 7 ) {
+		roles[6] = SHERIFF;
+	}
+	SHUFFLE(roles, numAvatar, Role);
+	DEBUG_PRINT("Finish shuffling roles\n");
+	for ( int i=0; i<numAvatar; i++ ) {
+		DEBUG_PRINT("i\n");
+	}
+	return roles;
 }
 
 Character **Deck_buildCharacter() {

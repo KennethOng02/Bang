@@ -68,7 +68,7 @@ int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return -1;
 }
 int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) {
-	MESSAGE_PRINT("%s use %s,",user->player->username,card->name);
+	MESSAGE_PRINT("%s use %s.",user->player->username,card->name);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
@@ -109,7 +109,7 @@ int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	int list_size;
 	Card **list = Avatar_giveToChoose(target, &list_size);
 	DEBUG_PRINT("%s ,list generated Done\n",card->name);
-	int *choose = Avatar_choose(user,game,list,list_size,1);
+	int *choose = Avatar_choose(user,game,list,list_size,1, false);
 	if ( choose[0] < target->cards_size ) {
 		Avatar_get(user,game,Avatar_taken(target, game, choose[0]));
 	} else {
@@ -130,7 +130,7 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	int list_size;
 	Card **list = Avatar_giveToChoose(target, &list_size);
 	DEBUG_PRINT("%s ,list generated Done\n",card->name);
-	int *choose = Avatar_choose(user,game,list,list_size,1);
+	int *choose = Avatar_choose(user,game,list,list_size,1, false);
 	DEBUG_PRINT("%s ,list choose Done\n",card->name);
 	Card* trash;
 	if ( choose[0] < target->cards_size ) {
@@ -165,14 +165,14 @@ int play_CARD_FARGO(Avatar * user, Avatar * target, Game * game, Card * card) {
 int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	MESSAGE_PRINT("%s use %s.",user->player->username,card->name);
 	Avatar* next = user;
-	Card** options = calloc(4,sizeof(Card*));
+	Card** options = calloc(game->numAvailableAvatar, sizeof(Card*));
 	int* choose ;
 	int opt_size = game->numAvailableAvatar;
 	for(int i = 0; i<opt_size;i++) {
 		options[i] = Deck_draw(game->deck);
 	}
 	do{
-		choose = Avatar_choose(next,game,options,opt_size,1);	
+		choose = Avatar_choose(next,game,options,opt_size,1, false);
 		Avatar_get(next,game,options[choose[0]]);
 		MESSAGE_PRINT("%s get the card %s",next->player->username,options[choose[0]]->name);
 		for(int i = choose[0];i < opt_size - 1 ; i++) {

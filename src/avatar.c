@@ -243,7 +243,7 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 				// Play
 				Card **list = malloc( target->cards_size * sizeof(Card *) );
 				memset(list, 0, target->cards_size * sizeof(Card *));
-				int *choose = Avatar_choose(this,game,list,target->cards_size,1);
+				int *choose = Avatar_choose(this,game,list,target->cards_size,1, false);
 				MESSAGE_PRINT("%s using his ability(%s),he draw %s's card",this->player->username,this->character->name,target->player->username);
 				Avatar_get(this,game,Avatar_taken(target, game, choose[0]));
 				free(list);
@@ -270,11 +270,11 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 		for(int i = 0; i<3 ; i++) {
 			options[i] = Deck_draw(game->deck);
 		}
-		choosen = Avatar_choose(this,game,options,3,2);
+		choosen = Avatar_choose(this,game,options,3,2, false);
 		for(int i = 0; i<3 ; i++) {
 			if ( i != choosen[0] && i != choosen[1]) {
 				Avatar_discard(game,options[i]);
-			}else {
+			} else {
 				Avatar_get(this,game,options[i]);
 			}
 		}
@@ -520,7 +520,7 @@ int Avatar_judge(Avatar *this, Game *game, int card_id) {
 		MESSAGE_PRINT("%s use his ability(%s) to choose judge card:",this->player->username,this->character->name);
 		MESSAGE_PRINT("1.%s[%s]",options[0]->name,interface_getCardSuit(options[0]->suit));
 		MESSAGE_PRINT("2.%s[%s]",options[1]->name,interface_getCardSuit(options[1]->suit));
-		int*choosen = Avatar_choose(this,game,options,2,1);
+		int*choosen = Avatar_choose(this,game,options,2,1, false);
 		for(int i = 0; i<2 ; i++) {
 			if ( i != choosen[0]) {
 				Avatar_discard(game,options[i]);
@@ -677,7 +677,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 		MESSAGE_PRINT("%s hurt, using his ability(%s).",this->player->username,this->character->name);
 		Card **list = malloc( attacker->cards_size * sizeof(Card *) );
 		memset(list, 0, attacker->cards_size * sizeof(Card *));
-		int *choose = Avatar_choose(this,game,list,attacker->cards_size,1);
+		int *choose = Avatar_choose(this,game,list,attacker->cards_size,1, false);
 		Avatar_get(this,game,Avatar_taken(attacker,game,choose[0]));
 		free(list);
 	}
@@ -755,10 +755,10 @@ void Avatar_draw(Avatar *this, Game *game){
 	return;
 }
 
-int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num) {
+int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num, bool undo) {
 	DEBUG_PRINT("%s start to choose\n",this->player->username);
 	interface_refresh(this->player->username, game);
-	return Player_chooseTake( this->player, game, options, size, num );
+	return Player_chooseTake( this->player, game, options, size, num, undo);
 }
 
 void Avatar_get(Avatar *this, Game *game, Card *want){
@@ -775,7 +775,7 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 	for( int i = index ; i < this->cards_size - 1 ; i++ ){
 		this->cards[i] = this->cards[i+1];
 	}
-	this->cards_size -- ;
+	this->cards_size -- ;	
 	if( this->character->id == Suzy_Lafayette && this->cards_size == 0 && this->isDead == false) {
 		Avatar_draw(this,game);
 		MESSAGE_PRINT("%s have no card! Using his ability(%s).",this->player->username,this->character->name);

@@ -86,5 +86,5 @@ int computer_selectReact(Player *this, Game *game, Card **cards, bool *validReac
 }
 
 bool computer_useAbility(Player *this, Game *game) {
-	return false;
+	return true;
 }
