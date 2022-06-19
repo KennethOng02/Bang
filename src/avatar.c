@@ -348,8 +348,12 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 			if ( this->character->id == Sid_Ketchum ) {
 				int *rets = Player_chooseDrop(this->player, game, this->cards, this->cards_size, 2, true);
 				if ( rets != NULL ) {
+					Card* trash;
+					MESSAGE_PRINT("%s use his ability(%s).",this->player->username,this->character->name);
 					for ( int i=1; i>=0; i-- ) { // Don't change this!
-						Avatar_discard(game, Avatar_taken(this, game, rets[i]));
+						trash = Avatar_taken(this, game, rets[i]);
+						Avatar_discard(game, trash);
+						MESSAGE_PRINT("%s discard the card %s",this->player->username,trash->name);
 					}
 					Avatar_heal(this, game);
 					free(rets);
@@ -476,8 +480,12 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 			if ( this->character->id == Sid_Ketchum ) {
 				int *rets = Player_chooseDrop(this->player, game, this->cards, this->cards_size, 2, true);
 				if ( rets != NULL ) {
+					Card* trash;
+					MESSAGE_PRINT("%s use his ability(%s).",this->player->username,this->character->name);
 					for ( int i=1; i>=0; i-- ) { // Don't change this!
-						Avatar_discard(game, Avatar_taken(this, game, rets[i]));
+						trash = Avatar_taken(this, game, rets[i]);
+						Avatar_discard(game, trash);
+						MESSAGE_PRINT("%s discard the card %s",this->player->username,trash->name);
 					}
 					Avatar_heal(this, game);
 					free(rets);
