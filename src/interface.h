@@ -63,3 +63,4 @@ char *interface_getPlayerEquipment(Avatar *avatar);
 void interface_drawBoard(char *username, Game *game);
 void interface_draw(char *username, Game *game);
 void interface_refresh(char *username, Game *game);
+void interface_drawInfo(Game *game);
