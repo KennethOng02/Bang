@@ -62,8 +62,12 @@ int computer_selectTarget(Player *this, Game *game, bool *validTargets) {
 	if ( tarIdx != -1 ) return tarIdx;
 	for ( int i=0; i<game->numAvatar; i++ ) {
 		bool isSheriff = game->avatars[i]->role == SHERIFF;
-		if ( validTargets[i] && isSheriff ) {
-			tarIdx = i;
+		if ( validTargets[i] ) {
+			if ( isSheriff ) {
+				if ( self->role != DEPUTY && self->role != SHERIFF ) {
+					tarIdx = i;
+				}
+			}
 		}
 	}
 	if ( tarIdx != -1 ) return tarIdx;
