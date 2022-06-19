@@ -1,0 +1,54 @@
+[DEBUG] finish generating deck!
+[DEBUG] Finish shuffling roles: { 2, 3, 2, 0 }
+[DEBUG] Finish initiation of player DIn with avatar 1
+[DEBUG] Finish initiation of player Computer 1 with avatar 2
+[DEBUG] Finish initiation of player Computer 2 with avatar 3
+[DEBUG] SHERIFF is avatar 4.
+[DEBUG] Finish initiation of player Computer 3 with avatar 4
+[DEBUG] Avatar 1 get the card: REV. CARABINE.
+[DEBUG] Avatar 1 draw one card.Remain: 79 cards.
+[DEBUG] Avatar 1 get the card: CAT BALOU.
+[DEBUG] Avatar 1 draw one card.Remain: 78 cards.
+[DEBUG] Avatar 1 get the card: BANG!.
+[DEBUG] Avatar 1 draw one card.Remain: 77 cards.
+[DEBUG] Avatar 1 get the card: MISSED!.
+[DEBUG] Avatar 1 draw one card.Remain: 76 cards.
+[DEBUG] Avatar 2 get the card: STAGECOACH.
+[DEBUG] Avatar 2 draw one card.Remain: 75 cards.
+[DEBUG] Avatar 2 get the card: BANG!.
+[DEBUG] Avatar 2 draw one card.Remain: 74 cards.
+[DEBUG] Avatar 2 get the card: BANG!.
+[DEBUG] Avatar 2 draw one card.Remain: 73 cards.
+[DEBUG] Avatar 2 get the card: PANIC!.
+[DEBUG] Avatar 2 draw one card.Remain: 72 cards.
+[DEBUG] Avatar 3 get the card: BANG!.
+[DEBUG] Avatar 3 draw one card.Remain: 71 cards.
+[DEBUG] Avatar 3 get the card: APPALOOSA.
+[DEBUG] Avatar 3 draw one card.Remain: 70 cards.
+[DEBUG] Avatar 3 get the card: DUEL.
+[DEBUG] Avatar 3 draw one card.Remain: 69 cards.
+[DEBUG] Avatar 3 get the card: BANG!.
+[DEBUG] Avatar 3 draw one card.Remain: 68 cards.
+[DEBUG] Avatar 4 get the card: MISSED!.
+[DEBUG] Avatar 4 draw one card.Remain: 67 cards.
+[DEBUG] Avatar 4 get the card: BANG!.
+[DEBUG] Avatar 4 draw one card.Remain: 66 cards.
+[DEBUG] Avatar 4 get the card: MUSTANG.
+[DEBUG] Avatar 4 draw one card.Remain: 65 cards.
+[DEBUG] Avatar 4 get the card: MUSTANG.
+[DEBUG] Avatar 4 draw one card.Remain: 64 cards.
+[DEBUG] Avatar 4 get the card: BANG!.
+[DEBUG] Avatar 4 draw one card.Remain: 63 cards.
+[DEBUG] Done Game_init
+[DEBUG] Stating game loop
+[DEBUG] Avatar 4 get the card: DYNAMITE.
+[DEBUG] Avatar 4 draw one card.Remain: 62 cards.
+[DEBUG] Avatar 4 get the card: GENERAL STORE.
+[DEBUG] Avatar 4 draw one card.Remain: 61 cards.
+[DEBUG] Finish cheking whether card can be play.
+[DEBUG] computer selecting.
+[DEBUG] Finish asking what card he want to play.
+[DEBUG] computer selecting.
+[DEBUG] Avatar 4's card: BANG! had been taken.
+[DEBUG] Computer 3 use card "BANG!" on Computer 2.
+[DEBUG] Ask Avatar 3 to respond for BANG! Remain: 4
