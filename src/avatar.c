@@ -515,7 +515,7 @@ int Avatar_judge(Avatar *this, Game *game, int card_id) {
 			return -1;
 		}
 	}
-	interface_refresh(this->player->username, game);
+	interface_drawBoard(this->player->username, game);
 	return 0;
 }
 void Avatar_dead(Avatar *this, Game *game) {
@@ -603,7 +603,7 @@ void Avatar_dead(Avatar *this, Game *game) {
 	//move dead people out
 	
 	game->numAvailableAvatar--;
-	interface_refresh(this->player->username, game);
+	interface_drawBoard(this->player->username, game);
 	Game_checkWin(game);
 	
 }
@@ -643,7 +643,7 @@ void Avatar_hurt(Avatar *this, Game *game, Avatar *attacker){
 		free(list);
 	}
 	DEBUG_PRINT("Avatar %d hurt.\n", this->id);
-	interface_refresh(this->player->username, game);
+	interface_drawBoard(this->player->username, game);
 	return;
 }
 
@@ -651,7 +651,7 @@ void Avatar_heal(Avatar *this, Game *game){
 	this->hp ++;
 	MESSAGE_PRINT("%s's hp +1",this->player->username);
 	DEBUG_PRINT("Avatar %d heal.\n", this->id);
-	interface_refresh(this->player->username, game);
+	interface_drawBoard(this->player->username, game);
 	return;
 }
 
@@ -704,20 +704,20 @@ Card* Avatar_unequip(Avatar *this, Game *game, Card **card){
 	Card *bye = *card;
 	DEBUG_PRINT("%s unquipped the card: %s.", this->player->username, (*card)->name );
 	*card = NULL;
-	interface_refresh(this->player->username, game);
+	interface_drawBoard(this->player->username, game);
 	return bye;
 }
 
 void Avatar_draw(Avatar *this, Game *game){
 	Avatar_get(this,game, Deck_draw(game->deck));
 	DEBUG_PRINT("Avatar %d draw one card.Remain: %d cards.\n", this->id ,game->deck->top + 1);
-	interface_refresh(this->player->username, game);
+	interface_drawBoard(this->player->username, game);
 	return;
 }
 
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num) {
 	DEBUG_PRINT("%s start to choose\n",this->player->username);
-	interface_refresh(this->player->username, game);
+	interface_drawBoard(this->player->username, game);
 	return Player_chooseTake( this->player, game, options, size, num );
 }
 
@@ -725,7 +725,7 @@ void Avatar_get(Avatar *this, Game *game, Card *want){
 	this->cards_size ++;
 	this->cards[this->cards_size - 1] = want;
 	DEBUG_PRINT("Avatar %d get the card: %s.\n", this->id , want->name);
-	interface_refresh(this->player->username, game);
+	interface_drawBoard(this->player->username, game);
 	return;
 }
 
@@ -741,7 +741,7 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 		MESSAGE_PRINT("%s have no card! Using his ability(%s).",this->player->username,this->character->name);
 	}
 	DEBUG_PRINT("Avatar %d's card: %s had been taken.\n", this->id , bye->name );
-	interface_refresh(this->player->username, game);
+	interface_drawBoard(this->player->username, game);
 	return bye;
 }
 
