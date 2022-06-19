@@ -482,19 +482,21 @@ void interface_drawInput(Avatar *avatar, bool canPass, bool canQuit, bool canBac
 	keypad(inputWin, true);
 	box(inputWin, 0, 0);
 	int xInput = getmaxx(inputWin);
-	mvwprintw(inputWin, 0, 2, "%s-(%s)-(%s)-HP(%d)", avatar->player->username, print_role(avatar->role), avatar->character->name, avatar->hp);
-	int offset = 26;
+	char *buffer = calloc(64, sizeof(char));
+	snprintf(buffer, 64, "%s-(%s)-(%s)-HP(%d)", avatar->player->username, print_role(avatar->role), avatar->character->name, avatar->hp);
+	mvwprintw(inputWin, 0, 1, buffer);
+	int offset = strlen(buffer) + 2;
 	if ( canPass ) {
-		mvwprintw(inputWin, 0, xInput - offset, "[0]pass");
+		mvwprintw(inputWin, 0, offset, "[0]pass");
 	}
 	if ( canQuit ) {
-		mvwprintw(inputWin, 0, xInput - offset + 8, "[Q]quit");
+		mvwprintw(inputWin, 0, offset + 8, "[Q]quit");
 	}
 	if ( canBack ) {
-		mvwprintw(inputWin, 0, xInput - offset + 16, "[u]undo");
+		mvwprintw(inputWin, 0, offset + 16, "[u]undo");
 	}
 	if ( canUseAbility ) {
-		mvwprintw(inputWin, 0, xInput - offset + 16, "[a]ability");
+		mvwprintw(inputWin, 0, offset + 16, "[a]ability");
 	}
 
 	wmove(inputWin, 1, 1);
