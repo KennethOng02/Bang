@@ -178,7 +178,7 @@ bool interface_yesOrNo(WINDOW *win) {
 	return false;
 }
 
-int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, int cards_size, char *msg, bool notChoose) {
+int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, int cards_size, char *msg, bool notChoose, bool canBack, bool canUseAbility) {
 
 	int selected = 0;
 
@@ -189,7 +189,7 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 
 	flushinp();
 	while ( 1 ) {
-		interface_drawInput(this->avatar, notChoose, true, false);
+		interface_drawInput(this->avatar, notChoose, true, canBack, canUseAbility);
 		INPUT_PRINT(msg);
 		wmove(inputWin, 1, 1);
 		interface_printCards(inputWin, cards, validCards, selected, start, end);
@@ -213,9 +213,19 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 		case '\n':
 			if ( validCards[selected] ) {
 				//wclear(inputWin);
-				interface_drawInput(this->avatar, false, false, false);
+				interface_drawInput(this->avatar, false, false, false, false);
 				wrefresh(inputWin);
 				return selected;
+			}
+			break;
+		case 'u':
+			if ( canBack ) {
+				return -1;
+			}
+			break;
+		case 'a':
+			if ( canUseAbility ) {
+				return -2;
 			}
 			break;
 		}
@@ -248,7 +258,7 @@ int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size
 	for ( int i=0; i<cards_size; i++ ) validCards[i] = true;
 	for ( int i=n; i>=1; i-- ) {
 		snprintf(buffer, bufSize, "Please choose %d cards from following list.", i);
-		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false);
+		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false, false, false);
 		rets[i-1] = idx;
 		for ( int j=idx; j < curSize-1; j++ ) {
 			cards_copy[j] = cards_copy[j+1];
@@ -260,7 +270,7 @@ int *interface_chooseTake(Player *this, Game *game, Card **cards, int cards_size
 	return rets;
 }
 
-int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, int n) {
+int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size, int n, bool notChoose) {
 	int bufSize = 1024;
 	char *buffer = malloc(bufSize);
 
@@ -272,15 +282,40 @@ int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size
 
 	int * rets = malloc(n * sizeof(int));
 	bool validCards[cards_size];
-
 	for ( int i=0; i<cards_size; i++ ) validCards[i] = true;
-	for ( int i=n; i>=1; i-- ) {
+
+	for ( int i=n; i>=1; i-- ) { // Don't change this!
 		snprintf(buffer, bufSize, "Please choose %d cards from following list to drop.", i);
-		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false);
+		bool canBack = false;
+		if ( notChoose || i!=n ) {
+			canBack = true;
+		}
+		int idx = interface_choose(this, game, cards_copy, validCards, curSize, buffer, false, canBack, false);
+		if ( idx == -1 ) {
+			if ( i != n ) {
+				// Undo
+				i++;
+				curSize++;
+				Card *tmp = cards_copy[curSize-1];
+				for ( int j=curSize-2; j >= rets[i-1]; j-- ) {
+					cards_copy[j+1] = cards_copy[j];
+				}
+				cards_copy[rets[i-1]] = tmp;
+				i++;
+				continue;
+			} else {
+				// not choose
+				free(cards_copy);
+				free(buffer);
+				return NULL;
+			}
+		}
+		Card *tmp = cards_copy[idx];
 		rets[i-1] = idx;
 		for ( int j=idx; j < curSize-1; j++ ) {
 			cards_copy[j] = cards_copy[j+1];
 		}
+		cards_copy[curSize-1] = tmp;
 		curSize--;
 	}
 	free(cards_copy);
@@ -288,12 +323,9 @@ int *interface_chooseDrop(Player *this, Game *game, Card **cards, int cards_size
 	return rets;
 }
 
-int interface_selectUse(Player *this, Game *game, Card **cards, bool *validCards, int cards_size) {
+int interface_selectUse(Player *this, Game *game, Card **cards, bool *validCards, int cards_size, bool canUseAbility) {
 	char *msg = "Please choose a card to use";
-	int ret = interface_choose(this, game, cards, validCards, cards_size, msg, true);
-	if ( ret == -1 ) {
-		return -1;
-	}
+	int ret = interface_choose(this, game, cards, validCards, cards_size, msg, true, false, canUseAbility);
 	return ret;
 }
 
@@ -318,7 +350,7 @@ int interface_selectTarget(Player *this, Game *game, bool *validTargets) {
 	int end = MIN(perPage, game->numAvatar);
 	flushinp();
 	while ( 1 ) {
-		interface_drawInput(this->avatar, false, true, true);
+		interface_drawInput(this->avatar, false, true, true, false);
 		INPUT_PRINT(msg);
 
 		interface_printTargets(this, game, validTargets, selected, start, end);
@@ -339,11 +371,11 @@ int interface_selectTarget(Player *this, Game *game, bool *validTargets) {
 			break;
 		case '\n':
 			//wclear(inputWin);
-			interface_drawInput(this->avatar, false, false, false);
+			interface_drawInput(this->avatar, false, false, false, false);
 			wrefresh(inputWin);
 			if ( validTargets[selected] ) return selected;
 			break;
-		case 'b':
+		case 'u':
 			return -1;
 		}
 		if ( selected < start ) {
@@ -359,13 +391,10 @@ int interface_selectTarget(Player *this, Game *game, bool *validTargets) {
 	return -1;
 }
 
-int interface_selectReact(Player *this, Game *game, Card **cards, bool *validReact, int cards_size) {
+int interface_selectReact(Player *this, Game *game, Card **cards, bool *validReact, int cards_size, bool canUseAbility) {
 	char *msg = "Please choose a card to respond.";
-	int ret = interface_choose(this, game, cards, validReact, cards_size, msg, true);
-	if ( ret != -1 ) {
-		return ret;
-	}
-	return -1;
+	int ret = interface_choose(this, game, cards, validReact, cards_size, msg, true, false, canUseAbility);
+	return ret;
 }
 
 bool interface_useAbility(Player *this, Game *game) {
@@ -445,7 +474,7 @@ void interface_drawMessg() {
 	wrefresh(messgWin);
 }
 
-void interface_drawInput(Avatar *avatar, bool canPass, bool canQuit, bool canBack) {
+void interface_drawInput(Avatar *avatar, bool canPass, bool canQuit, bool canBack, bool canUseAbility) {
 	int yMax, xMax;
 	getmaxyx(stdscr, yMax, xMax);
 
@@ -462,7 +491,10 @@ void interface_drawInput(Avatar *avatar, bool canPass, bool canQuit, bool canBac
 		mvwprintw(inputWin, 0, xInput - offset + 8, "[Q]quit");
 	}
 	if ( canBack ) {
-		mvwprintw(inputWin, 0, xInput - offset + 16, "[b]back");
+		mvwprintw(inputWin, 0, xInput - offset + 16, "[u]undo");
+	}
+	if ( canUseAbility ) {
+		mvwprintw(inputWin, 0, xInput - offset + 16, "[a]ability");
 	}
 
 	wmove(inputWin, 1, 1);
@@ -589,7 +621,7 @@ void interface_drawBoard(char *username, Game *game) {
 
 void interface_draw(char *username, Game *game) {
 	interface_drawBoard(username, game);
-	interface_drawInput(game->avatars[0], false, false, false);
+	interface_drawInput(game->avatars[0], false, false, false, false);
 	interface_drawMessg();
 	refresh();
 	return;

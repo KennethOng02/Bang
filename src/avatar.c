@@ -278,7 +278,6 @@ void Avatar_onDraw(Avatar *this, Game *game) {
 				Avatar_get(this,game,options[i]);
 			}
 		}
-		
 		free(options);
 	}
 	else {
@@ -330,19 +329,36 @@ void Avatar_onPlay(Avatar *this, Game *game) {
 
 		// Ask for what he want to play
 		int retIdx;
+		bool canUseAbility = false;
+		if ( this->character->id == Sid_Ketchum && this->hp < this->hp_max && this->cards_size >= 2 ) canUseAbility = true;
 		while ( 1 ) {
-			retIdx = Player_selectUse(this->player, game, this->cards, validPlays_any, this->cards_size);
-			if ( retIdx >= this->cards_size || retIdx < -1 ) ERROR_PRINT("Invalid index.");
+			retIdx = Player_selectUse(this->player, game, this->cards, validPlays_any, this->cards_size, canUseAbility);
+			if ( retIdx >= this->cards_size || retIdx < -2 ) ERROR_PRINT("Invalid index.");
 			if ( retIdx == -1 || validPlays_any[retIdx] ) break;
+			if ( canUseAbility && retIdx == -2 ) break; // Use ability
 		}
 		if ( retIdx == -1 ) {
 			DEBUG_PRINT("%s finish his turn.\n", this->player->username);
-			for ( int i=0; i<orgCards_size; i++ ) {
-				free(validPlays[i]);
-			}
+			for ( int i=0; i<orgCards_size; i++ ) free(validPlays[i]);
 			free(validPlays_any);
 			free(validPlays);
 			return;
+		}
+		if ( canUseAbility && retIdx == -2 ) {
+			if ( this->character->id == Sid_Ketchum ) {
+				int *rets = Player_chooseDrop(this->player, game, this->cards, this->cards_size, 2, true);
+				if ( rets != NULL ) {
+					for ( int i=1; i>=0; i-- ) { // Don't change this!
+						Avatar_discard(game, Avatar_taken(this, game, rets[i]));
+					}
+					Avatar_heal(this, game);
+					free(rets);
+				}
+				for ( int i=0; i<orgCards_size; i++ ) free(validPlays[i]);
+				free(validPlays_any);
+				free(validPlays);
+				continue;
+			}
 		}
 		DEBUG_PRINT("Finish asking what card he want to play.\n");
 
@@ -391,8 +407,8 @@ void Avatar_onDump(Avatar *this, Game *game) {
 	Card* trash;
 	if ( this->cards_size > this->hp ) {
 		int n = this->cards_size - this->hp;
-		int *indexes = Player_chooseDrop(this->player, game, this->cards, this->cards_size, n);
-		for ( int i=n-1; i>=0; i-- ) {
+		int *indexes = Player_chooseDrop(this->player, game, this->cards, this->cards_size, n, false);
+		for ( int i=n-1; i>=0; i-- ) { // Don't change this!!
 			trash = Avatar_taken(this, game, indexes[i]);
 			Avatar_discard( game, trash);
 			MESSAGE_PRINT("%s discard the card %s",this->player->username,trash->name);
@@ -448,15 +464,30 @@ int Avatar_onReact(Avatar *this, Game *game, int card_id, Card* to_react) {
 		}
 	}
 
+	bool canUseAbility = false;
+	if ( this->character->id == Sid_Ketchum && this->hp < this->hp_max && this->cards_size >= 2 ) canUseAbility = true;
 	// Ask which card he want react
 	int react;
 	while ( 1 ) {
-		react = Player_selectReact(this->player, game, this->cards, validReact, this->cards_size);
-		if ( react < -1 || react >= this->cards_size ) ERROR_PRINT("Invalid react.");
+		react = Player_selectReact(this->player, game, this->cards, validReact, this->cards_size, canUseAbility);
+		if ( react < -2 || react >= this->cards_size ) ERROR_PRINT("Invalid react.");
 		if ( react == -1 || validReact[react] ) break;
+		if ( canUseAbility && react == -2 ) {
+			if ( this->character->id == Sid_Ketchum ) {
+				int *rets = Player_chooseDrop(this->player, game, this->cards, this->cards_size, 2, true);
+				if ( rets != NULL ) {
+					for ( int i=1; i>=0; i-- ) { // Don't change this!
+						Avatar_discard(game, Avatar_taken(this, game, rets[i]));
+					}
+					Avatar_heal(this, game);
+					free(rets);
+				}
+				free(validReact);
+				return Avatar_onReact(this, game, card_id, to_react);
+			}
+		}
 		WARNING_PRINT("You can't react with this card !");
 	}
-
 	// react
 	if ( react == -1 ) {
 		return -1;
