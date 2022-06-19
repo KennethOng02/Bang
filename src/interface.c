@@ -43,9 +43,9 @@ void moveCurDown(WINDOW *win) {
 }
 
 void interface_printCenter(WINDOW *win, int start_row, char *str) {
-	int center_col = getmaxx(win) / 2;
+	int half_col = getmaxx(win) / 2;
 	int half_length = strlen(str) / 2;
-	int adjusted_col = center_col - half_length;
+	int adjusted_col = half_col - half_length;
 
 	mvwprintw(win, start_row, adjusted_col, str);
 
@@ -537,8 +537,8 @@ void interface_drawInput(Avatar *avatar, bool canPass, bool canQuit, bool canBac
 	return;
 }
 
-void interface_drawCardVertical(WINDOW *win, int num, int start_row) {
-	int center_col = getmaxx(win) / 2;
+void interface_drawCardVertical(WINDOW *win, int num, int start_row, double xratio) {
+	int center_col = getmaxx(win) * xratio;
 	int half_length = 5 * num / 2;
 	int adjusted_col = center_col - half_length;
 	for(int i = 0; i < num; i++) mvwprintw(win, start_row, adjusted_col + i * 6,     "+---+ ");
@@ -548,8 +548,8 @@ void interface_drawCardVertical(WINDOW *win, int num, int start_row) {
 	return;
 }
 
-void interface_drawCardHorizontal(WINDOW *win, int num, int start_col) {
-	int center_row = getmaxy(win) / 2;
+void interface_drawCardHorizontal(WINDOW *win, int num, int start_col, double yratio) {
+	int center_row = getmaxy(win) * yratio;
 	int half_length = 3 * num / 2;
 	int adjusted_row = center_row - half_length;
 	/* int y, x; */
@@ -594,20 +594,35 @@ char *interface_getPlayerEquipment(Avatar *avatar) {
 	return info;
 }
 
-void interface_printPlayerInfoHorizontal(WINDOW *win, Avatar *avatar, int y) {
+void interface_printxCenter(WINDOW *win, int start_row, int mid_col, char *str) {
+	int half_len = strlen(str) / 2;
+	int adj_col = mid_col - half_len;
+	mvwprintw(win, start_row, adj_col, str);
+}
+
+void interface_printPlayerInfoHorizontal(WINDOW *win, Avatar *avatar, int y, double xratio) {
 	char *info = calloc(1024, sizeof(char));
-	snprintf(info, 1024, "%s (%s) (%s) HP(%d/%d)", avatar->player->username, avatar->role == SHERIFF || avatar->isDead ? print_role(avatar->role) : "Unkown", avatar->character->name, avatar->hp, avatar->hp_max);
-	interface_printCenter(win, y, info);
+	int col = getmaxx(win) * xratio;
+
+	snprintf(info, 1024, "%s (%s)", avatar->player->username, avatar->role == SHERIFF || avatar->isDead ? print_role(avatar->role) : "Unkown");
+	interface_printxCenter(win, y, col, info);
+
+	snprintf(info, 1024, "%s",avatar->character->name);
+	interface_printxCenter(win, y+1, col, info);
+
+	snprintf(info, 1024, "HP(%d/%d)", avatar->hp, avatar->hp_max);
+	interface_printxCenter(win, y+2, col, info);
+
 	info = interface_getPlayerEquipment(avatar);
-	interface_printCenter(win, y + 1, info);
+	interface_printxCenter(win, y+3, col, info);
 	return;
 }
 
-void interface_printPlayerInfoVertical(WINDOW *win, Avatar *avatar, int x) {
+void interface_printPlayerInfoVertical(WINDOW *win, Avatar *avatar, int x, double yratio) {
 	int yMax, xMax;
 	getmaxyx(win, yMax, xMax);
 	//int y = yMax / 2 - avatar->cards_size / 2 * 3 - (avatar->cards_size % 2 == 0 ? 4 : 5);
-	int y = yMax/2;
+	int y = yMax * yratio;
 	int bufSize = 128;
 	char *buffer = calloc(bufSize, sizeof(char));
 
@@ -674,23 +689,92 @@ void interface_drawBoard(char *username, Game *game) {
 	clearok(boardWin, TRUE);
 	box(boardWin, 0, 0);
 
-	interface_drawCardVertical(boardWin, 2, yBoard / 2);
+	interface_drawCardVertical(boardWin, 2, yBoard / 2, 1.0/2.0);
 
-	interface_drawCardVertical(boardWin, game->avatars[0]->cards_size, LINES - 16);
-	char *info = interface_getPlayerEquipment(game->avatars[0]);
-	interface_printCenter(boardWin, LINES - 12, info);
+	if ( game->numAvatar < 7 ) {
+		interface_drawCardVertical(boardWin, game->avatars[0]->cards_size, LINES - 16, 1.0/2.0);
+		char *info = interface_getPlayerEquipment(game->avatars[0]);
+		int mid_col = getmaxx(boardWin) / 2;
+		interface_printxCenter(boardWin, LINES - 12, mid_col, info);
+	}
 
-	interface_drawCardHorizontal(boardWin, game->avatars[1]->cards_size, 2);
-	interface_printPlayerInfoVertical(boardWin, game->avatars[1], 22);
+	if ( game->numAvatar == 4 ) {
+		interface_drawCardHorizontal(boardWin, game->avatars[1]->cards_size, 2, 3.0/5.0);
+		interface_printPlayerInfoVertical(boardWin, game->avatars[1], 22, 3.0/5.0);
 
-	interface_drawCardVertical(boardWin, game->avatars[2]->cards_size, 3);
-	interface_printPlayerInfoHorizontal(boardWin, game->avatars[2], 1);
+		interface_drawCardVertical(boardWin, game->avatars[2]->cards_size, 1, 1.0/2.0);
+		interface_printPlayerInfoHorizontal(boardWin, game->avatars[2], 5, 1.0/2.0);
 
-	interface_drawCardHorizontal(boardWin, game->avatars[3]->cards_size, COLS - 9);
-	info = interface_getPlayerEquipment(game->avatars[3]);
-	int offset = strlen(game->avatars[3]->character->name) + 10;
-	if(strlen(info) > offset) offset = strlen(info) + 1;
-	interface_printPlayerInfoVertical(boardWin, game->avatars[3], COLS - offset/2 - 10);
+		interface_drawCardHorizontal(boardWin, game->avatars[3]->cards_size, COLS - 9, 3.0/5.0);
+		interface_printPlayerInfoVertical(boardWin, game->avatars[3], COLS - 21, 3.0/5.0);
+
+	} else if ( game->numAvatar == 5 ) {
+
+		interface_drawCardHorizontal(boardWin, game->avatars[1]->cards_size, 2, 3.0/5.0);
+		interface_printPlayerInfoVertical(boardWin, game->avatars[1], 22, 3.0/5.0);
+
+		interface_drawCardVertical(boardWin, game->avatars[2]->cards_size, 1, 1.0/3.0);
+		interface_printPlayerInfoHorizontal(boardWin, game->avatars[2], 5, 1.0/3.0);
+
+		interface_drawCardVertical(boardWin, game->avatars[3]->cards_size, 1, 2.0/3.0);
+		interface_printPlayerInfoHorizontal(boardWin, game->avatars[3], 5, 2.0/3.0);
+
+		interface_drawCardHorizontal(boardWin, game->avatars[4]->cards_size, COLS - 9, 3.0/5.0);
+		interface_printPlayerInfoVertical(boardWin, game->avatars[4], COLS - 21, 3.0/5.0);
+
+	} else if ( game->numAvatar == 6 ) {
+
+		interface_drawCardHorizontal(boardWin, game->avatars[1]->cards_size, 2, 3.0/5.0);
+		interface_printPlayerInfoVertical(boardWin, game->avatars[1], 22, 3.0/5.0);
+
+		interface_drawCardVertical(boardWin, game->avatars[2]->cards_size, 1, 1.0/5.0);
+		interface_printPlayerInfoHorizontal(boardWin, game->avatars[2], 5, 1.0/5.0);
+
+		interface_drawCardVertical(boardWin, game->avatars[3]->cards_size, 1, 2.0/4.0);
+		interface_printPlayerInfoHorizontal(boardWin, game->avatars[3], 5, 2.0/4.0);
+
+		interface_drawCardVertical(boardWin, game->avatars[4]->cards_size, 1, 4.0/5.0);
+		interface_printPlayerInfoHorizontal(boardWin, game->avatars[4], 5, 4.0/5.0);
+
+		interface_drawCardHorizontal(boardWin, game->avatars[5]->cards_size, COLS - 9, 3.0/5.0);
+		interface_printPlayerInfoVertical(boardWin, game->avatars[5], COLS - 21, 3.0/5.0);
+
+	} else if ( game->numAvatar == 7 ) {
+
+		interface_drawCardVertical(boardWin, game->avatars[0]->cards_size, LINES - 16, 1.0/3.0);
+		char *info = interface_getPlayerEquipment(game->avatars[0]);
+		int mid_col = getmaxx(boardWin) / 3;
+		interface_printxCenter(boardWin, LINES - 12, mid_col, info);
+
+		interface_drawCardHorizontal(boardWin, game->avatars[1]->cards_size, 2, 3.0/5.0);
+		interface_printPlayerInfoVertical(boardWin, game->avatars[1], 22, 3.0/5.0);
+
+		interface_drawCardVertical(boardWin, game->avatars[2]->cards_size, 1, 1.0/5.0);
+		interface_printPlayerInfoHorizontal(boardWin, game->avatars[2], 5, 1.0/5.0);
+
+		interface_drawCardVertical(boardWin, game->avatars[3]->cards_size, 1, 2.0/4.0);
+		interface_printPlayerInfoHorizontal(boardWin, game->avatars[3], 5, 2.0/4.0);
+
+		interface_drawCardVertical(boardWin, game->avatars[4]->cards_size, 1, 4.0/5.0);
+		interface_printPlayerInfoHorizontal(boardWin, game->avatars[4], 5, 4.0/5.0);
+
+		interface_drawCardHorizontal(boardWin, game->avatars[5]->cards_size, COLS - 9, 3.0/5.0);
+		interface_printPlayerInfoVertical(boardWin, game->avatars[5], COLS - 21, 3.0/5.0);
+
+		interface_drawCardVertical(boardWin, game->avatars[6]->cards_size, LINES - 16, 2.0/3.0);
+		info = interface_getPlayerEquipment(game->avatars[6]);
+		mid_col = getmaxx(boardWin) * 2 / 3;
+		interface_printxCenter(boardWin, LINES - 12, mid_col, info);
+		int y = LINES - 19;
+		char *buf = calloc(1024, sizeof(char));
+		int col = getmaxx(boardWin) * 2.0 / 3.0;
+		snprintf(buf, 1024, "%s (%s)", game->avatars[6]->player->username, game->avatars[6]->role == SHERIFF || game->avatars[6]->isDead ? print_role(game->avatars[6]->role) : "Unkown");
+		interface_printxCenter(boardWin, y, col, buf);
+		snprintf(buf, 1024, "%s",game->avatars[6]->character->name);
+		interface_printxCenter(boardWin, y+1, col, buf);
+		snprintf(buf, 1024, "HP(%d/%d)", game->avatars[6]->hp, game->avatars[6]->hp_max);
+		interface_printxCenter(boardWin, y+2, col, buf);
+	}
 
 	mvwprintw(boardWin, 0, 2, "%s's Turn", username);
 	wmove(boardWin, 1, 1);

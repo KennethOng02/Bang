@@ -18,6 +18,7 @@ void interface_init();
 void moveCurDown(WINDOW *win);
 
 void interface_printCenter(WINDOW *win, int start_row, char *str);
+void interface_printxCenter(WINDOW *win, int start_row, int mid_col, char *str);
 
 char *interface_askName();
 
@@ -55,10 +56,10 @@ char *print_role(Role role);
 
 void interface_drawMessg();
 void interface_drawInput(Avatar *avatar, bool, bool, bool, bool);
-void interface_drawCardVertical(WINDOW *win, int num, int start_row);
-void interface_drawCardHorizontal(WINDOW *win, int num, int start_col);
-void interface_printPlayerInfoHorizontal(WINDOW *win, Avatar *avatar, int y);
-void interface_printPlayerInfoVertical(WINDOW *win, Avatar *avatar, int x);
+void interface_drawCardVertical(WINDOW *win, int num, int start_row, double xratio);
+void interface_drawCardHorizontal(WINDOW *win, int num, int start_col, double yratio);
+void interface_printPlayerInfoHorizontal(WINDOW *win, Avatar *avatar, int y, double xratio);
+void interface_printPlayerInfoVertical(WINDOW *win, Avatar *avatar, int x, double yratio);
 char *interface_getPlayerEquipment(Avatar *avatar);
 void interface_drawBoard(char *username, Game *game);
 void interface_draw(char *username, Game *game);
