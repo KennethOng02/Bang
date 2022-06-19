@@ -167,19 +167,18 @@ void Game_reShuffle() {
 }
 
 void Game_checkWin() {
-	Avatar *sheriff = NULL;
 	bool teamSheriff = false;
+	bool teamDuputy = false;
 	bool teamOutlaw = false;
 	bool teamRenegade = false;
 	for ( int i=0; i<game->numAvatar; i++ ) {
-		if ( game->avatars[i]->role == SHERIFF ) {
-			sheriff = game->avatars[i];
-		}
 		if ( !game->avatars[i]->isDead ) {
 			switch ( game->avatars[i]->role ) {
 			case SHERIFF:
-			case DEPUTY:
 				teamSheriff = true;
+				break;
+			case DEPUTY:
+				teamDeputy = true;
 				break;
 			case OUTLAW:
 				teamOutlaw = true;
@@ -192,19 +191,23 @@ void Game_checkWin() {
 			}
 		}
 	}
-	if ( sheriff->isDead ) {
-		if ( teamOutlaw ) {
-			MESSAGE_PRINT("Outlaws win!\n");
-			sleep(10);
-			Game_exit();
-		} else if ( teamRenegade && !teamSheriff ) {
+	if ( !teamSheriff ) {
+		if ( !teamDeputy && !teamOutlaw ) {
 			MESSAGE_PRINT("Renegade wins!\n");
-			sleep(10);
-			Game_exit();
+		} else {
+			MESSAGE_PRINT("Outlaws win!\n");
 		}
+		sleep(10);
+		Game_exit();
 	}
 	if ( !teamOutlaw && !teamRenegade ) {
-		MESSAGE_PRINT("Sheriff wins!\n");
+		if ( game->numAvatar == 7 ) {
+			MESSAGE_PRINT("Sheriffs and Deputy win!");
+		} else if ( game->numAvatar >= 5 ) {
+			MESSAGE_PRINT("Sheriff and Deputy win!");
+		} else if ( game->numAvatar == 4 ) {
+			MESSAGE_PRINT("Sheriff wins!");
+		}
 		sleep(10);
 		Game_exit();
 	}
