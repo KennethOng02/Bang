@@ -20,15 +20,15 @@ void Game_init(int numAvatar) {
 	initscr();
 	start_color();
 	cbreak();
-	keypad(stdscr, TRUE);
-	mouseinterval(0);
-	scrollok(stdscr, TRUE);
+	/* keypad(stdscr, TRUE); */
+	/* mouseinterval(0); */
+	/* scrollok(stdscr, TRUE); */
 	interface_init();
 	
 	interface_welcome();
 
 	game = malloc(sizeof(Game));
-	
+
 	// initiate Card *deck[DECK_SIZE]
 	game->deck = Deck_gen(DECK_SIZE);
 
@@ -47,6 +47,11 @@ void Game_init(int numAvatar) {
 	for(int i = 0; i < numAvatar; i++ ) {
 		// Initiate player and avatar
 		game->avatars[i] = Avatar_init(i+1, character_deck[i], roles[i]);
+	}
+
+	interface_drawBoard(NULL, game);
+
+	for(int i = 0; i < numAvatar; i++ ) {
 		for ( int _=0; _<game->avatars[i]->hp; _++ ) {
 			Avatar_draw(game->avatars[i], game);
 		}

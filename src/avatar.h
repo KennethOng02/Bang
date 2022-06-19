@@ -90,6 +90,7 @@ void Avatar_draw(Avatar *this, Game *game);
 int* Avatar_choose(Avatar *this, Game *game, Card **options , int size, int num);
 void Avatar_get(Avatar *this, Game *game, Card *want);
 Card *Avatar_taken(Avatar *this, Game *game,int index);
+void Avatar_discard(Game* game, Card* card);
 int Avatar_calcDist(Game *game, Avatar *this, Avatar *that);
 int Avatar_calcVision(Avatar *this);
 

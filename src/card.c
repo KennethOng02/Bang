@@ -49,7 +49,7 @@ int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 		Avatar_hurt(target, game, user);
 	}else {
 		if( user->character->id == Slab_the_Killer ) {
-			MESSAGE_PRINT("Because %s's ability(%s),you need another MISSED!",user->player->username,user->character->name);
+			MESSAGE_PRINT("Because %s's ability(%s),%s need another MISSED!",user->player->username,user->character->name,target->player->username);
 			if( Avatar_onReact(target, game, CARD_MISS, NULL ) == -1 ) {
 				MESSAGE_PRINT("%s do not react with another MISS.",target->player->username);
 				Avatar_hurt(target, game, user);
@@ -60,7 +60,6 @@ int play_CARD_BANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 			MESSAGE_PRINT("%s missed!",user->player->username);
 		}
 	}
-	interface_refresh(user->player->username, game);
 	return 0;
 }
 int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
@@ -68,7 +67,6 @@ int play_CARD_MISS(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) {
 	MESSAGE_PRINT("%s use %s,",user->player->username,card->name);
-	interface_refresh(user->player->username, game);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
@@ -87,7 +85,6 @@ int play_CARD_GATLING(Avatar * user, Avatar * target, Game * game, Card * card) 
 }
 int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) {
 	MESSAGE_PRINT("%s use %s.",user->player->username,card->name);
-	interface_refresh(user->player->username, game);
 	Avatar* next = Game_nextAvailableAvatar(user);
 	while(next->id != user->id) 
 	{
@@ -102,7 +99,6 @@ int play_CARD_INDIANS(Avatar * user, Avatar * target, Game * game, Card * card) 
 		}
 		next = Game_nextAvailableAvatar(next);
 	}
-	interface_refresh(user->player->username, game);
 	return 0;
 }
 int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
@@ -110,7 +106,7 @@ int play_CARD_PANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	MESSAGE_PRINT("%s use %s to %s.",user->player->username,card->name,target->player->username);
 	int list_size;
 	Card **list = Avatar_giveToChoose(target, &list_size);
-	DEBUG_PRINT("%s ,list generated Done",card->name);
+	DEBUG_PRINT("%s ,list generated Done\n",card->name);
 	int *choose = Avatar_choose(user,game,list,list_size,1);
 	if ( choose[0] < target->cards_size ) {
 		Avatar_get(user,game,Avatar_taken(target, game, choose[0]));
@@ -131,9 +127,9 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 	MESSAGE_PRINT("%s use %s to %s.",user->player->username,card->name,target->player->username);
 	int list_size;
 	Card **list = Avatar_giveToChoose(target, &list_size);
-	DEBUG_PRINT("%s ,list generated Done",card->name);
+	DEBUG_PRINT("%s ,list generated Done\n",card->name);
 	int *choose = Avatar_choose(user,game,list,list_size,1);
-	DEBUG_PRINT("%s ,list choose Done",card->name);
+	DEBUG_PRINT("%s ,list choose Done\n",card->name);
 	Card* trash;
 	if ( choose[0] < target->cards_size ) {
 		trash = Avatar_taken(target, game, choose[0]);
@@ -146,19 +142,18 @@ int play_CARD_BALOU(Avatar * user, Avatar * target, Game * game, Card * card) {
 			}
 		}
 	}
+	MESSAGE_PRINT("%s's card %s had been discard!",target->player->username,trash->name);
 	Deck_put(game->discardPile,trash);
 	free(list);
 	return 0;
 }
 int play_CARD_STAGECOACH(Avatar * user, Avatar * target, Game * game, Card * card) {
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s use %s.",user->player->username,card->name);
 	Avatar_draw(user,game);
 	Avatar_draw(user,game);
 	return 0;
 }
 int play_CARD_FARGO(Avatar * user, Avatar * target, Game * game, Card * card) {
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s use %s",user->player->username,card->name);
 	Avatar_draw(user,game);
 	Avatar_draw(user,game);
@@ -166,7 +161,6 @@ int play_CARD_FARGO(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return 0;
 }
 int play_CARD_STORE(Avatar * user, Avatar * target, Game * game, Card * card) {
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s use %s.",user->player->username,card->name);
 	Avatar* next = user;
 	Card** options = calloc(4,sizeof(Card*));
@@ -208,7 +202,6 @@ int play_CARD_SALOON(Avatar * user, Avatar * target, Game * game, Card * card) {
 	return 0;
 }
 int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card) {
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s use %s to %s",user->player->username,card->name,target->player->username);
 	while(1) {
 		if( Avatar_onReact(target, game, CARD_BANG, card) == -1) {
@@ -217,7 +210,7 @@ int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card) {
 			return 0;
 		}else {
 			MESSAGE_PRINT("%s has a Bang!",target->player->username);
-			wrefresh(messgWin);
+			/* wrefresh(messgWin); */
 			if( Avatar_onReact(user, game, CARD_BANG, card) == -1) {
 				MESSAGE_PRINT("%s lose the duel.",user->player->username);
 				Avatar_hurt(user, game, target);
@@ -232,61 +225,51 @@ int play_CARD_DUEL(Avatar * user, Avatar * target, Game * game, Card * card) {
 }
 int play_CARD_BARREL(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s equipped the %s",user->player->username,card->name);
 	return 0;
 }
 int play_CARD_APPALOOSA(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s equipped the %s",user->player->username,card->name);
 	return 0;
 }
 int play_CARD_MUSTANG(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s equipped the %s",user->player->username,card->name);
 	return 0;
 }
 int play_CARD_VOLCANIC(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s equipped the %s",user->player->username,card->name);
 	return 0;
 }
 int play_CARD_SCHOFIELD(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s equipped the %s",user->player->username,card->name);
 	return 0;
 }
 int play_CARD_REMINGTON(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s equipped the %s",user->player->username,card->name);
 	return 0;
 }
 int play_CARD_CARABINE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s equipped the %s",user->player->username,card->name);
 	return 0;
 }
 int play_CARD_WINCHEDTER(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s equipped the %s",user->player->username,card->name);
 	return 0;
 }
 int play_CARD_JAIL(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( target, game, card );
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s use %s to %s",user->player->username,card->name,target->player->username);
 	return 0;
 }
 int play_CARD_DYNAMITE(Avatar * user, Avatar * target, Game * game, Card * card) {
 	Avatar_equip( user, game, card );
-	interface_refresh(user->player->username, game);
 	MESSAGE_PRINT("%s use a %s",user->player->username,card->name);
 	return 0;
 }

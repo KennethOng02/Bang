@@ -38,7 +38,7 @@ Player *Player_init(int id, Avatar *avatar) {
 void Player_free(Player *this) {
 	free(this->username);
 	free(this);
-	DEBUG_PRINT("Done Player_free!");
+	DEBUG_PRINT("Done Player_free!\n");
 }
 
 
