@@ -490,7 +490,7 @@ void interface_drawInput(Avatar *avatar, bool canPass, bool canQuit, bool canBac
 	int yInput, xInput;
 	getmaxyx(inputWin, yInput, xInput);
 	char *buffer = calloc(64, sizeof(char));
-	snprinf(buffer, 64, "%s-(%s)-(%s)-HP(%d/%d)", avatar->player->username, print_role(avatar->role), avatar->character->name, avatar->hp, avatar->hp_max);
+	snprintf(buffer, 64, "%s-(%s)-(%s)-HP(%d/%d)", avatar->player->username, print_role(avatar->role), avatar->character->name, avatar->hp, avatar->hp_max);
 	mvwprintw(inputWin, 0, 1, buffer);
 	int offset = 1;
 	if ( canPass ) {
@@ -711,6 +711,24 @@ void interface_drawInfo(Game *game) {
 		}
 		row++;
 	}
+
+	row++;
+	mvwprintw(infoWin, row + 1, 1, "---CARD---");
+	row++;
+
+	char *buffer = calloc(2048, sizeof(char));
+	for(int i = 0; i < game->avatars[0]->cards_size; i++) {
+		snprintf(buffer, 2048, "%s - %s", game->avatars[0]->cards[i]->name, game->avatars[0]->cards[i]->intro);
+		char *trav = buffer;
+		while(1) {
+			mvwprintw(infoWin, row + 1, 1, "%.*s", xMax - 12, trav);
+			if(strlen(trav) < xMax - 12) break;
+			trav += xMax - 12;
+			row++;
+		}
+		row++;
+	}
+
 	wrefresh(infoWin);
 	refresh();
 

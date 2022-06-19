@@ -1,32 +1,32 @@
 CARD_START
 CARD_HAND_START
-BANG!,CARD_BANG,2,25,0 13 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 40 41 42 43 44 45 46 47
-MISSED!,CARD_MISS,0,12,1 2 3 4 5 6 7 39 48 49 50 51
-GATLING,CARD_GATLING,0,1,22
-INDIANS,CARD_INDIANS,0,2,26 38
-PANIC!,CARD_PANIC,1,4,13 23 24 33
-CAT BALOU,CARD_BALOU,3,4,25 34 35 36
-STAGECOACH,CARD_STAGECOACH,0,2,8 8
-WELLS FARGO,CARD_FARGO,0,1,15
-GENERAL STORE,CARD_STORE,0,2,11 47
-BEER,CARD_BEER,0,6,18 19 20 21 22 23
-SALOON,CARD_SALOON,0,1,17
-DUEL,CARD_DUEL,3,3,10 37 46
+BANG!,CARD_BANG,2,25,0 13 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 40 41 42 43 44 45 46 47,BANG!
+MISSED!,CARD_MISS,0,12,1 2 3 4 5 6 7 39 48 49 50 51,miss the BANG! effect played by other player
+GATLING,CARD_GATLING,0,1,22,shoot bang to all players
+INDIANS,CARD_INDIANS,0,2,26 38,all other players must discard a BANG! or lose 1 life point
+PANIC!,CARD_PANIC,1,4,13 23 24 33,draw a card from a player at distance 1
+CAT BALOU,CARD_BALOU,3,4,25 34 35 36,force any player to discard a card
+STAGECOACH,CARD_STAGECOACH,0,2,8 8,draw 2 cards from the deck
+WELLS FARGO,CARD_FARGO,0,1,15,draw 3 cards from the deck
+GENERAL STORE,CARD_STORE,0,2,11 47,each player takes turn to draw one card from revealed cards from the deck
+BEER,CARD_BEER,0,6,18 19 20 21 22 23,regain 1 life point(have no effects when only 2 players left)
+SALOON,CARD_SALOON,0,1,17,regain 1 life point for all players
+DUEL,CARD_DUEL,3,3,10 37 46,challenge one player to take turn discard BANG! until one player doesn't have one which will lose 1 life point
 CARD_HAND_END
 CARD_ARMOUR_START
-BARREL,CARD_BARREL,0,2,11 12
-APPALOOSA,CARD_APPALOOSA,0,1,0
-MUSTANG,CARD_MUSTANG,0,2,20 21
+BARREL,CARD_BARREL,0,2,11 12,allows you to "draw!" when you are the target of a BANG!(if you draw a Heart card you are Missed! otherwise nothing happens.)
+APPALOOSA,CARD_APPALOOSA,0,1,0,you see all the other players at a distance decreased by 1.
+MUSTANG,CARD_MUSTANG,0,2,20 21,distance between other players and you is increased by 1.
 CARD_ARMOUR_END
 CARD_GUN_START
-VOLCANIC,CARD_VOLCANIC,0,2,9 48
-SCHOFIELD,CARD_SCHOFIELD,0,3,12 49 50
-REMINGTON,CARD_REMINGTON,0,1,51
-REV. CARABINE,CARD_CARABINE,0,1,39
-WINCHEDTER,CARD_WINCHEDTER,0,1,7
+VOLCANIC,CARD_VOLCANIC,0,2,9 48,allow continuous BANG! being played
+SCHOFIELD,CARD_SCHOFIELD,0,3,12 49 50,extends bang vision by 2
+REMINGTON,CARD_REMINGTON,0,1,51,extends bang vision by 3
+REV. CARABINE,CARD_CARABINE,0,1,39,extends bang vision by 4
+WINCHEDTER,CARD_WINCHEDTER,0,1,7,extends bang vision by 5
 CARD_GUN_END
 CARD_JUDGE_START
-JAIL,CARD_JAIL,3,3,9 10 16
-DYNAMITE,CARD_DYNAMITE,0,1,14
+JAIL,CARD_JAIL,3,3,9 10 16,you put him in jail! If you are in jail you must "draw!" before the beginning of your turn(if you draw a Heart card you escape from jail: discard the Jail and continue your turn as normal; otherwise discard the Jail and skip your turn)(Jail cannot be played on the Sheriff.)
+DYNAMITE,CARD_DYNAMITE,0,1,14,When you start your next turn (you have the Dynamite already in play) before the first phase you must "draw!":(if you draw a card showing Spades and a number between 2 and 9 the Dynamite explodes! Discard it and lose 3 life points; otherwise pass the Dynamite to the player on your left)
 CARD_JUDGE_END
 CARD_END

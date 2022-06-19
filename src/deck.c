@@ -69,7 +69,7 @@ Deck *Deck_build() {
 		int counter;
 		mystrsplit(&line, &counter, buffer, ",");
 
-		if ( counter == 5 ) {
+		if ( counter == 6 ) {
 
 			char *card_str = line[4];
 			char **card_list;
@@ -81,7 +81,7 @@ Deck *Deck_build() {
 			}
 
 			for(int i = 0; i < cardCounter; i++) {
-				Card *new_card = Card_init(lineNum, line[0], strtol(line[2],NULL,10), strtod(card_list[i], NULL), Card_funArr[lineNum]);
+				Card *new_card = Card_init(lineNum, line[0], strtol(line[2],NULL,10), strtod(card_list[i], NULL), line[5], Card_funArr[lineNum]);
 				Deck_put(deck, new_card);
 			}
 

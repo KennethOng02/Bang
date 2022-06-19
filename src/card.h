@@ -15,10 +15,11 @@ struct card {
 	char *name;
 	int type; // {0, 1, 2, 3}
 	int suit; // [0 - 51] //[Spade, Heart, Diamond, Club]
+	char *intro;
 	int (* play)(Avatar * user, Avatar * target, Game * game, Card * card);
 };
 
-Card *Card_init(const int id, const char *name, const int dist, const int suit, int (*fun)(Avatar *, Avatar *, Game *, Card *));
+Card *Card_init(const int id, const char *name, const int dist, const int suit, const char *intro, int (*fun)(Avatar *, Avatar *, Game *, Card *));
 
 Card *Card_copy(Card *this);
 

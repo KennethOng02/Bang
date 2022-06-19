@@ -38,7 +38,7 @@ int main () {
 
 			snprintf(buffer, bufSize, "#define %s %d\n", line[0], lineNum);
 
-		} else if ( counter == 5 ) {
+		} else if ( counter == 6 ) {
 
 			char *card_str = line[4];
 			char **card_list;
@@ -88,7 +88,7 @@ int main () {
 		
 		mystrsplit(&line, &counter, buffer, ",");
 		
-		if ( counter == 5 ) {
+		if ( counter == 6 ) {
 			snprintf(buffer, bufSize, "&play_%s, ", line[1]);
 		} else {
 			snprintf(buffer, bufSize, "NULL, ");
