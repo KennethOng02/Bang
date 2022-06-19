@@ -604,7 +604,7 @@ void interface_printPlayerInfoHorizontal(WINDOW *win, Avatar *avatar, int y, dou
 	char *info = calloc(1024, sizeof(char));
 	int col = getmaxx(win) * xratio;
 
-	snprintf(info, 1024, "%s (%s)", avatar->player->username, avatar->role == SHERIFF || avatar->isDead ? print_role(avatar->role) : "Unkown");
+	snprintf(info, 1024, "%s (%s)", avatar->player->username, avatar->role == SHERIFF || avatar->isDead ? print_role(avatar->role) : "Unknown");
 	interface_printxCenter(win, y, col, info);
 
 	snprintf(info, 1024, "%s",avatar->character->name);

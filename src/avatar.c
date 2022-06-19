@@ -11,6 +11,7 @@
 #include "card.h"
 #include "characterid.h"
 #include "interface.h"
+#include "mylib.h"
 
 Character *Character_init(int id, const char *name, const int hp, const char *intro) {
 	if(name == NULL || intro == NULL)
@@ -795,13 +796,18 @@ Card* Avatar_taken(Avatar *this, Game *game, int index){
 }
 
 int Avatar_calcDist(Game *game, Avatar *this, Avatar *that) {
-	int idx_1 = Game_findIndex(this);
-	int idx_2 = Game_findIndex(that);
-
-	int dist = abs(idx_2 - idx_1);
-	if(dist > (double)game->numAvailableAvatar / 2) {
-		dist = -1 * dist + game->numAvailableAvatar; 
+	int dist1 = 0;
+	Avatar *trav = this;
+	while ( trav->id != that->id ) {
+		trav = Game_nextAvailableAvatar(trav);
+		dist1++;
 	}
+	int dist2 = 0;
+	while ( trav->id != this->id ) {
+		trav = Game_nextAvailableAvatar(trav);
+		dist2++;
+	}
+	int dist = MIN(dist1, dist2);
 
 	if ( this->character->id == Rose_Doolan ) {
 		dist--;
