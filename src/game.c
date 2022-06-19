@@ -117,7 +117,7 @@ void Game_run() {
 	if ( sheriff == NULL ) {
 		ERROR_PRINT("No SHERIFF in game game.\n");
 	}
-	Avatar *curAvatar = sheriff;
+	curAvatar = sheriff;
 
 	DEBUG_PRINT("Stating game loop\n");
 	while ( 1 ) {

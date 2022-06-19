@@ -157,7 +157,7 @@ void interface_printCards(WINDOW *win, Card **cards, bool *validCards, int selec
 bool interface_yesOrNo(WINDOW *win) {
 	int y, x;
 	getmaxyx(win, y, x);
-	mvwprintw(win, 0, x - 10, "(y/n): ");
+	mvwprintw(win, y - 1, x - 10, "(y/n): ");
 	wrefresh(win);
 	while(1) {
 		char c = wgetch(win);
@@ -169,9 +169,9 @@ bool interface_yesOrNo(WINDOW *win) {
 				return false;
 				break;
 			default:
-				wmove(win, 0, x - 3);
+				wmove(win, y - 1, x - 3);
 				clrtoeol();
-				wmove(win, 0, x - 3);
+				wmove(win, y - 1, x - 3);
 				break;
 		}
 	}
@@ -209,6 +209,9 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 			break;
 		case '0':
 			if ( notChoose ) return -1;
+			break;
+		case 'i':
+			interface_drawInfo(game);
 			break;
 		case '\n':
 			if ( validCards[selected] ) {
@@ -391,6 +394,9 @@ int interface_selectTarget(Player *this, Game *game, bool *validTargets) {
 		case KEY_UP:
 			selected = (game->numAvatar+selected-1) % game->numAvatar;
 			break;
+		case 'i':
+			interface_drawInfo(game);
+			break;
 		case '\n':
 			//wclear(inputWin);
 			interface_drawInput(this->avatar, false, false, false, false);
@@ -503,22 +509,26 @@ void interface_drawInput(Avatar *avatar, bool canPass, bool canQuit, bool canBac
 	inputWin = newwin(10, xMax / 2, yMax - 10, 0);
 	keypad(inputWin, true);
 	box(inputWin, 0, 0);
-	int xInput = getmaxx(inputWin);
+	int yInput, xInput;
+	getmaxyx(inputWin, yInput, xInput);
 	char *buffer = calloc(64, sizeof(char));
 	snprintf(buffer, 64, "%s-(%s)-(%s)-HP(%d/%d)", avatar->player->username, print_role(avatar->role), avatar->character->name, avatar->hp, avatar->hp_max);
 	mvwprintw(inputWin, 0, 1, buffer);
-	int offset = strlen(buffer) + 2;
+	int offset = 1;
 	if ( canPass ) {
-		mvwprintw(inputWin, 0, offset, "[0]pass");
+		mvwprintw(inputWin, yInput - 1, offset, "[0]pass");
 	}
 	if ( canQuit ) {
-		mvwprintw(inputWin, 0, offset + 8, "[Q]quit");
+		mvwprintw(inputWin, yInput - 1, offset + 8, "[Q]quit");
+	}
+	if (canQuit) {
+		mvwprintw(inputWin, yInput - 1, offset + 16, "[i]info");
 	}
 	if ( canBack ) {
-		mvwprintw(inputWin, 0, offset + 16, "[u]undo");
+		mvwprintw(inputWin, yInput - 1, offset + 24, "[u]undo");
 	}
 	if ( canUseAbility ) {
-		mvwprintw(inputWin, 0, offset + 16, "[a]ability");
+		mvwprintw(inputWin, yInput - 1, offset + 24, "[a]ability");
 	}
 
 	wmove(inputWin, 1, 1);
@@ -701,5 +711,32 @@ void interface_refresh(char *username, Game *game) {
 	wmove(inputWin, 1, 1);
 	wclrtobot(inputWin);
 	interface_draw(username, game);
+	return;
+}
+
+void interface_drawInfo(Game *game) {
+	int yMax, xMax;
+	getmaxyx(stdscr, yMax, xMax);
+	WINDOW *infoWin = newwin(yMax - 15, xMax - 10, 3, xMax / 2 - (xMax - 10) / 2);
+	box(infoWin, 0, 0);
+
+	int row = 0;
+	for(int i = 0; i < game->numAvatar; i++) {
+		mvwprintw(infoWin, row + 1, 1, "%s", game->avatars[i]->character->name);
+		row++;
+		char *trav = game->avatars[i]->character->intro;
+		while(1) {
+			mvwprintw(infoWin, row + 1, 1, "%.*s", xMax - 12, trav);
+			if(strlen(trav) < xMax - 12) break;
+			trav += xMax - 12;
+			row++;
+		}
+		row++;
+	}
+	wrefresh(infoWin);
+	refresh();
+
+	getch();
+	interface_draw(curAvatar->player->username, game);
 	return;
 }

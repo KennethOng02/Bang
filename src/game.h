@@ -10,6 +10,8 @@ typedef struct game Game;
 #define DECK_SIZE 80
 #define CHARACTER_SIZE 16
 
+Avatar *curAvatar;
+
 struct game {
 	int numAvatar;
 	int numAvailableAvatar;
