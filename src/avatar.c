@@ -511,7 +511,7 @@ int Avatar_judge(Avatar *this, Game *game, int card_id) {
 			if(card_id == CARD_JAIL) MESSAGE_PRINT("Lucky!%s leave the jail.",this->player->username);
 			return 0;
 		}else {
-			MESSAGE_PRINT("uh oh!%s is so bad that he need to stay in jail.",this->player->username);
+			if(card_id == CARD_JAIL) MESSAGE_PRINT("uh oh!%s is so bad that he need to stay in jail.",this->player->username);
 			return -1;
 		}
 	}
