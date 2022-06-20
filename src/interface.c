@@ -154,14 +154,23 @@ void interface_printCards(WINDOW *win, Card **cards, bool *validCards, int selec
 	return;
 }
 
-bool interface_yesOrNo(WINDOW *win) {
+bool interface_yesOrNo(WINDOW *win, Game *game, Player *this, char *msg) {
 	int y, x;
 	getmaxyx(win, y, x);
-	mvwprintw(win, y - 1, x - 10, "(y/n): ");
-	wrefresh(win);
 	while(1) {
+		interface_drawInput(this->avatar, false, true, false, false);
+		wmove(win, 1, 1);
+		wprintw(win, "%s", msg);
+		mvwprintw(win, y - 1, x - 10, "(y/n): ");
+		wrefresh(win);
 		char c = wgetch(win);
 		switch(c) {
+			case 'Q':
+				Game_exit(game);
+				break;
+			case 'i':
+				interface_drawInfo(game);
+				break;
 			case 'y':
 				return true;
 				break;
@@ -174,6 +183,7 @@ bool interface_yesOrNo(WINDOW *win) {
 				wmove(win, y - 1, x - 3);
 				break;
 		}
+		usleep(100);
 	}
 	return false;
 }
@@ -208,14 +218,17 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 			if ( cards_size > 0) selected = (cards_size+selected-1) % cards_size;
 			break;
 		case '0':
-			if ( notChoose ) return -1;
+			if ( notChoose ) {
+				interface_drawInput(this->avatar, false, false, false, false);
+				wrefresh(inputWin);
+				return -1;
+			}
 			break;
 		case 'i':
 			interface_drawInfo(game);
 			break;
 		case '\n':
 			if ( cards_size > 0 && validCards[selected] ) {
-				//wclear(inputWin);
 				interface_drawInput(this->avatar, false, false, false, false);
 				wrefresh(inputWin);
 				return selected;
@@ -223,6 +236,8 @@ int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, i
 			break;
 		case 'u':
 			if ( canBack ) {
+				interface_drawInput(this->avatar, false, false, false, false);
+				wrefresh(inputWin);
 				return -1;
 			}
 			break;
@@ -404,6 +419,8 @@ int interface_selectTarget(Player *this, Game *game, bool *validTargets) {
 			if ( validTargets[selected] ) return selected;
 			break;
 		case 'u':
+			interface_drawInput(this->avatar, false, false, false, false);
+			wrefresh(inputWin);
 			return -1;
 		}
 		if ( selected < start ) {
@@ -426,9 +443,12 @@ int interface_selectReact(Player *this, Game *game, Card **cards, bool *validRea
 }
 
 bool interface_useAbility(Player *this, Game *game) {
-	wprintw(inputWin, "Do you want to use your characteristic ability?");
-	wrefresh(inputWin);
-	return interface_yesOrNo(inputWin);
+	int bufSize = 128;
+	char *buffer = malloc(bufSize);
+	snprintf(buffer, bufSize, "Do you want to use your characteristic ability(%s)?", this->avatar->character->name);
+	bool ret = interface_yesOrNo(inputWin, game, this, buffer);
+	free(buffer);
+	return ret;
 }
 
 char *print_role(Role role) {

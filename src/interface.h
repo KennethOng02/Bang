@@ -24,7 +24,7 @@ char *interface_askName();
 
 void interface_welcome();
 
-bool interface_yesOrNo(WINDOW *win);
+bool interface_yesOrNo(WINDOW *win, Game *game, Player *this, char *msg);
 
 int interface_choose(Player *this, Game *game, Card **cards, bool *validCards, int cards_size, char *msg, bool canPass, bool canBack, bool canUseAbility);
 
