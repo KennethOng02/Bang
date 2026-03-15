@@ -1,4 +1,4 @@
-bin/
+bin/*
 *.swp
 .vscode/
 .gdb_history
