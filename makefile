@@ -6,11 +6,14 @@ debug_dependency=$(addsuffix ${debug_suffix}, ${dependency})
 debug_dependency_path=$(addprefix ${bin_dir}, ${debug_dependency})
 dependency_path=$(addprefix ${bin_dir}, ${dependency})
 
-all: $(dependency)
+all: bin $(dependency)
 	make cardid
 	make characterid
 	# gcc -fsanitize=address src/main.c $(dependency_path) -lncurses -o bin/main
 	gcc src/main.c $(dependency_path) -lncurses -o bin/main
+
+bin:
+	mkdir -p bin
 
 run:
 	./bin/main
